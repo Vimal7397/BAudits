@@ -395,8 +395,8 @@
 		    var selectedYear = parseInt(b[1]);
 		    var selectedMonth = parseInt(c);
 		    
-		    if (selectedYear > 2025 || (selectedYear === 2025 && selectedMonth > 4)) {
-		        alert("Please select a month before May 2025");
+		    if (selectedYear > 2026 || (selectedYear === 2026 && selectedMonth > 4)) {
+		        alert("Please select a month before May 2026");
 		        return false; // Exit the function without redirecting
 		    }
 
@@ -496,6 +496,10 @@
 												id="MY" type="text" placeholder="Select Month and year"
 												autocomplete="off">
 											<input type="hidden" id="My2" th:value="${month}">
+											<input type="text" th:value="${#temporals.format(monthDate,'MMMM yyyy')}"
+																						       style="border:none; background:none; outline:none; font-family: inherit; font-size: inherit;
+																							   margin-left: 45rem;font-weight: bolder;font-weight: bold;" readonly>
+
 											<div class="card-body p-0">
 												<div class="table-responsive"
 													style="width:1740px;max-height: 670px;overflow-y: auto;">
@@ -558,7 +562,7 @@
 
 
 																<td style="width:3%;"
-																	th:text="${#strings.equalsIgnoreCase(jhg?.urn_no, 'Not applicable') ? 'NA' : jhg?.urn_no}">
+																    th:text="${(jhg?.urn_no != null and !#strings.isEmpty(jhg?.urn_no) and !#strings.equalsIgnoreCase(jhg?.urn_no, 'Not applicable')) ? jhg?.urn_no : 'Not applicable'}">
 																</td>
 
 																<td style="text-align:right;"

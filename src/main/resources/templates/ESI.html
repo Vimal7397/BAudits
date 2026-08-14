@@ -377,10 +377,12 @@
 
 			// Add validation for April 2025
 			var selectedYear = parseInt(b[1]);
+			//alert("selectedYear"+selectedYear);
 			var selectedMonth = parseInt(c);
+			//alert("selectedMonth"+selectedMonth);
 
-			if (selectedYear > 2025 || (selectedYear === 2025 && selectedMonth > 4)) {
-				alert("Please select a month before May 2025");
+			if (selectedYear > 2026 || (selectedYear === 2026 && selectedMonth > 4)) {
+				alert("Please select a month before May 2026");
 				return false; // Exit the function without redirecting
 			}
 			var d = b[1] + c;
@@ -456,6 +458,7 @@
 														<li><a onclick="xcelCustomerdown(this);">Excel-All</a></li>
 														<li><a onclick="xcelCustomerdown1(this);">Excel-Month</a></li>
 													</ul>
+													
 													<button
 														class="btn text-white  btn-filter btn-primary">Filter</button>
 												</div>
@@ -465,6 +468,11 @@
 												placeholder="Select Month and year" onchange="selectedmy()"><input
 												id="MY" type="text" placeholder="Select Month and year">
 											<input type="hidden" id="My2" th:value="${month}">
+											<input type="text" th:value="${#temporals.format(monthDate,'MMMM yyyy')}"
+											       style="border:none; background:none; outline:none; font-family: inherit; font-size: inherit;
+												   margin-left: 30rem;font-weight: bold;" readonly>
+
+
 											<div class="card-body p-0">
 												<div class="table-responsive">
 													<table class="table table-sm"

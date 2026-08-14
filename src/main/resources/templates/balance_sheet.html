@@ -136,29 +136,17 @@
 	</script>
 	<script>
 		$(function () {
-			var fixedDateStr = "31-03-2025"; // dd-mm-yy format
-			var minAllowedDate = new Date(2025, 2, 31); // 01-Apr-2017
-			var maxAllowedDate = new Date(2025, 3, 1); // 01-Apr-2025
-
-			$("#assetDate").datepicker({
-				changeMonth: true,
-				changeYear: true,
-				dateFormat: "dd-mm-yy",
-				minDate: minAllowedDate,
-				maxDate: maxAllowedDate,
-				beforeShowDay: function (date) {
-					// Allow only between 01-04-2017 and 01-04-2025
-					return [date >= minAllowedDate && date <= maxAllowedDate];
-				},
-				onSelect: function (selected) {
-					var reportDate = $("#incomedate").val();
-					funcall();
-				}
-			});
-
-			// Set the default value to 01-04-2025
-			$("#assetDate").val(fixedDateStr);
+		    $("#assetDate").datepicker({
+		        changeMonth: true,
+		        changeYear: true,
+		        dateFormat: "dd-mm-yy",
+		        onSelect: function (selected) {
+		            var reportDate = $("#incomedate").val();
+		            funcall();
+		        }
+		    });
 		});
+
 
 		let balancedate;
 
@@ -246,9 +234,15 @@
 
 							
 							row.innerHTML = `
-	                        <td th:attr="data-glshcode=${trial[3]}" style="cursor:pointer;width:30%"
-							onclick="viewglsh(this);" 	onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
-							>${trial[3]}-${trial[5]}</td>
+							<td data-glshcode="${trial[3]}" 
+							      style="cursor:pointer;width:30%" 
+							      onclick="viewglsh(this);" 
+							      onmouseover="this.style.color='#0000EE';" 
+							      onmouseout="this.style.color='black';">
+							      ${trial[3]}-${trial[5]}
+							  </td>
+							
+
 	                        <td style="width:10%">${trial[6]}</td>
 							<td style="width:40%" title="${trial[7]}">${desc}</td>
 															                        <td  style="width:7%">${trial[8]}</td>
@@ -405,7 +399,7 @@
 		}
 		function viewglsh(element) {
 			var glshCode = element.getAttribute('data-glshcode');
-
+			//alert("glshCode"+glshCode);
 			if (!glshCode) {
 				alert("GLSH Code not found.");
 				return;
@@ -526,6 +520,15 @@
 				}
 			});
 		}
+		
+		function listcharge3(a) {
+					var acct_num = a.getAttribute("data-acctnum");
+
+
+					// Optional: redirect to another page
+					location.href = 'AccountLedger?formmode=ViewAccLedger&acct_num=' + encodeURIComponent(acct_num);
+				}
+
 	</script>
 </head>
 <title>BAUDIT</title>
@@ -588,7 +591,11 @@
 												onmouseover="this.style.color='#0000EE';"
 												onmouseout="this.style.color='black';"></td>
 											<td th:text="${chartacc[6]}"
-												style="text-align: left; white-space: nowrap; width: 10%;"></td>
+												style="text-align: left; white-space: nowrap; width: 10%;cursor: pointer;"
+												th:attr="data-acctnum=${chartacc[6]}" 
+												onclick="listcharge3(this)"
+												onmouseover="this.style.color='#0000EE';"
+												onmouseout="this.style.color='black';"></td>
 											<td th:text="${chartacc[7]?.length() > 30 ? chartacc[7].substring(0, 30) + '...,' : chartacc[7]}"
 												style="text-align: left; white-space: nowrap; width: 20%;"></td>
 
@@ -674,7 +681,11 @@
 												onmouseover="this.style.color='#0000EE';"
 												onmouseout="this.style.color='black';"></td>
 											<td th:text="${chartacc[6]}"
-												style="text-align: left;white-space: nowrap; width: 20%;"></td>
+												style="text-align: left;white-space: nowrap; width: 20%;cursor: pointer;"
+												th:attr="data-acctnum=${chartacc[6]}" 
+												onclick="listcharge3(this)"
+												onmouseover="this.style.color='#0000EE';"
+												onmouseout="this.style.color='black';"></td>
 											<td th:text="${chartacc[7]?.length() > 30 ? chartacc[7].substring(0, 30) + '...,' : chartacc[7]}"
 												style="text-align: left; white-space: nowrap; width: 20%;"></td>
 

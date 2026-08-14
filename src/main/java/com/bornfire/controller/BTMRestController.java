@@ -1915,5 +1915,62 @@ public class BTMRestController {
 	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Issue number not found");
 	    }
 	}
+	
+	
+	@GetMapping("/getTransactionsJournalDelete")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getTransactionsJournalDelete() {
+		
+		List<BAJ_TrmView_Entity> records = bAJ_TrmView_Repo.getjournalDeleteAcct();
+
+		System.out.println("Records: " + records);
+		for (BAJ_TrmView_Entity up1 : records) {
+			System.out.println("Record: " + up1);
+		}
+
+		return records;
+	}
+	
+	
+	
+	@GetMapping("/getTransactionsJournalverify")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getTransactionsJournalverify() {
+		
+		List<BAJ_TrmView_Entity> records = bAJ_TrmView_Repo.getjournalVerifyAcct();
+
+
+		System.out.println("Records: " + records);
+		for (BAJ_TrmView_Entity up1 : records) {
+			System.out.println("Record: " + up1);
+		}
+
+		return records;
+	}
+	
+	@GetMapping("/TransactionndeleteDates")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> TransactionndeleteDates() {
+	    
+	    List<BAJ_TrmView_Entity> records;
+	    records = bAJ_TrmView_Repo.getTransactionDelete();
+	   
+
+	    // Log records for debugging (Remove this in production)
+	    System.out.println("Fetched Records: " + records);
+
+	    return records;
+	}
+
+	
+	
+	@GetMapping("/TransactionunverifiedDates")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> TransactionunverifiedDates() {
+	    List<BAJ_TrmView_Entity> records = bAJ_TrmView_Repo.getTransactionVerify();
+	    System.out.println("Fetched Records: " + records);
+	    return records;
+	}
+
 
 } 	

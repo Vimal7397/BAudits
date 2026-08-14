@@ -30,6 +30,7 @@
 		th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
 	<script src="/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
 		th:src="@{/webjars/datatables/1.10.19/js/dataTables.bootstrap4.min.js}"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
 	<style>
 		body {
@@ -510,32 +511,35 @@
 		}
 
 		.modal-row {
-		    display: flex;
-		    justify-content: center; /* Center horizontally */
-		    margin: 5px 0;
+			display: flex;
+			justify-content: center;
+			/* Center horizontally */
+			margin: 5px 0;
 		}
 
 		.modal-label {
-		    width: 150px;
-		    font-weight: 600;
-		    text-align: right; /* Align label text to the right */
-		    margin-right: 10px; /* Spacing between label and value */
+			width: 150px;
+			font-weight: 600;
+			text-align: right;
+			/* Align label text to the right */
+			margin-right: 10px;
+			/* Spacing between label and value */
 		}
 
 		.modal-value {
-		    flex: none;
-		    min-width: 150px;
-		    text-align: left;
-		    font-family: monospace;
+			flex: none;
+			min-width: 150px;
+			text-align: left;
+			font-family: monospace;
 		}
 
 		.modal-content {
-		    padding: 20px;
-		    width: 500px;
-		    margin: auto;
-		    background-color: white;
-		    border-radius: 8px;
-		    box-shadow: 0px 0px 10px #aaa;
+			padding: 20px;
+			width: 500px;
+			margin: auto;
+			background-color: white;
+			border-radius: 8px;
+			box-shadow: 0px 0px 10px #aaa;
 		}
 
 
@@ -588,6 +592,30 @@
 
 		.filterable .filters input[disabled]::-webkit-input-placeholder {
 			color: #333;
+		}
+
+
+		#TabButtons {
+			display: flex;
+			gap: 10px;
+			margin-left: 100px;
+			align-items: center;
+		}
+
+		#extraButtons {
+			margin-left: auto;
+			/* pushes buttons to the far right */
+			gap: 10px;
+			display: none;
+			/* hidden by default */
+		}
+
+		#extraButtons1 {
+			margin-left: auto;
+			/* pushes buttons to the far right */
+			gap: 10px;
+			display: none;
+			/* hidden by default */
 		}
 	</style>
 	<script th:inline="javascript">
@@ -1011,7 +1039,42 @@
 								}
 							});
 				});
+
+
+
+
+
+
 	</script>
+	<script>
+		function clearInput() {
+			// clear the text field value
+			document.getElementById("acct_num3").value = "";
+			//alert("Value cleared!");
+			journalDeletenumber();
+		}
+
+		function clearVerified() {
+			document.getElementById("acct_num3").value = "";
+
+			journalVerifyNumber();
+		}
+
+
+		function clearInputtab2() {
+			// clear the text field value
+			document.getElementById("acct_num2").value = "";
+			//alert("Value cleared!");
+			TransactionDeletenumber();
+		}
+
+		function clearVerifiedTab2() {
+			document.getElementById("acct_num2").value = "";
+
+			TransactionVerifyNumber();
+		}
+	</script>
+
 
 
 </head>
@@ -1034,7 +1097,7 @@
 							<h6 style="font-size: 1.2rem; color: black; margin: 0;">Audit
 								Inquiry</h6>
 						</div>
-						<div class="tab" id="TabButtons" style="display: none; gap: 10px; margin-left: 200px;">
+						<div class="tab" id="TabButtons" style="display: none; gap: 10px; margin-left: 100px;">
 							<button class="tablinks" onclick="showTab('tab1')"
 								style="font-size: 16px; padding: 4px 20px; height: 100%; flex: 1; width: 200px; border: 2px solid black;">Account
 								Ledger</button>
@@ -1043,6 +1106,7 @@
 							<button class="tablinks ml-4" onclick="showTab('tab3')"
 								style="font-size: 16px; padding: 4px 20px; height: 100%; flex: 1; width: 200px; border: 2px solid black;">Journal
 								Entries</button>
+
 
 						</div>
 						<div id="acctList" class="acct-list" style="display: none; height: 40px; margin: 0px">
@@ -1069,8 +1133,7 @@
 							</ul>
 						</div>
 						<div id="acctList3" class="acct-list3" style="display: none; height: 40px; margin: 0px">
-							<ul
-								style="display: flex; list-style: none; align-item: center; justify-content: space-around;">
+							<ul style="display: flex; list-style: none; align-item: center; gap:1px">
 								<li onclick="moreaccutnum2('tab1', '2100002180', getAllNumbers2())">2100002180</li>
 								<li style="margin-left: 10px"
 									onclick="moreaccutnum2('tab1', '6200006215', getAllNumbers2())">6200006215</li>
@@ -1103,6 +1166,28 @@
 
 
 							</ul>
+						</div>
+
+						<div id="extraButtons" style="gap: 10px; display: none;">
+							<button onclick="JournalDelete()"
+								style="font-size: 12px; padding: 2px 12px; border: 2px solid black; ">
+								Deleted
+							</button>
+							<button onclick="JournalUnverfied()"
+								style="font-size: 12px; padding: 2px 12px; border: 2px solid black;">
+								Unverified
+							</button>
+						</div>
+
+						<div id="extraButtons1" style="gap: 10px; display: none;">
+							<button onclick="JournalDelete1()"
+								style="font-size: 12px; padding: 2px 12px; border: 2px solid black; ">
+								Deleted
+							</button>
+							<button onclick="JournalUnverfied1()"
+								style="font-size: 12px; padding: 2px 12px; border: 2px solid black;">
+								Unverified
+							</button>
 						</div>
 
 					</div>
@@ -1141,11 +1226,13 @@
 						</tr>
 					</table>
 
-				<div id="tab1" class="tabcontent filterable card panel panel-primary filterable" data-tab="tab1"
+					<div id="tab1" class="tabcontent filterable card panel panel-primary filterable" data-tab="tab1"
 						style="display: none; width: 1470px; margin-left: 10px;">
 						<div class="card-header">
 							<button type="button" class="btn btns btn-filter headerbutton"
-								style="float: right;">Filter</button>
+								style="float: right;margin-top:-15px">
+								<i class="bi bi-funnel-fill"></i> <!-- filter icon -->
+							</button>
 						</div>
 						<form action="#" id="accountForm">
 							<div class="w-100 h-100">
@@ -1194,8 +1281,8 @@
 													class="form-control font-weight-bold" placeholder="Tran Particulars"
 													disabled></th>
 											<th style="text-align: center"><input type="text"
-													class="form-control font-weight-bold" placeholder="Cur"
-													disabled></th>
+													class="form-control font-weight-bold" placeholder="Cur" disabled>
+											</th>
 											<th style="text-align: right"><input type="text" style="text-align: right"
 													class="form-control font-weight-bold" placeholder="Debits" disabled>
 											</th>
@@ -1220,6 +1307,7 @@
 							</div>
 						</div>
 						<div style="margin-left: 700px">
+							<button onclick="Home()" class="btn btn-secondary mt-3">Home</button>
 							<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
 						</div>
 					</div>
@@ -1232,16 +1320,24 @@
 						style="display: none; width: 1470px; margin-left: 10px;">
 						<div class="card-header">
 							<button type="button" class="btn btns btn-filter headerbutton"
-								style="float: right;">Filter</button>
+								style="float: right;margin-top:-15px">
+								<i class="bi bi-funnel-fill"></i> <!-- filter icon -->
+							</button>
 						</div>
 						<form action="#" id="accountForm">
 							<div class="w-100 h-100">
 								<div class="row formline" style="margin-top: 1px">
+									<input type="radio" name="transactionradiobtn" id="transactionradiobtn"
+										style="margin-left: 5px;display: none;" onclick="clearInputtab2()">
+									<input type="radio" name="transactionunverifiedradiobtn"
+										id="transactionunverifiedradiobtn" style="margin-left: 5px;display: none;"
+										onclick="clearVerifiedTab2()">
 
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
-									<div class="col-sm-1">
+									<div class="col-sm-1" style="display: flex;">
 										<input type="text" name="acct_num2" id="acct_num2" class="form-control-sm"
 											readonly />
+
 									</div>
 									<div class="col-sm-1"></div>
 									<div class="col-sm-1" style="margin-top: 5px">Account
@@ -1322,8 +1418,10 @@
 
 							</div>
 							<div style="margin-left: 700px">
-								<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
+								<button onclick="Home()" class="btn btn-secondary mt-3">Home</button>
 								<button onclick="getModelValue()" class="btn btn-secondary mt-3">Summary</button>
+								<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
+
 							</div>
 
 						</div>
@@ -1338,17 +1436,26 @@
 						style="display: none; width: 1470px; margin-left: 10px;">
 						<div class="card-header">
 							<button type="button" class="btn btns btn-filter headerbutton"
-								style="float: right;">Filter</button>
+								style="float: right;margin-top:-15px">
+								<i class="bi bi-funnel-fill"></i> <!-- filter icon -->
+							</button>
 						</div>
+
 						<form action="#" id="accountForm">
 							<div class="w-100 h-100">
 								<div class="row formline" style="margin-top: 1px">
-
+									<input type="radio" name="deleteradiobtn" id="deleteradiobtn"
+										style="margin-left: 5px;display: none;" onclick="clearInput()">
+									<input type="radio" name="Unverifiedradiobtn" id="Unverifiedradiobtn"
+										style="margin-left: 5px;display: none;" onclick="clearVerified()">
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
-									<div class="col-sm-1">
+									<div class="col-sm-1" style="display: flex;">
 										<input type="text" name="acct_num3" id="acct_num3" class="form-control-sm"
 											readonly />
+
 									</div>
+
+
 									<div class="col-sm-1"></div>
 									<div class="col-sm-1" style="margin-top: 5px">Account
 										Name</div>
@@ -1430,7 +1537,9 @@
 
 							</div>
 							<div style="margin-left: 700px">
+								<button onclick="Home()" class="btn btn-secondary mt-3">Home</button>
 								<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
+
 							</div>
 						</div>
 					</div>
@@ -1905,42 +2014,42 @@
 	</div>
 
 	<div id="myModal" class="modal" data-backdrop="false">
-	    <div class="modal-content" id="submodel">
-	        <span class="close" id="closebtn">&times;</span>
-	        <h2 style="text-align: center" class="h2">Transaction Details</h2>
+		<div class="modal-content" id="submodel">
+			<span class="close" id="closebtn">&times;</span>
+			<h2 style="text-align: center" class="h2">Transaction Details</h2>
 
-	        <div class="modal-row">
-	            <span class="modal-label"><strong>Account Number:</strong></span>
-	            <span id="modal-acctnum" class="modal-value"></span>
-	        </div>
+			<div class="modal-row">
+				<span class="modal-label"><strong>Account Number:</strong></span>
+				<span id="modal-acctnum" class="modal-value"></span>
+			</div>
 
-	        <!-- ✅ From Date -->
-	        <div class="modal-row">
-	            <span class="modal-label"><strong>From Date:</strong></span>
-	            <span id="modal-fromdate" class="modal-value"></span>
-	        </div>
+			<!-- ✅ From Date -->
+			<div class="modal-row">
+				<span class="modal-label"><strong>From Date:</strong></span>
+				<span id="modal-fromdate" class="modal-value"></span>
+			</div>
 
-	        <!-- ✅ To Date -->
-	        <div class="modal-row">
-	            <span class="modal-label"><strong>To Date:</strong></span>
-	            <span id="modal-todate" class="modal-value"></span>
-	        </div>
+			<!-- ✅ To Date -->
+			<div class="modal-row">
+				<span class="modal-label"><strong>To Date:</strong></span>
+				<span id="modal-todate" class="modal-value"></span>
+			</div>
 
-	        <div class="modal-body" id="modelBody">
-	            <div class="modal-row">
-	                <span class="modal-label"><strong>Credit Balance:</strong></span>
-	                <span id="modal-credit" class="modal-value"></span>
-	            </div>
-	            <div class="modal-row">
-	                <span class="modal-label"><strong>Debit Balance:</strong></span>
-	                <span id="modal-debit" class="modal-value"></span>
-	            </div>
-	            <div class="modal-row">
-	                <span class="modal-label"><strong>Total Balance:</strong></span>
-	                <span id="modal-total" class="modal-value"></span>
-	            </div>
-	        </div>
-	    </div>
+			<div class="modal-body" id="modelBody">
+				<div class="modal-row">
+					<span class="modal-label"><strong>Credit Balance:</strong></span>
+					<span id="modal-credit" class="modal-value"></span>
+				</div>
+				<div class="modal-row">
+					<span class="modal-label"><strong>Debit Balance:</strong></span>
+					<span id="modal-debit" class="modal-value"></span>
+				</div>
+				<div class="modal-row">
+					<span class="modal-label"><strong>Total Balance:</strong></span>
+					<span id="modal-total" class="modal-value"></span>
+				</div>
+			</div>
+		</div>
 	</div>
 
 
@@ -2324,7 +2433,9 @@
 		tabContents.forEach((tab) => (tab.style.display = 'none'));
 
 		const tabElement = document.getElementById(tabId);
-		tabElement.style.display = 'block';
+		if (tabElement) {
+			tabElement.style.display = 'block';
+		}
 
 		const tabLinks = document.querySelectorAll('.tablinks');
 		tabLinks.forEach((tab) => {
@@ -2334,11 +2445,22 @@
 
 		const activeButton = document.querySelector(`.tablinks[onclick="showTab('${tabId}')"]`);
 		if (activeButton) {
-			activeButton.style.backgroundColor = '#13739F'; // Set background to peacock blue
-			activeButton.style.color = 'white'; // Optional: Set text color for better contrast
+			activeButton.style.backgroundColor = '#13739F'; // Active tab background
+			activeButton.style.color = 'white'; // Active tab text color
+		}
+
+		// ✅ Show extra buttons only when tab3 is active
+		const extraButtons = document.getElementById("extraButtons");
+		if (extraButtons) {
+			extraButtons.style.display = tabId === "tab3" ? "flex" : "none";
+		}
+
+		// ✅ Show extraButtons1 only for tab2
+		const extraButtons1 = document.getElementById("extraButtons1");
+		if (extraButtons1) {
+			extraButtons1.style.display = tabId === "tab2" ? "flex" : "none";
 		}
 	}
-
 
 	function showCommonTable() {
 
@@ -2426,7 +2548,7 @@
 			changeMonth: true,
 			changeYear: true,
 			dateFormat: "dd-mm-yy",
-			maxDate:new Date(2025, 3, 1),
+			maxDate: new Date(2025, 3, 1),
 			onSelect: function (selected) {
 				var fromdate = $("#fromdate2").val();
 				var todate = $("#todate2").val();
@@ -2460,7 +2582,7 @@
 			changeMonth: true,
 			changeYear: true,
 			dateFormat: "dd-mm-yy",
-			maxDate:new Date(2025, 3, 1),
+			maxDate: new Date(2025, 3, 1),
 			onSelect: function (selected) {
 				var fromdate = $("#fromdate3").val();
 				var todate = $("#todate3").val();
@@ -2470,7 +2592,7 @@
 				if (!fromdate3) {
 					alert("Enter From date");
 				} else {
-				
+
 					funcall3();
 				}
 			}
@@ -2495,7 +2617,7 @@
 			changeMonth: true,
 			changeYear: true,
 			dateFormat: "dd-mm-yy",
-			maxDate:new Date(2025, 3, 1),
+			maxDate: new Date(2025, 3, 1),
 			onSelect: function (selected) {
 				var fromdate = $("#fromdate").val();
 				var todate = $("#todate").val();
@@ -2516,7 +2638,7 @@
 		//var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
 		//var yyyy = today.getFullYear();
 		//var currentDate = dd + '-' + mm + '-' + yyyy; // Format: dd-MM-yyyy
-		var currentDate = '01-04-2025';
+		var currentDate = '01-04-2026';
 		document.getElementById('todate').value = currentDate;
 	}
 	function setCurrentDate2() {
@@ -2525,7 +2647,7 @@
 		//var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
 		//var yyyy = today.getFullYear();
 		//var currentDate = dd + '-' + mm + '-' + yyyy; // Format: dd-MM-yyyy
-		var currentDate = '01-04-2025';
+		var currentDate = '01-04-2026';
 		document.getElementById('todate2').value = currentDate;
 	}
 	function setCurrentDate3() {
@@ -2534,7 +2656,7 @@
 		//var mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
 		//var yyyy = today.getFullYear();
 		//var currentDate = dd + '-' + mm + '-' + yyyy; // Format: dd-MM-yyyy
-		var currentDate = '01-04-2025';
+		var currentDate = '01-04-2026';
 		document.getElementById('todate3').value = currentDate;
 	}
 	window.onload = function () {
@@ -3083,9 +3205,9 @@
 				$('#modal-todate').text(todate);
 
 				// Format numbers with comma and 2 decimal places
-				$('#modal-debit').text(debit.toLocaleString('en-US', { minimumFractionDigits: 2 }));
-				$('#modal-credit').text(credit.toLocaleString('en-US', { minimumFractionDigits: 2 }));
-				$('#modal-total').text(total.toLocaleString('en-US', { minimumFractionDigits: 2 }));
+				$('#modal-debit').text(debit.toLocaleString('en-US', {minimumFractionDigits: 2}));
+				$('#modal-credit').text(credit.toLocaleString('en-US', {minimumFractionDigits: 2}));
+				$('#modal-total').text(total.toLocaleString('en-US', {minimumFractionDigits: 2}));
 
 				// Show modal
 				$('#myModal').css("display", "block");
@@ -4746,6 +4868,637 @@
 
 	}
 
+
+	<!-------------------------------------------------Deleted and Unverfied---------------------------------------->
+	function JournalDelete() {
+
+		document.getElementById("deleteradiobtn").style.display = "inline-block";
+		document.getElementById("Unverifiedradiobtn").style.display = "none";
+
+		//alert("Journal Delete Option")
+		let acctnum = document.getElementById("acct_num3").value;
+		//alert("acctnum" + acctnum);
+		$('#list3 tbody').empty();
+		$('#loader-overlay').show();
+		$.ajax({
+			url: './jounalDelete',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (additionalData) {
+				console.log("Additional data:", additionalData);
+				const tableBody = $('#list3 tbody');
+				tableBody.empty(); // Clear previous rows
+
+				if (additionalData && additionalData.length > 0) {
+					// Set the first transaction date
+					const firstTranDate = additionalData[0].tran_date ? formatDate(additionalData[0].tran_date) : '';
+					$('#fromdate3').val(firstTranDate);
+
+					// Append rows to the table body
+					additionalData.forEach(function (item) {
+						const row = `
+			                        <tr>
+			                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+			                            <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+			                                onclick="showdetails('${item.tran_id}', '${item.part_tran_id}', '${item.acct_num}')">
+			                                ${item.tran_id} / ${item.part_tran_id}
+			                            </td>
+			                            <td>${item.part_tran_type || ''}</td>
+			                            <td>${item.acct_crncy || ''}</td>
+			                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+			                            <td style="text-align: right;cursor:pointer"
+										onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+										onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+			                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+			                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+			                            <td style="text-align: left;">${item.tran_status || ''}</td>
+			                        </tr>
+			                    `;
+						tableBody.append(row);
+					});
+
+					console.log("Rows appended successfully to #list3 table.");
+				} else {
+					// Show "No record found"
+					const noRecordRow = `
+						        <tr>
+						            <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+						                There is no record found !!!
+						            </td>
+						        </tr>
+						    `;
+					tableBody.append(noRecordRow);
+					console.log("No account details found for setlist3.");
+				}
+
+				// Ensure the table is displayed
+				$('#list3').show();
+				$('#loader-overlay').hide();
+			},
+			error: function (error) {
+				console.error('Error fetching additional data:', error);
+			}
+		});
+
+	}
+
+	function journalDeletenumber() {
+	    //alert("Journal remove Acct num");
+	    var fromdate = $('#fromdate3').val();
+	    var todate = $('#todate3').val();
+
+	    console.log("fromdate: " + fromdate);
+	    console.log("todate: " + todate);
+
+	    let tableBody = $('#list3 tbody');
+	    tableBody.empty(); // Clear previous rows
+
+	    $('#loadingMessage3').show();
+	    $.ajax({
+	        url: './getTransactionsJournalDelete',
+	        type: 'GET',
+	        data: {
+	            fromdate: fromdate,
+	            todate: todate
+	        },
+	        success: function (data) {
+	            if (data && Array.isArray(data) && data.length > 0) {
+	                data.forEach(function (item) {
+	                    let row = `
+	                        <tr>
+	                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+	                            <td style="cursor:pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+	                                onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> 
+	                                ${item.tran_id} / ${item.part_tran_id}
+	                            </td>
+	                            <td>${item.part_tran_type || ''}</td>
+	                            <td>${item.acct_crncy || ''}</td>
+	                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+	                            <td style="text-align: right;cursor:pointer"
+	                                onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+	                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+	                            <td style="text-align: right;">${item.tran_status || ''}</td>
+	                        </tr>
+	                    `;
+	                    $('#list3 tbody').append(row);
+	                });
+	            } else {
+	                // Show "No record found"
+	                const noRecordRow = `
+	                    <tr>
+	                        <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                            There is no record found !!!
+	                        </td>
+	                    </tr>
+	                `;
+	                tableBody.append(noRecordRow);
+	                console.log("No account details found for setlist3.");
+	            }
+	            $('#loadingMessage3').hide();
+	        },
+	        error: function (error) {
+	            console.error("Error fetching transaction records:", error);
+	            $('#loadingMessage3').hide();
+
+	            // Show fallback "No record found" if error
+	            const noRecordRow = `
+	                <tr>
+	                    <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                        There is no record found !!!
+	                    </td>
+	                </tr>
+	            `;
+	            tableBody.append(noRecordRow);
+	        }
+	    });
+	}
+
+
+
+	function JournalUnverfied() {
+	    let acct_num2 = document.getElementById("acct_num1").value;
+	    let accnum = acct_num2;
+	    document.getElementById("acct_num3").value = accnum;
+
+	    document.getElementById("deleteradiobtn").style.display = "none";
+	    document.getElementById("Unverifiedradiobtn").style.display = "inline-block";
+
+	    //alert("accnum " + accnum);
+
+	    $('#list3 tbody').empty();
+	    $('#loader-overlay').show();
+
+	    $.ajax({
+	        url: './jounalVerify',
+	        type: 'GET',
+	        data: { acctnum: accnum },
+	        success: function (additionalData) {
+	            console.log("Additional data:", additionalData);
+	            const tableBody = $('#list3 tbody');
+	            tableBody.empty(); // Clear previous rows
+
+	            if (additionalData && Array.isArray(additionalData) && additionalData.length > 0) {
+	                // ✅ Set the first transaction date
+	                const firstTranDate = additionalData[0].tran_date ? formatDate(additionalData[0].tran_date) : '';
+	                $('#fromdate3').val(firstTranDate);
+
+	                // ✅ Append rows
+	                additionalData.forEach(function (item) {
+	                    const row = `
+	                        <tr>
+	                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+	                            <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+	                                onclick="showdetails('${item.tran_id}', '${item.part_tran_id}', '${item.acct_num}')">
+	                                ${item.tran_id} / ${item.part_tran_id}
+	                            </td>
+	                            <td>${item.part_tran_type || ''}</td>
+	                            <td>${item.acct_crncy || ''}</td>
+	                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+	                            <td style="text-align: right;cursor:pointer"
+	                                onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+	                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${item.tran_status || ''}</td>
+	                        </tr>
+	                    `;
+	                    tableBody.append(row);
+	                });
+
+	                console.log("Rows appended successfully to #list3 table.");
+	            } else {
+	                // ✅ Show "No record found"
+	                const noRecordRow = `
+	                    <tr>
+	                        <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                            There is no record found !!!
+	                        </td>
+	                    </tr>
+	                `;
+	                tableBody.append(noRecordRow);
+	                console.log("No account details found for setlist3.");
+	            }
+
+	            // ✅ Ensure table shows
+	            $('#list3').show();
+	            $('#loader-overlay').hide();
+	        },
+	        error: function (error) {
+	            console.error('Error fetching additional data:', error);
+	            $('#loader-overlay').hide();
+
+	            // ✅ Show "No record found" even on error
+	            const noRecordRow = `
+	                <tr>
+	                    <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                        There is no record found !!!
+	                    </td>
+	                </tr>
+	            `;
+	            $('#list3 tbody').append(noRecordRow);
+	        }
+	    });
+	}
+
+
+	function journalVerifyNumber() {
+	    //alert("Alert verifynumber 123");
+	    var fromdate = $('#fromdate3').val();
+	    var todate = $('#todate3').val();
+
+	    console.log("fromdate: " + fromdate);
+	    console.log("todate: " + todate);
+
+	    let tableBody = $('#list3 tbody');
+	    tableBody.empty(); // Clear previous rows
+
+	    $('#loader-overlay').show();
+
+	    $.ajax({
+	        url: './getTransactionsJournalverify',
+	        type: 'GET',
+	        data: {
+	            fromdate: fromdate,
+	            todate: todate
+	        },
+	        success: function (data) {
+	            tableBody.empty(); // Clear again to ensure fresh data
+
+	            if (data && Array.isArray(data) && data.length > 0) {
+	                data.forEach(function (item) {
+	                    let row = `
+	                        <tr>
+	                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+	                            <td style="cursor:pointer;" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';" 
+	                                onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')">
+	                                ${item.tran_id} / ${item.part_tran_id}
+	                            </td>
+	                            <td>${item.part_tran_type || ''}</td>
+	                            <td>${item.acct_crncy || ''}</td>
+	                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+	                            <td style="text-align: right;cursor:pointer"
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${item.acct_num}')">
+	                                ${item.acct_num || ''}
+	                            </td>
+	                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+	                            <td style="text-align: right;">${item.tran_status || ''}</td>
+	                        </tr>
+	                    `;
+	                    tableBody.append(row);
+	                });
+	                console.log("Rows appended successfully to #list3 table.");
+	            } else {
+	                // ✅ Show "No record found"
+	                const noRecordRow = `
+	                    <tr>
+	                        <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                            There is no record found !!!
+	                        </td>
+	                    </tr>
+	                `;
+	                tableBody.append(noRecordRow);
+	                console.log("No account details found for setlist3.");
+	            }
+
+	            $('#list3').show();
+	            $('#loader-overlay').hide();
+	        },
+	        error: function (error) {
+	            console.error("Error fetching transaction records:", error);
+	            $('#loader-overlay').hide();
+
+	            // ✅ Fallback: show "No record found" if request fails
+	            const noRecordRow = `
+	                <tr>
+	                    <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                        There is no record found !!!
+	                    </td>
+	                </tr>
+	            `;
+	            tableBody.append(noRecordRow);
+	        }
+	    });
+	}
+
+
+
+	function JournalDelete1() {
+	    document.getElementById("transactionradiobtn").style.display = "inline-block";
+	    document.getElementById("transactionunverifiedradiobtn").style.display = "none";
+
+	    let accnum = document.getElementById("acct_num2").value;
+
+	    $.ajax({
+	        url: './Transactiondelete',
+	        type: 'GET',
+	        data: { acctnum: accnum },
+	        success: function (list2Data) {
+	            console.log("List2 data:", list2Data);
+	            $('#list2 tbody').empty();
+
+	            if (list2Data && Array.isArray(list2Data) && list2Data.length > 0) {
+	                let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+	                $('#fromdate2').val(firstTranDate);
+
+	                list2Data.forEach(function (item) {
+	                    let row = `
+	                        <tr>
+	                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+	                            <td style="cursor:pointer" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';" 
+	                                onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')">
+	                                ${item.tran_id} / ${item.part_tran_id}
+	                            </td>
+	                            <td>${item.part_tran_type || ''}</td>
+	                            <td>${item.acct_crncy || ''}</td>
+	                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+	                            <td style="text-align: right;cursor:pointer" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${item.acct_num}')">
+	                                ${item.acct_num || ''}
+	                            </td>
+	                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${item.tran_status || ''}</td>
+	                        </tr>
+	                    `;
+	                    $('#list2 tbody').append(row);
+	                });
+	            } else {
+	                // ✅ Show "No record found" row
+	                const noRecordRow = `
+	                    <tr>
+	                        <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                            There is no record found !!!
+	                        </td>
+	                    </tr>
+	                `;
+	                $('#list2 tbody').append(noRecordRow);
+	                console.log("No account details found for list2.");
+	            }
+	        },
+	        error: function (error) {
+	            console.error('Error fetching list2 data:', error);
+
+	            // ✅ Show "No record found" row even on error
+	            const noRecordRow = `
+	                <tr>
+	                    <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                        There is no record found !!!
+	                    </td>
+	                </tr>
+	            `;
+	            $('#list2 tbody').append(noRecordRow);
+	        }
+	    });
+	}
+
+
+	function JournalUnverfied1() {
+	    document.getElementById("transactionradiobtn").style.display = "none";
+	    document.getElementById("transactionunverifiedradiobtn").style.display = "inline-block";
+
+	    let acct_num1 = document.getElementById("acct_num1").value || "";
+	    document.getElementById("acct_num2").value = acct_num1;
+	    let accnum = acct_num1;
+
+	    if (!accnum) {
+	        alert("Account number is missing!");
+	        return;
+	    }
+
+	    $.ajax({
+	        url: './Transactionnverify',
+	        type: 'GET',
+	        data: { acctnum: accnum },
+	        success: function (list2Data) {
+	            console.log("List2 data:", list2Data);
+	            $('#list2 tbody').empty();
+
+	            if (list2Data && list2Data.length > 0) {
+	                let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+	                $('#fromdate2').val(firstTranDate);
+
+	                list2Data.forEach(function (item) {
+	                    let row = `
+	                        <tr>
+	                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+	                            <td style="cursor:pointer" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';" 
+	                                onclick="showdetails('${item.tran_id || ''}', '${item.part_tran_id || ''}','${item.acct_num || ''}')">
+	                                ${item.tran_id || ''} / ${item.part_tran_id || ''}
+	                            </td>
+	                            <td>${item.part_tran_type || ''}</td>
+	                            <td>${item.acct_crncy || ''}</td>
+	                            <td style="text-align: right;">
+	                                ${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}
+	                            </td>
+	                            <td style="text-align: right;cursor:pointer" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${item.acct_num || ''}')">
+	                                ${item.acct_num || ''}
+	                            </td>
+	                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${item.tran_status || ''}</td>
+	                        </tr>
+	                    `;
+	                    $('#list2 tbody').append(row);
+	                });
+	            } else {
+	                // Show "No record found" row
+	                const noRecordRow = `
+	                    <tr>
+	                        <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                            There is no record found !!!
+	                        </td>
+	                    </tr>
+	                `;
+	                $('#list2 tbody').append(noRecordRow);
+	                console.log("No account details found.");
+	            }
+	        },
+	        error: function (error) {
+	            console.error('Error fetching list2 data:', error);
+	            const errorRow = `
+	                <tr>
+	                    <td colspan="9" style="text-align: center; color: red; font-weight: bold;">
+	                        Error while fetching data!
+	                    </td>
+	                </tr>
+	            `;
+	            $('#list2 tbody').append(errorRow);
+	        }
+	    });
+	}
+
+
+
+	function TransactionDeletenumber() {
+	    var fromdate = $('#fromdate2').val();
+	    var todate = $('#todate2').val();
+
+	    $.ajax({
+	        url: './TransactionndeleteDates',
+	        type: 'GET',
+	        data: { fromdate: fromdate, todate: todate },
+	        success: function (list2Data) {
+	            console.log("List2 data:", list2Data);
+
+	            // Clear previous rows
+	            $('#list2 tbody').empty();
+
+	            if (Array.isArray(list2Data) && list2Data.length > 0) {
+	                let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+	                $('#fromdate2').val(firstTranDate);
+
+	                list2Data.forEach(function (item) {
+	                    let row = `
+	                        <tr>
+	                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+	                            <td style="cursor:pointer"
+	                                onmouseover="this.style.color='#0000EE';"
+	                                onmouseout="this.style.color='black';"
+	                                onclick="showdetails('${item.tran_id || ''}', '${item.part_tran_id || ''}', '${item.acct_num || ''}')">
+	                                ${(item.tran_id || '')} / ${(item.part_tran_id || '')}
+	                            </td>
+	                            <td>${item.part_tran_type || ''}</td>
+	                            <td>${item.acct_crncy || ''}</td>
+	                            <td style="text-align: right;">
+	                                ${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}
+	                            </td>
+	                            <td style="text-align: right; cursor:pointer"
+	                                onmouseover="this.style.color='#0000EE';"
+	                                onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${item.acct_num || ''}')">
+	                                ${item.acct_num || ''}
+	                            </td>
+	                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+	                            <td style="text-align: left;">${item.tran_status || ''}</td>
+	                        </tr>
+	                    `;
+	                    $('#list2 tbody').append(row);
+	                });
+	            } else {
+	                console.log("No account details found.");
+	                $('#list2 tbody').append('<tr><td colspan="9" style="text-align:center;">No records found</td></tr>');
+	            }
+	        },
+	        error: function (error) {
+	            console.error('Error fetching list2 data:', error);
+	            $('#list2 tbody').append('<tr><td colspan="9" style="text-align:center; color:red;">Error loading data</td></tr>');
+	        }
+	    });
+	}
+
+	function TransactionVerifyNumber() {
+	    var fromdate = $('#fromdate2').val();
+	    var todate = $('#todate2').val();
+
+	    $.ajax({
+	        url: './TransactionunverifiedDates',
+	        type: 'GET',
+	        data: { fromdate: fromdate, todate: todate },
+	        success: function (list2Data) {
+	            console.log("List2 data:", list2Data);
+	            $('#list2 tbody').empty();
+
+	            if (list2Data && list2Data.length > 0) {
+	                let firstTranDate = (list2Data[0].tran_date && list2Data[0].tran_date !== "null")
+	                    ? formatDate(list2Data[0].tran_date)
+	                    : '';
+	                $('#fromdate2').val(firstTranDate);
+
+	                list2Data.forEach(function (item) {
+	                    let tranDate = (item.tran_date && item.tran_date !== "null") 
+	                        ? new Date(item.tran_date).toLocaleDateString('en-GB') 
+	                        : '';
+	                    let tranId = (item.tran_id && item.tran_id !== "null") ? item.tran_id : '';
+	                    let partTranId = (item.part_tran_id && item.part_tran_id !== "null") ? item.part_tran_id : '';
+	                    let partTranType = (item.part_tran_type && item.part_tran_type !== "null") ? item.part_tran_type : '';
+	                    let acctCrncy = (item.acct_crncy && item.acct_crncy !== "null") ? item.acct_crncy : '';
+	                    let tranAmt = (item.tran_amt && item.tran_amt !== "null") ? formatDecimal(item.tran_amt, 2) : '0.00';
+	                    let acctNum = (item.acct_num && item.acct_num !== "null") ? item.acct_num : '';
+	                    let acctName = (item.acct_name && item.acct_name !== "null") ? item.acct_name.substring(0, 35) : '';
+	                    let tranParticular = (item.tran_particular && item.tran_particular !== "null") ? item.tran_particular.substring(0, 35) : '';
+	                    let tranStatus = (item.tran_status && item.tran_status !== "null") ? item.tran_status : '';
+
+	                    let row = `
+	                        <tr>
+	                            <td>${tranDate}</td>
+	                            <td style="cursor:pointer" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';" 
+	                                onclick="showdetails('${tranId}', '${partTranId}','${acctNum}')"> 
+	                                ${tranId} / ${partTranId}
+	                            </td>
+	                            <td>${partTranType}</td>
+	                            <td>${acctCrncy}</td>
+	                            <td style="text-align: right;">${tranAmt}</td>
+	                            <td style="text-align: right;cursor:pointer" 
+	                                onmouseover="this.style.color='#0000EE';" 
+	                                onmouseout="this.style.color='black';"
+	                                onclick="listcharge2('${acctNum}')">${acctNum}</td>
+	                            <td style="text-align: left;">${acctName}</td>
+	                            <td style="text-align: left;">${tranParticular}</td>
+	                            <td style="text-align: left;">${tranStatus}</td>
+	                        </tr>
+	                    `;
+	                    $('#list2 tbody').append(row);
+	                });
+	            } else {
+	                // Show "No records found" inside the table
+	                $('#list2 tbody').append('<tr><td colspan="9" style="text-align:center;">No records found</td></tr>');
+	            }
+	        },
+	        error: function (error) {
+	            console.error('Error fetching list2 data:', error);
+	            $('#list2 tbody').empty().append('<tr><td colspan="9" style="text-align:center;color:red;">Error fetching data</td></tr>');
+	        }
+	    });
+	}
+
+	document.querySelectorAll("#extraButtons button").forEach(btn => {
+		btn.addEventListener("click", function () {
+			// Reset all buttons in extraButtons
+			document.querySelectorAll("#extraButtons button").forEach(b => {
+				b.style.backgroundColor = "";
+				b.style.color = "black";
+			});
+
+
+			// Highlight the clicked one
+			this.style.backgroundColor = "#13739F";  // blue
+			this.style.color = "white";
+		});
+	});
+
+	document.querySelectorAll("#extraButtons1 button").forEach(btn => {
+		btn.addEventListener("click", function () {
+			// Reset all buttons in extraButtons
+			document.querySelectorAll("#extraButtons1 button").forEach(b => {
+				b.style.backgroundColor = "";
+				b.style.color = "black";
+			});
+
+
+			// Highlight the clicked one
+			this.style.backgroundColor = "#13739F";  // blue
+			this.style.color = "white";
+		});
+	});
 
 
 </script>

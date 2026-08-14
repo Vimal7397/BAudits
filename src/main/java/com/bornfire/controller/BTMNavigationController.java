@@ -4744,6 +4744,12 @@ public class BTMNavigationController {
 
 				md.addAttribute("ghj", spfValues);
 				md.addAttribute("formmode", "list");
+				String monthValue=Month;
+				String monthStr = String.valueOf(monthValue); // "202501"
+				int year = Integer.parseInt(monthStr.substring(0,4)); // 2025
+				int monthNum = Integer.parseInt(monthStr.substring(4,6)); // 01
+				LocalDate date = LocalDate.of(year, monthNum, 1);
+				md.addAttribute("monthDate", date);
 				md.addAttribute("month", Month);
 			} else {
 				YearMonth currentYearMonth = YearMonth.now();
@@ -5733,6 +5739,13 @@ public class BTMNavigationController {
 
 				md.addAttribute("ghj", spfValues);
 				md.addAttribute("formmode", "list");
+				String monthValue=Month;
+				String monthStr = String.valueOf(monthValue); // "202501"
+				int year = Integer.parseInt(monthStr.substring(0,4)); // 2025
+				int monthNum = Integer.parseInt(monthStr.substring(4,6)); // 01
+				LocalDate date = LocalDate.of(year, monthNum, 1);
+				md.addAttribute("monthDate", date);
+				
 				md.addAttribute("month", Month);
 			} else {
 				YearMonth currentYearMonth = YearMonth.now();
@@ -15719,6 +15732,12 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 				md.addAttribute("ghj", spfValues);
 				md.addAttribute("formmode", "list");
 				md.addAttribute("month", Month);
+				String monthValue=Month;
+				String monthStr = String.valueOf(monthValue); // "202501"
+				int year = Integer.parseInt(monthStr.substring(0,4)); // 2025
+				int monthNum = Integer.parseInt(monthStr.substring(4,6)); // 01
+				LocalDate date = LocalDate.of(year, monthNum, 1);
+				md.addAttribute("monthDate", date);
 			} else {
 				YearMonth currentYearMonth = YearMonth.now();
 
@@ -15766,6 +15785,104 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 
 		return "BFITDS";
 	}
+	@GetMapping("/jounalDelete")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> jounalDelete(@RequestParam(required = false) String acctnum) {
+		System.out.println("Account number for Journal Delete data: " + acctnum);
 
+		// Initialize the results list
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+
+		try {
+			// Fetch ledger data from repository
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getJournalDel(acctnum);
+			} else {
+				System.out.println("Account number is null or empty.");
+			}
+		} catch (Exception e) {
+			// Log the error
+			System.err.println("Error fetching ledger data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+	
+	@GetMapping("/jounalVerify")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> jounalVerify(@RequestParam(required = false) String acctnum) {
+		System.out.println("Account number for Journal verify data: " + acctnum);
+
+		// Initialize the results list
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+
+		try {
+			// Fetch ledger data from repository
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getJournalverify(acctnum);
+			} else {
+				System.out.println("Account number is null or empty.");
+			}
+		} catch (Exception e) {
+			// Log the error
+			System.err.println("Error fetching ledger data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+	
+	
+	
+	@GetMapping("/Transactiondelete")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> Transactiondelete(@RequestParam(required = false) String acctnum) {
+		System.out.println("Account number for ledger data123: " + acctnum);
+
+		// Initialize the results list
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+
+		try {
+			// Fetch ledger data from repository
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getTransactiondelete(acctnum);
+			} else {
+				System.out.println("Account number is null or empty.");
+			}
+		} catch (Exception e) {
+			// Log the error
+			System.err.println("Error fetching ledger data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+	
+	@GetMapping("/Transactionnverify")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> Transactionnverify(@RequestParam(required = false) String acctnum) {
+		System.out.println("Account number for ledger data: " + acctnum);
+
+		// Initialize the results list
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+
+		try {
+			// Fetch ledger data from repository
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getTransactionverify(acctnum);
+			} else {
+				System.out.println("Account number is null or empty.");
+			}
+		} catch (Exception e) {
+			// Log the error
+			System.err.println("Error fetching ledger data: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return results;
+	}
+
+	
 
 }

@@ -109,47 +109,61 @@
 		}
 
 		$(function () {
-			$("#fromdate").datepicker({
-				changeMonth: true,
-				changeYear: true,
-				dateFormat: "dd-mm-yy",
-				minDate: new Date(2017, 3, 1),
-				maxDate: 0,
 
-				onSelect: function (selected) {
-					var dt = $(this).datepicker('getDate');
-					if (dt) {
-						dt.setDate(dt.getDate());
-						$("#todate").datepicker("option", "minDate", dt);
-					}
-				}
-			});
+		    // Default dates
+		    var defaultFromDate = "01-04-2025";
+		    var defaultToDate   = "01-04-2026";
 
-			var fixedDateStr = "01-04-2025";
-			var maxAllowedDate = new Date(2025, 3, 1); // 01-Apr-2025 (Month is 0-indexed)
+		    // Minimum selectable date: 01-Apr-2017
+		    var minAllowedDate = new Date(2017, 3, 1);
 
-			$("#todate").datepicker({
-				changeMonth: true,
-				changeYear: true,
-				dateFormat: "dd-mm-yy",
-				minDate: new Date(2017, 3, 1),
-				maxDate: maxAllowedDate, // Allow only dates up to 01-Apr-2025
-				onSelect: function (selected) {
-					var fromdate = $("#fromdate").val();
-					var todate = $("#todate").val();
+		    // Maximum selectable date: 01-Apr-2026
+		    var maxAllowedDate = new Date(2026, 3, 1);
 
-					if (!fromdate) {
-						alert("Enter From date");
-					} else {
-						funcall();
-					}
-				}
-			});
+		    $("#fromdate").datepicker({
+		        changeMonth: true,
+		        changeYear: true,
+		        dateFormat: "dd-mm-yy",
+		        minDate: minAllowedDate,
+		        maxDate: maxAllowedDate,
+		        onSelect: function () {
+		            var dt = $(this).datepicker('getDate');
+		            if (dt) {
+		                $("#todate").datepicker("option", "minDate", dt);
+		            }
+		        }
+		    });
 
-			// Set default value to 01-04-2025
-			$("#todate").val(fixedDateStr);
+		    $("#todate").datepicker({
+		        changeMonth: true,
+		        changeYear: true,
+		        dateFormat: "dd-mm-yy",
+		        minDate: minAllowedDate,
+		        maxDate: maxAllowedDate,
+		        onSelect: function () {
+		            var fromdate = $("#fromdate").val();
+
+		            if (!fromdate) {
+		                alert("Enter From date");
+		                $("#todate").val("");
+		            } else {
+		                funcall();
+		            }
+		        }
+		    });
+
+		    // Set default values
+		    $("#fromdate").datepicker("setDate", defaultFromDate);
+		    $("#todate").datepicker("setDate", defaultToDate);
+
+		    // Ensure To Date cannot be less than From Date
+		    $("#todate").datepicker(
+		        "option",
+		        "minDate",
+		        $("#fromdate").datepicker("getDate")
+		    );
+
 		});
-
 	</script>
 	<script type="text/javascript">
 

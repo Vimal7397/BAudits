@@ -342,30 +342,30 @@
 		}
 
 		function selectedmy() {
-		    var selectedValue = document.getElementById("MY").value;
-		    var parts = selectedValue.split(" ");
-		    var monthName = parts[0];
-		    var year = parts[1];
-		    
-		    // Convert month name to number (01-12)
-		    var monthMap = {
-		        "January": "01", "February": "02", "March": "03", 
-		        "April": "04", "May": "05", "June": "06", 
-		        "July": "07", "August": "08", "September": "09", 
-		        "October": "10", "November": "11", "December": "12"
-		    };
-		    var monthNum = monthMap[monthName];
-		    
-		    // Check if date is after April 2025
-		    if ((parseInt(year) > 2025) || 
-		        (parseInt(year) === 2025 && parseInt(monthNum) > 4)) {
-		        alert("Please select a month before May 2025");
-		        return; // Exit the function without redirecting
-		    }
-		    
-		    // Format as YYYYMM and redirect
-		    var formattedDate = year + monthNum;
-		    location.href = 'Tds?formmode=list&Month=' + formattedDate;
+			var selectedValue = document.getElementById("MY").value;
+			var parts = selectedValue.split(" ");
+			var monthName = parts[0];
+			var year = parts[1];
+
+			// Convert month name to number (01-12)
+			var monthMap = {
+				"January": "01", "February": "02", "March": "03",
+				"April": "04", "May": "05", "June": "06",
+				"July": "07", "August": "08", "September": "09",
+				"October": "10", "November": "11", "December": "12"
+			};
+			var monthNum = monthMap[monthName];
+
+			// Check if date is after April 2025
+			if ((parseInt(year) > 2026) ||
+				(parseInt(year) === 2026 && parseInt(monthNum) > 4)) {
+				alert("Please select a month before May 2026");
+				return; // Exit the function without redirecting
+			}
+
+			// Format as YYYYMM and redirect
+			var formattedDate = year + monthNum;
+			location.href = 'Tds?formmode=list&Month=' + formattedDate;
 		}
 		function xcelCustomerdown1(a) {
 			//alert("Hi")
@@ -416,7 +416,8 @@
 			<!---------------------- List of project form Starts-------------------------------------------- -->
 			<div class="col-sm-10">
 
-				<div class="container-fluid" th:if="${formmode}=='list'" style="padding-left:10px;font-size: 13px;width:1700px">
+				<div class="container-fluid" th:if="${formmode}=='list'"
+					style="padding-left:10px;font-size: 13px;width:1700px">
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="container-fluid content">
@@ -438,12 +439,17 @@
 												placeholder="Select Month and year" onchange="selectedmy()"><input
 												id="MY" type="text" placeholder="Select Month and year">
 											<input type="hidden" id="My2" th:value="${month}">
+											<input type="text" th:value="${#temporals.format(monthDate,'MMMM yyyy')}"
+												style="border:none; background:none; outline:none; font-family: inherit; font-size: inherit;
+																																		   margin-left: 40rem;font-weight: bolder;" readonly>
 											<div clafss="card-body p-0">
-												<div class="table-responsive" style="width:1670px;max-height: 670px;overflow-y: auto;">
+												<div class="table-responsive"
+													style="width:1670px;max-height: 670px;overflow-y: auto;">
 													<table class="table table-sm"
 														style="border-collapse: collapse; width: 100%;">
 
-														<thead style="position: sticky; top: 0;background-color: #f8f9fa;">
+														<thead
+															style="position: sticky; top: 0;background-color: #f8f9fa;">
 															<tr class="filters">
 																<th style="width: 120px;"><input type="text"
 																		class="form-control" placeholder="EMPLOYEE ID"
@@ -527,7 +533,7 @@
 										<div class="panel panel-primary filterable">
 											<div class="card-header d-flex justify-content-between"
 												style="background-color: #BBC3CB;">
-												<h3 th:if="${formmode}=='list1'">T	DS</h3>
+												<h3 th:if="${formmode}=='list1'">TDS</h3>
 
 												<div>
 													<button
@@ -537,13 +543,16 @@
 											</div>
 											<input class="js-monthpicker" type="hidden"
 												placeholder="Select Month and year" onchange="selectedmy()"><input
-												id="MY" type="text" placeholder="Select Month and year" autocomplete="off">
+												id="MY" type="text" placeholder="Select Month and year"
+												autocomplete="off">
 											<input type="hidden" id="My2" th:value="${month}">
 											<div class="card-body p-0">
-												<div class="table-responsive" style="width:1740px;max-height: 670px;overflow-y: auto;">
+												<div class="table-responsive"
+													style="width:1740px;max-height: 670px;overflow-y: auto;">
 													<table class="table">
 
-														<thead style="position: sticky; top: 0;background-color: #f8f9fa;">
+														<thead
+															style="position: sticky; top: 0;background-color: #f8f9fa;">
 															<tr class="filters">
 
 																<th><input type="text" class="form-control"
@@ -1082,7 +1091,7 @@
 						changeMonth: false,
 						altField: altField,
 						altFormat: 'M yy',
-							
+
 					}
 					$.extend(settings, options);
 					$this.datepicker(settings);
@@ -1094,8 +1103,8 @@
 	<script>
 		$('.js-monthpicker').monthpicker({altFormat: 'MM yy'});
 	</script>
-	
-	
+
+
 </body>
 
 

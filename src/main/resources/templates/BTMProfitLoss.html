@@ -136,30 +136,22 @@
 	</script>
 	<!-- DATE PICKER -->
 	<script>
+		
 		$(function () {
-			var fixedDateStr = "31-03-2025"; // dd-mm-yy format
-			var minAllowedDate = new Date(2025, 2, 31); // 01-Apr-2017
+		    $("#incomedate").datepicker({
+		        changeMonth: true,
+		        changeYear: true,
+		        dateFormat: "dd-mm-yy",
+		        onSelect: function (selected) {
+		            var reportDate = $("#incomedate").val();
+		            funcall();
+		        }
+		    });
 
-
-			$("#incomedate").datepicker({
-				changeMonth: true,
-				changeYear: true,
-				dateFormat: "dd-mm-yy",
-				minDate: minAllowedDate,
-				beforeShowDay: function (date) {
-					// Allow only between 01-04-2017 and 01-04-2025
-					return [date >= minAllowedDate && date <= maxAllowedDate];
-				},
-				onSelect: function (selected) {
-					var reportDate = $("#incomedate").val();
-					funcall();
-				}
-			});
-
-			// Set the default value to 01-04-2025
-			$("#incomedate").val(fixedDateStr);
+		    
 		});
 
+		
 		let balancedate;
 
 		function funcall() {

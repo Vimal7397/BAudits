@@ -227,7 +227,7 @@
 			</staticText>
 			<image>
 				<reportElement x="90" y="0" width="80" height="61" uuid="bba2428f-c4af-4478-8b15-a770f5e13434"/>
-				<imageExpression><![CDATA["http://103.224.241.244:8080/BTM/images/Bornfire.png"]]></imageExpression>
+				<imageExpression><![CDATA["http://192.168.1.11:8080/BTM/images/Bornfire.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="180" y="0" width="270" height="20" isRemoveLineWhenBlank="true" forecolor="#216FFF" backcolor="#FFFFFF" uuid="e97e03e7-d7d6-42aa-a488-a9a206b8233f"/>
