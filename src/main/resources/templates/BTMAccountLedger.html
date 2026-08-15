@@ -92,6 +92,51 @@
 		#transactionTable{
 			max-height: 300px;
 		}
+
+		#loader-overlay {
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			/* Semi-transparent black */
+			z-index: 9999;
+			/* Ensure it sits above other elements */
+		}
+
+		#loader {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+
+		.loader-animation {
+			border: 6px solid #f3f3f3;
+			/* Light grey */
+			border-top: 6px solid #3498db;
+			/* Blue */
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 1s linear infinite;
+		}
+
+		@keyframes spin {
+			0% {
+				transform: rotate(0deg);
+			}
+
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+		.spinner {
+			animation: spin 2s linear infinite;
+		}
 	</style>
 	<script th:inline="javascript">
 		/*<![CDATA[*/
@@ -105,10 +150,11 @@
 		}
 
 		function listcharge(a) {
-			var acct_num = a.getAttribute("data-acct_num");
+			$('#loader-overlay').show();
+			var acct_num = (typeof a === 'object' && a !== null) ? (a.getAttribute("data-acct_num") || a.getAttribute("data-acctnum") || a.id) : a;
 
 			location.href = 'AccountLedger?formmode=ViewAccLedger&acct_num='
-				+ acct_num;
+				+ encodeURIComponent(acct_num);
 		}
 
 		$(function () {
@@ -239,6 +285,8 @@
 				return;
 			}
 
+			// Show loader overlay
+			$('#loader-overlay').show();
 			// Hide the initial table and show a loading message
 			$('#list1').hide();
 			$('#loadingMessage').show();  // Show loading message
@@ -307,6 +355,7 @@
 	                            </tr>`;
 								tableBody.innerHTML += noDataRow;
 
+								$('#loader-overlay').hide();
 								$('#loadingMessage').hide();
 								$('#transactionTable').show();
 								$('#downloadButton').hide(); // Optionally hide download
@@ -361,19 +410,22 @@
 							// Append all transaction rows
 							tableBody.innerHTML += trHTML;
 
+							$('#loader-overlay').hide();
 							$('#loadingMessage').hide();
 							$('#transactionTable').show();
 							$('#downloadButton').show();
 						},
 						error: function (error) {
-							alert("Error occurred: " + error.responseText);
+							$('#loader-overlay').hide();
 							$('#loadingMessage').hide();
+							alert("Error occurred: " + error.responseText);
 						}
 					});
 				},
 				error: function (error) {
-					alert("Error occurred while fetching balance: " + error.responseText);
+					$('#loader-overlay').hide();
 					$('#loadingMessage').hide();
+					alert("Error occurred while fetching balance: " + error.responseText);
 				}
 			});
 
@@ -609,6 +661,12 @@
 <title>BAUDIT</title>
 
 <body>
+	<div id="loader-overlay">
+		<div id="loader">
+			<div class="loader-animation"></div>
+		</div>
+	</div>
+
 	<div class="col-sm-2">
 		<div th:insert="BTMHeaderMenu :: header"></div>
 	</div>
@@ -1441,6 +1499,7 @@
 
 
 		function showdetails(tranId, partTranId, acct_num) {
+			$('#loader-overlay').show();
 			console.log("tranId" + tranId);
 			console.log("partTranId" + partTranId);
 			console.log("Acct_num" + acct_num);
