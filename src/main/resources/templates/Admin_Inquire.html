@@ -2530,11 +2530,16 @@
 		}
 	}
 	$(function () {
+		var minAllowedDate = new Date(2017, 3, 1);
+		var maxAllowedDate = new Date(2026, 3, 1);
+
 		$("#fromdate2").datepicker({
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "2017:2026",
 			dateFormat: "dd-mm-yy",
-			maxDate: 0,
+			minDate: minAllowedDate,
+			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
 				var dt = $(this).datepicker('getDate');
 				if (dt) {
@@ -2547,15 +2552,17 @@
 		$("#todate2").datepicker({
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "2017:2026",
 			dateFormat: "dd-mm-yy",
-			maxDate: new Date(2025, 3, 1),
+			minDate: minAllowedDate,
+			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
 				var fromdate = $("#fromdate2").val();
 				var todate = $("#todate2").val();
 				console.log("fromdate2" + fromdate);
 				console.log("todate2" + todate);
 
-				if (!fromdate2) {
+				if (!fromdate) {
 					alert("Enter From date");
 				} else {
 					funcall2();
@@ -2564,11 +2571,16 @@
 		});
 	});
 	$(function () {
+		var minAllowedDate = new Date(2017, 3, 1);
+		var maxAllowedDate = new Date(2026, 3, 1);
+
 		$("#fromdate3").datepicker({
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "2017:2026",
 			dateFormat: "dd-mm-yy",
-			maxDate: 0,
+			minDate: minAllowedDate,
+			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
 				var dt = $(this).datepicker('getDate');
 				if (dt) {
@@ -2581,15 +2593,17 @@
 		$("#todate3").datepicker({
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "2017:2026",
 			dateFormat: "dd-mm-yy",
-			maxDate: new Date(2025, 3, 1),
+			minDate: minAllowedDate,
+			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
 				var fromdate = $("#fromdate3").val();
 				var todate = $("#todate3").val();
 				console.log("fromdate3" + fromdate);
 				console.log("todate3" + todate);
 
-				if (!fromdate3) {
+				if (!fromdate) {
 					alert("Enter From date");
 				} else {
 
@@ -2599,11 +2613,16 @@
 		});
 	});
 	$(function () {
+		var minAllowedDate = new Date(2017, 3, 1);
+		var maxAllowedDate = new Date(2026, 3, 1);
+
 		$("#fromdate").datepicker({
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "2017:2026",
 			dateFormat: "dd-mm-yy",
-			maxDate: 0,
+			minDate: minAllowedDate,
+			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
 				var dt = $(this).datepicker('getDate');
 				if (dt) {
@@ -2616,8 +2635,10 @@
 		$("#todate").datepicker({
 			changeMonth: true,
 			changeYear: true,
+			yearRange: "2017:2026",
 			dateFormat: "dd-mm-yy",
-			maxDate: new Date(2025, 3, 1),
+			minDate: minAllowedDate,
+			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
 				var fromdate = $("#fromdate").val();
 				var todate = $("#todate").val();
