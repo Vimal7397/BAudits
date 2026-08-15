@@ -53,7 +53,7 @@ public interface BAJ_DABView_Rep extends JpaRepository<BAJ_DABView_Entity,String
             "CASE WHEN SUM(tran_date_bal) > 0 THEN SUM(tran_date_bal) ELSE 0 END AS credit, " +
             "CASE WHEN SUM(tran_date_bal) < 0 THEN ABS(SUM(tran_date_bal)) ELSE 0 END AS debit " +
             "FROM DAB_VIEW " +
-            "WHERE TO_DATE('31-03-2025', 'DD-MM-YYYY') BETWEEN TRAN_DATE AND END_TRAN_DATE " +
+            "WHERE TO_DATE('31-03-2026', 'DD-MM-YYYY') BETWEEN TRAN_DATE AND END_TRAN_DATE " +
             "GROUP BY gl_desc, gl_code, glsh_code, acct_crncy " +
             "ORDER BY glsh_code ASC", 
     nativeQuery = true)
@@ -88,10 +88,10 @@ public interface BAJ_DABView_Rep extends JpaRepository<BAJ_DABView_Entity,String
 	@Query(value = "SELECT  GLSH_CODE, GLSH_DESC,COUNT(GLSH_CODE) as sum, acct_crncy, SUM(tran_date_bal) FROM DAB_VIEW WHERE gl_desc='Liability' AND :balancedate BETWEEN TRAN_DATE AND END_TRAN_DATE GROUP BY GLSH_CODE, GLSH_DESC, acct_crncy ORDER BY GLSH_CODE ASC", nativeQuery = true)
 	List<Object[]> getfilteredrec1(@Param("balancedate") Date balancedate);
 	
-	@Query(value = "SELECT  GLSH_CODE, GLSH_DESC,COUNT(GLSH_CODE) as sum, acct_crncy, SUM(tran_date_bal) FROM DAB_VIEW WHERE gl_desc='Asset' AND TO_DATE('31-03-2025', 'DD-MM-YYYY')  BETWEEN TRAN_DATE AND END_TRAN_DATE GROUP BY GLSH_CODE, GLSH_DESC, acct_crncy ORDER BY GLSH_CODE ASC", nativeQuery = true)
+	@Query(value = "SELECT  GLSH_CODE, GLSH_DESC,COUNT(GLSH_CODE) as sum, acct_crncy, SUM(tran_date_bal) FROM DAB_VIEW WHERE gl_desc='Asset' AND TO_DATE('31-03-2026', 'DD-MM-YYYY')  BETWEEN TRAN_DATE AND END_TRAN_DATE GROUP BY GLSH_CODE, GLSH_DESC, acct_crncy ORDER BY GLSH_CODE ASC", nativeQuery = true)
 	List<Object[]> getfilteredrec2();
 
-	@Query(value = "SELECT  GLSH_CODE, GLSH_DESC,COUNT(GLSH_CODE) as sum, acct_crncy, SUM(tran_date_bal) FROM DAB_VIEW WHERE gl_desc='Liability' AND TO_DATE('31-03-2025', 'DD-MM-YYYY') BETWEEN TRAN_DATE AND END_TRAN_DATE GROUP BY GLSH_CODE, GLSH_DESC, acct_crncy ORDER BY GLSH_CODE ASC", nativeQuery = true)
+	@Query(value = "SELECT  GLSH_CODE, GLSH_DESC,COUNT(GLSH_CODE) as sum, acct_crncy, SUM(tran_date_bal) FROM DAB_VIEW WHERE gl_desc='Liability' AND TO_DATE('31-03-2026', 'DD-MM-YYYY') BETWEEN TRAN_DATE AND END_TRAN_DATE GROUP BY GLSH_CODE, GLSH_DESC, acct_crncy ORDER BY GLSH_CODE ASC", nativeQuery = true)
 	List<Object[]> getfilteredrec3();
 	
 	

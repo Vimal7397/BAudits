@@ -223,8 +223,9 @@ $(function () {
         }
     });
 
-    // Set the default value to 01-04-2025
+    // Set the default value to 31-03-2026 and load data
     $("#reportDate").val(fixedDateStr);
+    funcall();
 });
 
 let balancedate;
@@ -624,8 +625,8 @@ function listcharge(a) {
 													<!-- GL_DESC -->
 													<td style="cursor: pointer;"  onmouseover="this.style.color='#0000EE';" 
 														onmouseout="this.style.color='black';" th:text="${Trial[2]}"
-														th:attr="data-glshcode=${Trial[2]}"
-														onclick="viewglsh(this);"></td>
+														th:attr="data-glshcode=${Trial[2]},data-date='31-03-2026'"
+														onclick="viewglshDAB(this);"></td>
 													<!-- GLSH_CODE -->
 													<td th:text="${Trial[3]}"></td>
 													<!-- GLSH_DESC -->
