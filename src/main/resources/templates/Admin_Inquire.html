@@ -2248,8 +2248,8 @@
 
 					let headerHTML = ` 
                     <tr>
-                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
-                        <td colspan="2"></td>
+						<td colspan="2"></td>
+						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="3"></td>
                         <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>`;
@@ -2686,6 +2686,7 @@
 					let tableBody = $('#usertable tbody');
 					tableBody.empty(); // Clear previous rows
 					$('#loadingMessage').show();
+		        	$('#loader-overlay').show();
 					let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
 					console.log('Updated balanceData1:', balanceData1);
 
@@ -2701,8 +2702,8 @@
 						// Add B/F row
 						let headerHTML = ` 
     	                    <tr>
+	                        	<td colspan="2"></td>
     	                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
-    	                        <td colspan="2"></td>
     	                        <td colspan="3"></td>
     	                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
     	                    </tr>`;
@@ -2761,6 +2762,7 @@
     	                            `;
 									tableBody.append(row);
 									$('#loadingMessage').hide();
+						        	$('#loader-overlay').hide();
 								});
 							},
 							error: function (error) {
@@ -2788,6 +2790,7 @@
 					let tableBody = $('#usertable tbody');
 					tableBody.empty(); // Clear previous rows
 					$('#loadingMessage').show();
+		        	$('#loader-overlay').show();
 					let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
 					console.log('Updated balanceData1:', balanceData1);
 
@@ -2803,8 +2806,8 @@
 						// Add B/F row
 						let headerHTML = ` 
                     <tr>
-                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="2"></td>
+                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="3"></td>
                         <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>`;
@@ -2863,6 +2866,7 @@
                             `;
 									tableBody.append(row);
 									$('#loadingMessage').hide();
+						        	$('#loader-overlay').hide();
 								});
 							},
 							error: function (error) {
@@ -2890,6 +2894,7 @@
 					let tableBody = $('#usertable tbody');
 					tableBody.empty(); // Clear previous rows
 					$('#loadingMessage').show();
+		        	$('#loader-overlay').show();
 					let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
 					console.log('Updated balanceData1:', balanceData1);
 
@@ -2905,8 +2910,8 @@
 						// Add B/F row
 						let headerHTML = ` 
     	                    <tr>
-    	                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
     	                        <td colspan="2"></td>
+    	                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
     	                        <td colspan="3"></td>
     	                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
     	                    </tr>`;
@@ -2963,6 +2968,7 @@
     	                            `;
 									tableBody.append(row);
 									$('#loadingMessage').hide();
+						        	$('#loader-overlay').hide();
 								});
 							},
 							error: function (error) {
@@ -3307,8 +3313,8 @@
 
 					let headerHTML = ` 
                     <tr>
-                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="2"></td>
+                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="3"></td>
                         <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>`;
@@ -3540,8 +3546,8 @@
 
 					let headerHTML = ` 
 	                    <tr>
+							<td colspan="2"></td>
 	                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
-	                        <td colspan="2"></td>
 	                        <td colspan="3"></td>
 	                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
 	                    </tr>`;
@@ -3767,8 +3773,8 @@
 
 					let headerHTML = ` 
 	                    <tr>
+							<td colspan="2"></td>
 	                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
-	                        <td colspan="2"></td>
 	                        <td colspan="3"></td>
 	                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
 	                    </tr>`;
@@ -4001,8 +4007,8 @@
 
 					let headerHTML = ` 
 	                    <tr>
-	                        <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
-	                        <td colspan="2"></td>
+							 <td colspan="2"></td>
+							 <td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
 	                        <td colspan="3"></td>
 	                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
 	                    </tr>`;
