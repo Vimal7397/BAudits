@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ACCOUNT LEDGER" pageWidth="1295" pageHeight="842" columnWidth="1255" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="7f29476d-119d-4f82-a948-a8e39c97af51">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ASPIRA.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="BTM"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.unit." value="pixel"/>
 	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
@@ -28,12 +28,12 @@
    COALESCE(
     (SELECT SUM(
         CASE 
-            WHEN PART_TRAN_TYPE = 'Credit' THEN TRAN_AMT 
-            WHEN PART_TRAN_TYPE = 'Debit' THEN -TRAN_AMT 
+            WHEN PART_TRAN_TYPE = 'credit' THEN TRAN_AMT 
+            WHEN PART_TRAN_TYPE = 'debit' THEN -TRAN_AMT 
             ELSE 0 
         END
     ) 
-    FROM BGLS_TRM_WRK_TRANSACTIONS 
+    FROM TRMWORK_VIEW 
     WHERE acct_num = $P{ACCOUNT_NO}
     AND TRAN_DATE < TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY')), 
     0
@@ -43,7 +43,7 @@ COALESCE(
     (SELECT TRAN_DATE_BAL  
      FROM (
          SELECT TRAN_DATE_BAL
-         FROM BGLS_DAILY_ACCT_BAL
+         FROM DAB_VIEW
          WHERE ACCT_NUM = $P{ACCOUNT_NO}
          AND TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY') - 1 
              BETWEEN TRAN_DATE AND END_TRAN_DATE
@@ -51,7 +51,7 @@ COALESCE(
          UNION ALL
          
          SELECT TRAN_DATE_BAL
-         FROM BGLS_DAILY_ACCT_BAL
+         FROM DAB_VIEW
          WHERE ACCT_NUM = $P{ACCOUNT_NO}
          AND TRAN_DATE_BAL IS NOT NULL
          AND TRAN_DATE < TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY')
@@ -64,14 +64,14 @@ COALESCE(
 (SELECT TRAN_DATE  
  FROM (
      SELECT TRAN_DATE
-     FROM BGLS_DAILY_ACCT_BAL
+     FROM DAB_VIEW
      WHERE ACCT_NUM = $P{ACCOUNT_NO}
      AND TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY') - 1 BETWEEN TRAN_DATE AND END_TRAN_DATE
      
      UNION ALL
      
      SELECT TRAN_DATE
-     FROM BGLS_DAILY_ACCT_BAL
+     FROM DAB_VIEW
      WHERE ACCT_NUM = $P{ACCOUNT_NO}
      AND TRAN_DATE_BAL IS NOT NULL
      AND TRAN_DATE < TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY')
@@ -83,14 +83,14 @@ COALESCE(
 (SELECT TRAN_DATE_BAL  
  FROM (
      SELECT TRAN_DATE_BAL
-     FROM BGLS_DAILY_ACCT_BAL
+     FROM DAB_VIEW
      WHERE ACCT_NUM = $P{ACCOUNT_NO}
      AND TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY') - 1 BETWEEN TRAN_DATE AND END_TRAN_DATE
      
      UNION ALL
      
      SELECT TRAN_DATE_BAL
-     FROM BGLS_DAILY_ACCT_BAL
+     FROM DAB_VIEW
      WHERE ACCT_NUM = $P{ACCOUNT_NO}
      AND TRAN_DATE_BAL IS NOT NULL
      AND TRAN_DATE < TO_DATE($P{FROM_DATE}, 'DD-MM-YYYY')
@@ -100,9 +100,9 @@ COALESCE(
 ) AS TRAN_BAL_DAO
 
 FROM 
-    BGLS_TRM_WRK_TRANSACTIONS TW
+    TRMWORK_VIEW TW
 JOIN 
-    BGLS_CHART_OF_ACCOUNTS COA 
+    COA_VIEW COA 
 ON 
     TW.acct_num = COA.acct_num
 WHERE 
@@ -113,101 +113,73 @@ WHERE
 ORDER BY 
     TW.TRAN_DATE ASC]]>
 	</queryString>
-	<field name="ACCT_CRNCY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_CRNCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_CRNCY"/>
-	</field>
-	<field name="ACCT_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_NAME"/>
-	</field>
-	<field name="ACCT_NUM" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_NUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_NUM"/>
-	</field>
-	<field name="ACID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACID"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACID"/>
-	</field>
-	<field name="ADD_DETAILS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADD_DETAILS"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADD_DETAILS"/>
-	</field>
-	<field name="BRANCH_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BRANCH_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="BRANCH_ID"/>
-	</field>
-	<field name="CUST_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CUST_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="CUST_ID"/>
-	</field>
-	<field name="DEL_FLG" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="DEL_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="DEL_FLG"/>
-	</field>
-	<field name="ENTRY_TIME" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="ENTRY_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENTRY_TIME"/>
-	</field>
-	<field name="ENTRY_USER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENTRY_USER"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENTRY_USER"/>
-	</field>
-	<field name="FLOW_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="FLOW_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="FLOW_CODE"/>
-	</field>
-	<field name="FLOW_DATE" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="FLOW_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="FLOW_DATE"/>
-	</field>
-	<field name="INSTR_DATE" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="INSTR_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSTR_DATE"/>
-	</field>
-	<field name="INSTR_NUM" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="INSTR_NUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="INSTR_NUM"/>
-	</field>
-	<field name="MODIFY_TIME" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="MODIFY_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="MODIFY_TIME"/>
-	</field>
-	<field name="MODIFY_USER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="MODIFY_USER"/>
-		<property name="com.jaspersoft.studio.field.label" value="MODIFY_USER"/>
-	</field>
-	<field name="PARTITION_DET" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PARTITION_DET"/>
-		<property name="com.jaspersoft.studio.field.label" value="PARTITION_DET"/>
-	</field>
-	<field name="PARTITION_TYPE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PARTITION_TYPE"/>
-		<property name="com.jaspersoft.studio.field.label" value="PARTITION_TYPE"/>
+	<field name="TRAN_ID" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_ID"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_ID"/>
 	</field>
 	<field name="PART_TRAN_ID" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="PART_TRAN_ID"/>
 		<property name="com.jaspersoft.studio.field.label" value="PART_TRAN_ID"/>
 	</field>
+	<field name="ACCT_NUM" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_NUM"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_NUM"/>
+	</field>
+	<field name="ACCT_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_NAME"/>
+	</field>
+	<field name="TRAN_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_TYPE"/>
+	</field>
 	<field name="PART_TRAN_TYPE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="PART_TRAN_TYPE"/>
 		<property name="com.jaspersoft.studio.field.label" value="PART_TRAN_TYPE"/>
 	</field>
-	<field name="POST_TIME" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="POST_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="POST_TIME"/>
+	<field name="ACCT_CRNCY" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_CRNCY"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_CRNCY"/>
 	</field>
-	<field name="POST_USER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="POST_USER"/>
-		<property name="com.jaspersoft.studio.field.label" value="POST_USER"/>
+	<field name="TRAN_AMT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_AMT"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_AMT"/>
 	</field>
-	<field name="RATE" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="RATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="RATE"/>
+	<field name="TRAN_PARTICULAR" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_PARTICULAR"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_PARTICULAR"/>
 	</field>
-	<field name="RATE_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="RATE_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="RATE_CODE"/>
+	<field name="TRAN_REMARKS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_REMARKS"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_REMARKS"/>
+	</field>
+	<field name="TRAN_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_DATE"/>
+	</field>
+	<field name="VALUE_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="VALUE_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="VALUE_DATE"/>
+	</field>
+	<field name="TRAN_REF_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_REF_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_REF_NO"/>
+	</field>
+	<field name="ADD_DETAILS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADD_DETAILS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADD_DETAILS"/>
+	</field>
+	<field name="PARTITION_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PARTITION_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="PARTITION_TYPE"/>
+	</field>
+	<field name="PARTITION_DET" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PARTITION_DET"/>
+		<property name="com.jaspersoft.studio.field.label" value="PARTITION_DET"/>
+	</field>
+	<field name="INSTR_NUM" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="INSTR_NUM"/>
+		<property name="com.jaspersoft.studio.field.label" value="INSTR_NUM"/>
 	</field>
 	<field name="REF_CRNCY" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="REF_CRNCY"/>
@@ -217,149 +189,73 @@ ORDER BY
 		<property name="com.jaspersoft.studio.field.name" value="REF_CRNCY_AMT"/>
 		<property name="com.jaspersoft.studio.field.label" value="REF_CRNCY_AMT"/>
 	</field>
-	<field name="SRL_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SRL_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="SRL_NO"/>
+	<field name="RATE_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="RATE_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="RATE_CODE"/>
 	</field>
-	<field name="TRAN_AMT" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_AMT"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_AMT"/>
+	<field name="RATE" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="RATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="RATE"/>
 	</field>
-	<field name="TRAN_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_CODE"/>
+	<field name="ENTRY_USER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ENTRY_USER"/>
+		<property name="com.jaspersoft.studio.field.label" value="ENTRY_USER"/>
 	</field>
-	<field name="TRAN_DATE" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_DATE"/>
+	<field name="POST_USER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="POST_USER"/>
+		<property name="com.jaspersoft.studio.field.label" value="POST_USER"/>
 	</field>
-	<field name="TRAN_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_ID"/>
+	<field name="ENTRY_TIME" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="ENTRY_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="ENTRY_TIME"/>
 	</field>
-	<field name="TRAN_PARTICULAR" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_PARTICULAR"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_PARTICULAR"/>
-	</field>
-	<field name="TRAN_REF_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_REF_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_REF_NO"/>
-	</field>
-	<field name="TRAN_REMARKS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_REMARKS"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_REMARKS"/>
-	</field>
-	<field name="TRAN_RPT_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_RPT_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_RPT_CODE"/>
+	<field name="POST_TIME" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="POST_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="POST_TIME"/>
 	</field>
 	<field name="TRAN_STATUS" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="TRAN_STATUS"/>
 		<property name="com.jaspersoft.studio.field.label" value="TRAN_STATUS"/>
 	</field>
-	<field name="TRAN_TYPE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="TRAN_TYPE"/>
-		<property name="com.jaspersoft.studio.field.label" value="TRAN_TYPE"/>
+	<field name="DEL_FLG" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DEL_FLG"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEL_FLG"/>
 	</field>
-	<field name="VALUE_DATE" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="VALUE_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="VALUE_DATE"/>
+	<field name="INSTR_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="INSTR_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="INSTR_DATE"/>
 	</field>
-	<field name="COLUMN_39" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_NUM"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_NUM"/>
+	<field name="TRAN_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_CODE"/>
 	</field>
-	<field name="ACCT_BAL" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_BAL"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_BAL"/>
+	<field name="TRAN_RPT_CODE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="TRAN_RPT_CODE"/>
+		<property name="com.jaspersoft.studio.field.label" value="TRAN_RPT_CODE"/>
 	</field>
-	<field name="ACCT_CLS_DATE" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_CLS_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_CLS_DATE"/>
+	<field name="MODIFY_USER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="MODIFY_USER"/>
+		<property name="com.jaspersoft.studio.field.label" value="MODIFY_USER"/>
 	</field>
-	<field name="ACCT_CLS_FLG" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_CLS_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_CLS_FLG"/>
+	<field name="MODIFY_TIME" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="MODIFY_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="MODIFY_TIME"/>
 	</field>
-	<field name="COLUMN_43" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_CRNCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_CRNCY"/>
+	<field name="GST_AMOUNT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="GST_AMOUNT"/>
+		<property name="com.jaspersoft.studio.field.label" value="GST_AMOUNT"/>
 	</field>
-	<field name="COLUMN_44" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_NAME"/>
-	</field>
-	<field name="ACCT_OPEN_DATE" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_OPEN_DATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_OPEN_DATE"/>
-	</field>
-	<field name="ACCT_PARTITION" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_PARTITION"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_PARTITION"/>
-	</field>
-	<field name="ACCT_STATUS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_STATUS"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_STATUS"/>
-	</field>
-	<field name="ACCT_TYPE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCT_TYPE"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCT_TYPE"/>
-	</field>
-	<field name="ADD_DET_FLG" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ADD_DET_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="ADD_DET_FLG"/>
-	</field>
-	<field name="AUTH_TIME" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="AUTH_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="AUTH_TIME"/>
-	</field>
-	<field name="AUTH_USER" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="AUTH_USER"/>
-		<property name="com.jaspersoft.studio.field.label" value="AUTH_USER"/>
-	</field>
-	<field name="BANK_ACC_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BANK_ACC_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="BANK_ACC_NAME"/>
-	</field>
-	<field name="BANK_REMARKS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BANK_REMARKS"/>
-		<property name="com.jaspersoft.studio.field.label" value="BANK_REMARKS"/>
-	</field>
-	<field name="COLUMN_54" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="BRANCH_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="BRANCH_ID"/>
+	<field name="GST_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="GST_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="GST_TYPE"/>
 	</field>
 	<field name="CLASSIFICATION" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="CLASSIFICATION"/>
 		<property name="com.jaspersoft.studio.field.label" value="CLASSIFICATION"/>
 	</field>
-	<field name="CR_AMT" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="CR_AMT"/>
-		<property name="com.jaspersoft.studio.field.label" value="CR_AMT"/>
-	</field>
-	<field name="CRNCY_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CRNCY_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="CRNCY_CODE"/>
-	</field>
-	<field name="COLUMN_58" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="DEL_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="DEL_FLG"/>
-	</field>
-	<field name="DR_AMT" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="DR_AMT"/>
-		<property name="com.jaspersoft.studio.field.label" value="DR_AMT"/>
-	</field>
-	<field name="ENTITY_FLG" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENTITY_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENTITY_FLG"/>
-	</field>
-	<field name="COLUMN_61" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="ENTRY_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENTRY_TIME"/>
-	</field>
-	<field name="COLUMN_62" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENTRY_USER"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENTRY_USER"/>
+	<field name="ACCT_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_TYPE"/>
 	</field>
 	<field name="GL_CODE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="GL_CODE"/>
@@ -377,53 +273,33 @@ ORDER BY
 		<property name="com.jaspersoft.studio.field.name" value="GLSH_DESC"/>
 		<property name="com.jaspersoft.studio.field.label" value="GLSH_DESC"/>
 	</field>
-	<field name="GSTIN" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="GSTIN"/>
-		<property name="com.jaspersoft.studio.field.label" value="GSTIN"/>
+	<field name="COLUMN_41" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_NUM"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_NUM"/>
 	</field>
-	<field name="MOBILE_NO" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="MOBILE_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="MOBILE_NO"/>
+	<field name="COLUMN_42" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_NAME"/>
 	</field>
-	<field name="COLUMN_69" class="java.util.Date">
-		<property name="com.jaspersoft.studio.field.name" value="MODIFY_TIME"/>
-		<property name="com.jaspersoft.studio.field.label" value="MODIFY_TIME"/>
+	<field name="ADD_DET_FLG" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ADD_DET_FLG"/>
+		<property name="com.jaspersoft.studio.field.label" value="ADD_DET_FLG"/>
 	</field>
-	<field name="COLUMN_70" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="MODIFY_USER"/>
-		<property name="com.jaspersoft.studio.field.label" value="MODIFY_USER"/>
+	<field name="ACCT_PARTITION" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_PARTITION"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_PARTITION"/>
 	</field>
-	<field name="NATIONAL_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="NATIONAL_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="NATIONAL_ID"/>
+	<field name="COLUMN_45" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_CRNCY"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_CRNCY"/>
 	</field>
-	<field name="OWN_REMARKS" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="OWN_REMARKS"/>
-		<property name="com.jaspersoft.studio.field.label" value="OWN_REMARKS"/>
-	</field>
-	<field name="OWN_TYPE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="OWN_TYPE"/>
-		<property name="com.jaspersoft.studio.field.label" value="OWN_TYPE"/>
-	</field>
-	<field name="PAN_NO" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PAN_NO"/>
-		<property name="com.jaspersoft.studio.field.label" value="PAN_NO"/>
-	</field>
-	<field name="PASSPORT" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="PASSPORT"/>
-		<property name="com.jaspersoft.studio.field.label" value="PASSPORT"/>
+	<field name="COLUMN_46" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="REF_CRNCY"/>
+		<property name="com.jaspersoft.studio.field.label" value="REF_CRNCY"/>
 	</field>
 	<field name="REF_CODE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="REF_CODE"/>
 		<property name="com.jaspersoft.studio.field.label" value="REF_CODE"/>
-	</field>
-	<field name="COLUMN_77" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="REF_CRNCY"/>
-		<property name="com.jaspersoft.studio.field.label" value="REF_CRNCY"/>
-	</field>
-	<field name="REF_CRNCY_BAL" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="REF_CRNCY_BAL"/>
-		<property name="com.jaspersoft.studio.field.label" value="REF_CRNCY_BAL"/>
 	</field>
 	<field name="REF_DESC" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="REF_DESC"/>
@@ -433,55 +309,107 @@ ORDER BY
 		<property name="com.jaspersoft.studio.field.name" value="RPT_CODE"/>
 		<property name="com.jaspersoft.studio.field.label" value="RPT_CODE"/>
 	</field>
-	<field name="SCHM_CODE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SCHM_CODE"/>
-		<property name="com.jaspersoft.studio.field.label" value="SCHM_CODE"/>
+	<field name="ACCT_STATUS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_STATUS"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_STATUS"/>
 	</field>
-	<field name="SCHM_TYPE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="SCHM_TYPE"/>
-		<property name="com.jaspersoft.studio.field.label" value="SCHM_TYPE"/>
+	<field name="CR_AMT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="CR_AMT"/>
+		<property name="com.jaspersoft.studio.field.label" value="CR_AMT"/>
 	</field>
-	<field name="VENDOR_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="VENDOR_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="VENDOR_NAME"/>
+	<field name="DR_AMT" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="DR_AMT"/>
+		<property name="com.jaspersoft.studio.field.label" value="DR_AMT"/>
+	</field>
+	<field name="ACCT_BAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_BAL"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_BAL"/>
+	</field>
+	<field name="REF_CRNCY_BAL" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="REF_CRNCY_BAL"/>
+		<property name="com.jaspersoft.studio.field.label" value="REF_CRNCY_BAL"/>
+	</field>
+	<field name="COLUMN_55" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ENTRY_USER"/>
+		<property name="com.jaspersoft.studio.field.label" value="ENTRY_USER"/>
+	</field>
+	<field name="COLUMN_56" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="ENTRY_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="ENTRY_TIME"/>
+	</field>
+	<field name="COLUMN_57" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="MODIFY_USER"/>
+		<property name="com.jaspersoft.studio.field.label" value="MODIFY_USER"/>
+	</field>
+	<field name="COLUMN_58" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="MODIFY_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="MODIFY_TIME"/>
+	</field>
+	<field name="AUTH_USER" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="AUTH_USER"/>
+		<property name="com.jaspersoft.studio.field.label" value="AUTH_USER"/>
+	</field>
+	<field name="AUTH_TIME" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="AUTH_TIME"/>
+		<property name="com.jaspersoft.studio.field.label" value="AUTH_TIME"/>
+	</field>
+	<field name="ENTITY_FLG" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ENTITY_FLG"/>
+		<property name="com.jaspersoft.studio.field.label" value="ENTITY_FLG"/>
+	</field>
+	<field name="COLUMN_62" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="DEL_FLG"/>
+		<property name="com.jaspersoft.studio.field.label" value="DEL_FLG"/>
+	</field>
+	<field name="ACCT_CLS_FLG" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_CLS_FLG"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_CLS_FLG"/>
+	</field>
+	<field name="ACCT_CLS_DATE" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="ACCT_CLS_DATE"/>
+		<property name="com.jaspersoft.studio.field.label" value="ACCT_CLS_DATE"/>
+	</field>
+	<field name="OWN_TYPE" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OWN_TYPE"/>
+		<property name="com.jaspersoft.studio.field.label" value="OWN_TYPE"/>
+	</field>
+	<field name="OWN_REMARKS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="OWN_REMARKS"/>
+		<property name="com.jaspersoft.studio.field.label" value="OWN_REMARKS"/>
 	</field>
 	<field name="VENDOR_TYPE" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="VENDOR_TYPE"/>
 		<property name="com.jaspersoft.studio.field.label" value="VENDOR_TYPE"/>
 	</field>
-	<field name="ACCOUNT_STATE" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCOUNT_STATE"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCOUNT_STATE"/>
+	<field name="VENDOR_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="VENDOR_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="VENDOR_NAME"/>
 	</field>
-	<field name="ENCODED_KEY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ENCODED_KEY"/>
-		<property name="com.jaspersoft.studio.field.label" value="ENCODED_KEY"/>
+	<field name="PAN_NO" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PAN_NO"/>
+		<property name="com.jaspersoft.studio.field.label" value="PAN_NO"/>
 	</field>
-	<field name="ACCOUNT_HOLDERKEY" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ACCOUNT_HOLDERKEY"/>
-		<property name="com.jaspersoft.studio.field.label" value="ACCOUNT_HOLDERKEY"/>
+	<field name="GSTIN" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="GSTIN"/>
+		<property name="com.jaspersoft.studio.field.label" value="GSTIN"/>
 	</field>
-	<field name="CUSTOMER_ID" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_ID"/>
-		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_ID"/>
+	<field name="PASSPORT" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="PASSPORT"/>
+		<property name="com.jaspersoft.studio.field.label" value="PASSPORT"/>
 	</field>
-	<field name="CUSTOMER_NAME" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="CUSTOMER_NAME"/>
-		<property name="com.jaspersoft.studio.field.label" value="CUSTOMER_NAME"/>
+	<field name="BANK_ACC_NAME" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="BANK_ACC_NAME"/>
+		<property name="com.jaspersoft.studio.field.label" value="BANK_ACC_NAME"/>
 	</field>
-	<field name="MODIFY_FLG" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="MODIFY_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="MODIFY_FLG"/>
-	</field>
-	<field name="VERIFY_FLG" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="VERIFY_FLG"/>
-		<property name="com.jaspersoft.studio.field.label" value="VERIFY_FLG"/>
+	<field name="BANK_REMARKS" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="BANK_REMARKS"/>
+		<property name="com.jaspersoft.studio.field.label" value="BANK_REMARKS"/>
 	</field>
 	<field name="PREVIOUS_BALANCE_WITH_RUNNING" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="PREVIOUS_BALANCE_WITH_RUNNING"/>
 		<property name="com.jaspersoft.studio.field.label" value="PREVIOUS_BALANCE_WITH_RUNNING"/>
 	</field>
-	<field name="TRAN_DATE_DAO" class="java.util.Date">
+	<field name="TRAN_DATE_DAO" class="java.sql.Timestamp">
 		<property name="com.jaspersoft.studio.field.name" value="TRAN_DATE_DAO"/>
 		<property name="com.jaspersoft.studio.field.label" value="TRAN_DATE_DAO"/>
 	</field>
@@ -771,7 +699,7 @@ ORDER BY
 					<font fontName="Times New Roman"/>
 					<paragraph leftIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PART_TRAN_TYPE}.equals("Credit") ? new java.text.DecimalFormat("#,##0.00").format($F{TRAN_AMT}) : "0.00"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PART_TRAN_TYPE}.equals("credit") ? new java.text.DecimalFormat("#,##0.00").format($F{TRAN_AMT}) : "0.00"]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
 				<reportElement x="990" y="0" width="100" height="30" uuid="7f3fda39-f9bd-421b-9e07-8695b6341660">
@@ -819,7 +747,7 @@ ORDER BY
 					<font fontName="Times New Roman"/>
 					<paragraph leftIndent="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{PART_TRAN_TYPE}.equals("Debit") ? new java.text.DecimalFormat("#,##0.00").format($F{TRAN_AMT}) : "0.00"]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{PART_TRAN_TYPE}.equals("debit") ? new java.text.DecimalFormat("#,##0.00").format($F{TRAN_AMT}) : "0.00"]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="130" y="0" width="100" height="30" uuid="dd8b8f7b-d37e-4584-aa55-0091e7e82a63">

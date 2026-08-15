@@ -377,7 +377,7 @@ AND MONTHS_BETWEEN(SYSDATE, date_of_birth) / 12 <= 60 order by emp_no]]>
 			</staticText>
 			<image>
 				<reportElement x="220" y="10" width="80" height="61" uuid="28013f27-43fa-4ea0-9e34-ff4cc62b3702"/>
-				<imageExpression><![CDATA["http://192.168.1.11:8080/BTM/images/Bornfire.png"]]></imageExpression>
+				<imageExpression><![CDATA["http://localhost:8085/BAUDIT/images/Bornfire.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement mode="Transparent" x="960" y="90" width="90" height="46" backcolor="#C0C0C0" uuid="a2afae49-0ffa-4ec4-bef9-9babd0e292c3">

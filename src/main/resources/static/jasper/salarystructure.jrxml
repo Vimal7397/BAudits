@@ -278,7 +278,7 @@
 					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
-				<imageExpression><![CDATA["http://192.168.1.11:8080/BTM/images/Bornfire.png"]]></imageExpression>
+				<imageExpression><![CDATA["http://localhost:8085/BAUDIT/images/Bornfire.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="120" y="0" width="432" height="24" isRemoveLineWhenBlank="true" forecolor="#216FFF" backcolor="#FFFFFF" uuid="307f8af0-4791-44ab-966e-39aa8bb126c3">

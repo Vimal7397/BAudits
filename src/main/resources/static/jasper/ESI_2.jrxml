@@ -375,7 +375,7 @@
 			</staticText>
 			<image>
 				<reportElement x="90" y="0" width="80" height="61" uuid="c85db34f-2aac-4023-87f2-4a6d0ad425bf"/>
-				<imageExpression><![CDATA["http://192.168.1.11:8080/BTM/images/Bornfire.png"]]></imageExpression>
+				<imageExpression><![CDATA["http://localhost:8085/BAUDIT/images/Bornfire.png"]]></imageExpression>
 			</image>
 		</band>
 	</title>
