@@ -89,8 +89,9 @@
 			margin-top: 80px;
 			margin-top: 80px;
 		}
-		#transactionTable{
-			max-height: 300px;
+		#transactionTableContainer {
+			max-height: 500px;
+			overflow-y: auto;
 		}
 
 		#loader-overlay {
@@ -163,13 +164,30 @@
 		    var defaultFromDate = "01-04-2025";
 		    var defaultToDate   = "01-04-2026";
 
-		    // Minimum selectable date: 01-Apr-2017
-		    var minAllowedDate = new Date(2017, 3, 1);
-
-		    // Maximum selectable date: 01-Apr-2026
-		    var maxAllowedDate = new Date(2026, 3, 1);
-
 		    if ($('#acct_num').length && $('#fromdate').length && $('#todate').length) {
+
+		        // Set default values before calling funcall()
+		        if (!$("#fromdate").val()) {
+		            $("#fromdate").val(defaultFromDate);
+		        }
+		        if (!$("#todate").val()) {
+		            $("#todate").val(defaultToDate);
+		        }
+
+		        // Immediately start loading and trigger funcall() on load for ViewAccLedger
+		        if ($('#acct_num').val()) {
+		            $('#loader-overlay').show();
+		            $('#loadingMessage').show();
+		            $('#list1').hide();
+		            $('#list1').closest('.table-responsive').hide();
+		            funcall();
+		        }
+
+		        // Minimum selectable date: 01-Apr-2017
+		        var minAllowedDate = new Date(2017, 3, 1);
+
+		        // Maximum selectable date: 01-Apr-2026
+		        var maxAllowedDate = new Date(2026, 3, 1);
 
 		        $("#fromdate").datepicker({
 		            changeMonth: true,
@@ -203,21 +221,12 @@
 		            }
 		        });
 
-		        // Set default values
-		        $("#fromdate").datepicker("setDate", defaultFromDate);
-		        $("#todate").datepicker("setDate", defaultToDate);
-
 		        // Ensure To Date cannot be less than From Date
 		        $("#todate").datepicker(
 		            "option",
 		            "minDate",
 		            $("#fromdate").datepicker("getDate")
 		        );
-
-		        // Auto-trigger funcall() on load for ViewAccLedger
-		        if ($('#acct_num').val()) {
-		            funcall();
-		        }
 		    }
 
 		});
@@ -289,6 +298,7 @@
 			$('#loader-overlay').show();
 			// Hide the initial table and show a loading message
 			$('#list1').hide();
+			$('#list1').closest('.table-responsive').hide();
 			$('#loadingMessage').show();  // Show loading message
 
 			// Inside the success function after the balanceData fetch
@@ -342,6 +352,7 @@
 	                            <td colspan="1"><strong>B/F:</strong> ${formattedDateString}</td>
 	                            <td colspan="3"></td>
 	                            <td colspan="1" style="text-align:right">${formattedBalance}</td>
+	                            <td colspan="1"></td>
 	                        </tr>`;
 							tableBody.innerHTML = headerHTML;
 
@@ -357,6 +368,7 @@
 
 								$('#loader-overlay').hide();
 								$('#loadingMessage').hide();
+								$('#transactionTableContainer').show();
 								$('#transactionTable').show();
 								$('#downloadButton').hide(); // Optionally hide download
 								return; // Stop processing further
@@ -387,7 +399,7 @@
 								}
 
 								trHTML += `
-	                            <tr style="line-height:0.5">
+	                            <tr>
 	                                <td>${formattedDate}</td>
 	                                <td>
 	                                    <span style="cursor: pointer;"  onmouseover="this.style.color='#0000EE';" 
@@ -412,6 +424,7 @@
 
 							$('#loader-overlay').hide();
 							$('#loadingMessage').hide();
+							$('#transactionTableContainer').show();
 							$('#transactionTable').show();
 							$('#downloadButton').show();
 						},
@@ -661,7 +674,7 @@
 <title>BAUDIT</title>
 
 <body>
-	<div id="loader-overlay">
+	<div id="loader-overlay" th:style="${formmode == 'ViewAccLedger' ? 'display: block;' : 'display: none;'}">
 		<div id="loader">
 			<div class="loader-animation"></div>
 		</div>
@@ -766,11 +779,11 @@
 
 		<div th:if="${formmode}=='ViewAccLedger'">
 
-			<div class="row" style="width: 1500px; height: 200px">
+			<div class="row" style="width: 100%;">
 
-				<div class="col-sm-12" style="margin-left: 3px; width: 1500px; height: 250px">
+				<div class="col-sm-12" style="margin-left: 3px; width: 100%;">
 
-					<div class="card w-100 h-100 border" style="width: 1800px;margin:0px;padding:0px;">
+					<div class="card border" style="width: 100%; margin:0px; padding:0px;">
 						<div class="card-header">
 							<div>
 								<div class="float-left">
@@ -925,7 +938,7 @@
 						<div class="card-body " style="margin:0px;padding:0px;">
 						<div style="max-height: 300px !important;">
 							<div class="table-responsive "
-								style="max-height: 300px !important;overflow-y: auto; border: 1px solid #ddd;">
+								th:style="${formmode == 'ViewAccLedger' ? 'display: none;' : 'max-height: 300px !important;overflow-y: auto; border: 1px solid #ddd;'}">
 								<table class="table table-bordered " id="list1">
 									<thead style="position: sticky; top: 0;background-color: #f8f9fa; z-index: 2;">
 										<tr class="filters">
@@ -940,7 +953,7 @@
 										</tr>
 									</thead>
 									<tbody id="listvalues" th:each="values, iterStat : ${AccList}">
-										<tr style="line-height:0px;">
+										<tr>
 											<td><span th:text="${#dates.format(values.tran_date, 'dd-MM-yyyy')}"></span>
 											</td>
 											<td>
@@ -972,7 +985,7 @@
 
 						<!-- -------------------------------------------------------------------------------------- -->
 
-						<div id="loadingMessage" style="display: none;">Loading,
+						<div id="loadingMessage" th:style="${formmode == 'ViewAccLedger' ? 'display: block; text-align: center; padding: 15px; font-weight: bold;' : 'display: none;'}">Loading,
 							please wait...</div>
 
 						<div class="row formline" style="display: none;" id="invisibledate">
@@ -991,27 +1004,30 @@
 							</div>
 						</div>
 
-						<table class="table" id="transactionTable"
-							style="max-height: 500px;overflow-y: auto; border: 1px solid #ddd;display: none;margin:0px;padding:0px;">
-							<thead style="position: sticky; top: 0;background-color: #f8f9fa; z-index: 2;">
-								<tr style="line-height: 0px">
-									<th>Tran Date</th>
-									<th>Tran Id</th>
-									<th>Tran Particulars</th>
-									<th>Currency</th>
-									<th style="text-align:right">Debits</th>
-									<th style="text-align:right">Credits</th>
-									<th style="text-align:right">Balance</th>
-									<th style="text-align:right">Indicator</th>
-								</tr>
-							</thead>
-							<tbody id="transactionBody">
-								<!-- This row is for Previous Date and Opening Balance -->
-								<tr>
+						<div class="table-responsive" id="transactionTableContainer"
+							style="max-height: 500px; overflow-y: auto; border: 1px solid #ddd; display: none;">
+							<table class="table table-bordered" id="transactionTable"
+								style="margin: 0px; padding: 0px;">
+								<thead style="position: sticky; top: 0; background-color: #f8f9fa; z-index: 2;">
+									<tr>
+										<th>Tran Date</th>
+										<th>Tran Id</th>
+										<th>Tran Particulars</th>
+										<th>Currency</th>
+										<th style="text-align:right">Debits</th>
+										<th style="text-align:right">Credits</th>
+										<th style="text-align:right">Balance</th>
+										<th style="text-align:right">Indicator</th>
+									</tr>
+								</thead>
+								<tbody id="transactionBody">
+									<!-- This row is for Previous Date and Opening Balance -->
+									<tr>
 
-								</tr>
-							</tbody>
-						</table>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 
 						<!---------------------------------------------------------------------------------------------------->
 						<div class="card-footer text-center" style="background-color: #e9ecef">
