@@ -15086,13 +15086,13 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 	
 	@RequestMapping(value = "incomexpenditure", method = { RequestMethod.GET, RequestMethod.POST })
 	@ResponseBody
-	public Map<String, List<BAJ_DABView_Entity>> incomexpenditure(@RequestParam(required = false) String formmode,
+	public Map<String, List<Object[]>> incomexpenditure(@RequestParam(required = false) String formmode,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd-MM-yyyy") Date balancedate,
 			@RequestParam(required = false) String tran, Model md, HttpServletRequest rq) {
 
-		List<BAJ_DABView_Entity> msg = btm_DABView_Rep.getfilteredrec2(balancedate);
-		List<BAJ_DABView_Entity> msg1 = btm_DABView_Rep.getfilteredrec3(balancedate);
-		Map<String, List<BAJ_DABView_Entity>> result = new HashMap<>();
+		List<Object[]> msg = bAJAccountLedgerRepo.getfilteredrecIncome(balancedate);
+		List<Object[]> msg1 = bAJAccountLedgerRepo.getfilteredrecExpenses(balancedate);
+		Map<String, List<Object[]>> result = new HashMap<>();
 		result.put("msg", msg);
 		result.put("msg1", msg1);
 

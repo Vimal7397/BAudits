@@ -231,5 +231,52 @@ public interface BAJAccountLedgerRepo extends JpaRepository<BAJAccountLedger_Ent
 										    nativeQuery = true)
 										List<Object[]>   getfilteredrec1(@Param("balancedate") Date balancedate);
 
+	@Query(value =
+		    "SELECT a.CLASSIFICATION, " +
+		    "       a.ACCT_TYPE, " +
+		    "       a.GL_CODE, " +
+		    "       a.GLSH_CODE, " +
+		    "       a.GL_DESC, " +
+		    "       a.GLSH_DESC, " +
+		    "       a.ACCT_NUM, " +
+		    "       a.ACCT_NAME, " +
+		    "       a.ACCT_CRNCY, " +
+		    "       a.ACCT_STATUS, " +
+		    "       DECODE(b.TRAN_DATE, :balancedate, b.TRAN_DR_BAL, 0) AS DR, " +
+		    "       DECODE(b.TRAN_DATE, :balancedate, b.TRAN_CR_BAL, 0) AS CR, " +
+		    "       b.TRAN_DATE_BAL, " +
+		    "       b.TRAN_TOT_NET " +
+		    "FROM DAB_VIEW b, " +
+		    "     COA_VIEW a " +
+		    "WHERE a.ACCT_NUM = b.ACCT_NUM " +
+		    "  AND a.CLASSIFICATION = 'Income' " +
+		    "  AND :balancedate BETWEEN b.TRAN_DATE AND b.END_TRAN_DATE " +
+		    "ORDER BY a.CLASSIFICATION, a.ACCT_NUM, b.ACCT_NUM ASC",
+		    nativeQuery = true)
+	List<Object[]> getfilteredrecIncome(@Param("balancedate") Date balancedate);
+
+	@Query(value =
+		    "SELECT a.CLASSIFICATION, " +
+		    "       a.ACCT_TYPE, " +
+		    "       a.GL_CODE, " +
+		    "       a.GLSH_CODE, " +
+		    "       a.GL_DESC, " +
+		    "       a.GLSH_DESC, " +
+		    "       a.ACCT_NUM, " +
+		    "       a.ACCT_NAME, " +
+		    "       a.ACCT_CRNCY, " +
+		    "       a.ACCT_STATUS, " +
+		    "       DECODE(b.TRAN_DATE, :balancedate, b.TRAN_DR_BAL, 0) AS DR, " +
+		    "       DECODE(b.TRAN_DATE, :balancedate, b.TRAN_CR_BAL, 0) AS CR, " +
+		    "       b.TRAN_DATE_BAL, " +
+		    "       b.TRAN_TOT_NET " +
+		    "FROM DAB_VIEW b, " +
+		    "     COA_VIEW a " +
+		    "WHERE a.ACCT_NUM = b.ACCT_NUM " +
+		    "  AND a.CLASSIFICATION = 'Expenses' " +
+		    "  AND :balancedate BETWEEN b.TRAN_DATE AND b.END_TRAN_DATE " +
+		    "ORDER BY a.CLASSIFICATION, a.ACCT_NUM, b.ACCT_NUM ASC",
+		    nativeQuery = true)
+	List<Object[]> getfilteredrecExpenses(@Param("balancedate") Date balancedate);
 	    
 }

@@ -138,20 +138,27 @@
 	<script>
 		
 		$(function () {
+		    var fixedDateStr = "31-03-2026";
+		    var minAllowedDate = new Date(2026, 2, 31); 
+		    var maxAllowedDate = new Date(2026, 3, 1);
+
 		    $("#incomedate").datepicker({
 		        changeMonth: true,
 		        changeYear: true,
 		        dateFormat: "dd-mm-yy",
+		        minDate: minAllowedDate,
+		        maxDate: maxAllowedDate,
+		        beforeShowDay: function (date) {
+		            return [date >= minAllowedDate && date <= maxAllowedDate];
+		        },
 		        onSelect: function (selected) {
-		            var reportDate = $("#incomedate").val();
 		            funcall();
 		        }
 		    });
 
-		    
+		    $("#incomedate").val(fixedDateStr);
 		});
 
-		
 		let balancedate;
 
 		function funcall() {
@@ -196,20 +203,21 @@
 					if (hasMsg) {
 						data.msg.forEach(trial => {
 							const row = document.createElement('tr');
-							let formattedBalance = trial.tran_date_bal == 0 ? '0.00' : Number(trial.tran_date_bal.toString().replace('-', '')).toLocaleString(undefined, {
+							let rawBal = trial[12] ? trial[12].toString().replace('-', '') : '0';
+							let formattedBalance = (trial[12] == 0 || !trial[12]) ? '0.00' : Number(rawBal).toLocaleString(undefined, {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
 							});
-							totalBalance += parseFloat(trial.tran_date_bal.toString().replace('-', '')) || 0;
+							totalBalance += parseFloat(rawBal) || 0;
 
-							const combinedCodeDesc = trial.glsh_code + ' - ' + trial.glsh_desc;
+							const combinedCodeDesc = trial[3] + '-' + trial[5];
 							row.innerHTML = `
                             <td>${combinedCodeDesc}</td>
                             <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" 
 							onmouseout="this.style.color='black';"
-							 onclick="listcharge2('${trial.acct_num}')">${trial.acct_num}</td>
-                            <td>${trial.acct_name}</td>
-                            <td>${trial.acct_crncy}</td>
+							 onclick="listcharge2('${trial[6]}')">${trial[6]}</td>
+                            <td>${trial[7]}</td>
+                            <td>${trial[8]}</td>
                             <td style="text-align: right;">${formattedBalance}</td>
                         `;
 							$('#profit').append(row);
@@ -226,20 +234,21 @@
 					if (hasMsg1) {
 						data.msg1.forEach(trial => {
 							const row = document.createElement('tr');
-							let formattedBalance = trial.tran_date_bal == 0 ? '0.00' : Number(trial.tran_date_bal.toString().replace('-', '')).toLocaleString(undefined, {
+							let rawBal = trial[12] ? trial[12].toString().replace('-', '') : '0';
+							let formattedBalance = (trial[12] == 0 || !trial[12]) ? '0.00' : Number(rawBal).toLocaleString(undefined, {
 								minimumFractionDigits: 2,
 								maximumFractionDigits: 2
 							});
-							totalBalance1 += parseFloat(trial.tran_date_bal.toString().replace('-', '')) || 0;
+							totalBalance1 += parseFloat(rawBal) || 0;
 
-							const combinedCodeDesc = trial.glsh_code + ' - ' + trial.glsh_desc;
+							const combinedCodeDesc = trial[3] + '-' + trial[5];
 							row.innerHTML = `
                             <td>${combinedCodeDesc}</td>
                             <td style="cursor: pointer;" 
 							onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';";
-							 onclick="listcharge2('${trial.acct_num}')">${trial.acct_num}</td>
-                            <td>${trial.acct_name}</td>
-                            <td>${trial.acct_crncy}</td>
+							 onclick="listcharge2('${trial[6]}')">${trial[6]}</td>
+                            <td>${trial[7]}</td>
+                            <td>${trial[8]}</td>
                             <td style="text-align: right;">${formattedBalance}</td>
                         `;
 							$('#loss').append(row);
@@ -285,154 +294,6 @@
 			});
 
 		}
-
-	</script>
-
-	<script>
-		$(document).ready(function () {
-			$('#incomedate').on('change', function () {
-
-				const balancedate = this.value; // Store the selected date
-				console.log('Selected Date:', balancedate);
-
-				$.ajax({
-					url: './incomexpenditure',
-					data: {balancedate: balancedate},
-					type: 'GET',
-					success: function (data) {
-						console.log('Data received:', data);
-
-						// Clear the tables before appending new rows
-						$('#profit').empty();
-						$('#loss').empty();
-
-						// Check if data.msg exists for income
-						let totalBalance = 0;
-						if (data.msg) {
-							// Initialize the total balance variable
-
-							// Iterate through each item in the data.msg array
-							data.msg.forEach(trial => {
-								const row = document.createElement('tr');
-
-								// Format the balance for display
-								let formattedBalance = trial.tran_date_bal == 0 ? '0.00' : Number(trial.tran_date_bal.toString().replace('-', '')).toLocaleString(undefined, {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								});
-
-								// Calculate the total balance, treating negative balances correctly
-								totalBalance += parseFloat(trial.tran_date_bal.toString().replace('-', '')) || 0;
-
-								// Combine GL code and description
-								const combinedCodeDesc = trial.glsh_code + ' - ' + trial.glsh_desc;
-
-								// Set the inner HTML for the new row
-								row.innerHTML = `
-                            <td>${combinedCodeDesc}</td>
-                            <td>${trial.acct_num}</td>
-                            <td>${trial.acct_name}</td>
-                            <td>${trial.acct_crncy}</td>
-                            <td style="text-align: right;">${formattedBalance}</td>
-                        `;
-
-								// Append the newly created row to the table with ID 'profit'
-								$('#profit').append(row);
-							});
-
-							// Format the total balance for display with commas and two decimal places
-							const formattedTotalBalance = totalBalance.toLocaleString(undefined, {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							});
-
-							document.getElementById('totalAmount').textContent = formattedTotalBalance;
-						}
-
-						// Check if data.msg1 exists for liabilities
-						let totalBalance1 = 0;
-						if (data.msg1) {
-							// Initialize the total balance variable for liabilities
-
-							data.msg1.forEach(trial => {
-								const row = document.createElement('tr');
-
-								// Format the balance for display
-								let formattedBalance = trial.tran_date_bal == 0 ? '0.00' : Number(trial.tran_date_bal.toString().replace('-', '')).toLocaleString(undefined, {
-									minimumFractionDigits: 2,
-									maximumFractionDigits: 2
-								});
-
-								// Calculate the total balance for liabilities
-								totalBalance1 += parseFloat(trial.tran_date_bal.toString().replace('-', '')) || 0;
-
-								// Combine GL code and description
-								const combinedCodeDesc = trial.glsh_code + ' - ' + trial.glsh_desc;
-
-								// Set the inner HTML for the new row
-								row.innerHTML = `
-                            <td>${combinedCodeDesc}</td>
-                            <td>${trial.acct_num}</td>
-                            <td>${trial.acct_name}</td>
-                            <td>${trial.acct_crncy}</td>
-                            <td style="text-align: right;">${formattedBalance}</td>
-                        `;
-
-								// Append the newly created row to the table with ID 'loss'
-								$('#loss').append(row);
-							});
-
-							// Format the total balance for display with commas and two decimal places
-							const formattedTotalBalance1 = totalBalance1.toLocaleString(undefined, {
-								minimumFractionDigits: 2,
-								maximumFractionDigits: 2
-							});
-
-							document.getElementById('totalAcctBal').textContent = formattedTotalBalance1;
-						}
-
-						// Calculate the difference between total balances
-						const numericTotalBalance = parseFloat(totalBalance.toFixed(2)) || 0;
-						const numericTotalLiabilityBalance = parseFloat(totalBalance1.toFixed(2)) || 0;
-						const difference = numericTotalBalance - numericTotalLiabilityBalance;
-						const absoluteDifference = Math.abs(difference).toLocaleString(undefined, {
-							minimumFractionDigits: 2,
-							maximumFractionDigits: 2
-						});
-
-						// Determine profit or loss
-						let statusMessage = '';
-						let totalBalance2 = '';
-						const statusMessageElement = document.getElementById('statusMessage');
-						console.log("Difference:", difference); // Debugging log
-						if (difference > 0) {
-							statusMessage = 'Profit';
-							statusMessageElement.style.color = 'green';
-							totalBalance2 = `Profit Amount: ${absoluteDifference}`;
-						} else if (difference < 0) {
-							statusMessage = 'Loss';
-							statusMessageElement.style.color = 'red';
-							totalBalance2 = `Loss Amount: ${absoluteDifference}`;
-						} else {
-							statusMessage = 'Break-even';
-							statusMessageElement.style.color = 'black';
-							totalBalance2 = 'No Profit or Loss';
-						}
-
-						// Display the result
-						console.log(statusMessage);
-						console.log("Total Balance 2:", totalBalance2); // Debugging log
-
-						// Update the UI with the status message
-						document.getElementById('statusMessage').textContent = statusMessage;
-						document.getElementById('totalBalance2').textContent = totalBalance2;
-					},
-					error: function (err) {
-						console.error('Error fetching data:', err);
-					}
-				});
-			});
-		});
 
 		//Filter Table
 
@@ -642,8 +503,8 @@
 								<div class="d-flex justify-content-between align-items-center">
 									<h5 class=" mb-0">EXPENDITURE</h5>
 									<div class="d-flex align-items-center">
-										<input type="text" name="incomedate" id="incomedate"
-											class="form-control form-control-sm bg-white border border-dark mr-2" />
+										<input type="text" name="incomedate" id="incomedate" value="31-03-2026"
+											class="form-control form-control-sm bg-white border border-dark mr-2" style="width: 120px; text-align: center; font-weight: bold;" />
 
 										<button type="button"
 											class="btn btn-xs btn-primary btns p-2 border btn-filter">Filter</button>
