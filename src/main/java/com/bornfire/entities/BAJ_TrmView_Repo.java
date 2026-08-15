@@ -15,7 +15,7 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY')  AND TRAN_DATE<= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE ASC", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getAccRecord(String acct_num);
 
-	@Query(value = "SELECT * FROM TRMWORK_VIEW WHERE ACCT_NUM = ?1 AND TRUNC(TRAN_DATE) BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy') ORDER BY TRAN_DATE", nativeQuery = true)
+	@Query(value = "SELECT * FROM TRMWORK_VIEW WHERE ACCT_NUM = ?1 AND TRUNC(TRAN_DATE) BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getTranlst(String acct_num, String fromdate, String todate);
 
 	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1", nativeQuery = true)
