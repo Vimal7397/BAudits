@@ -2886,9 +2886,169 @@ public File getFileTrailBalance(String filetype, String tran_date)
 
 }
 
+public File getBalanceSheetDownload(String filetype, String balancedate) 
+		throws FileNotFoundException, JRException, SQLException, IllegalArgumentException {
+	
+    String path = env.getProperty("output.exportpath");
+    System.out.println("Export Path"+path);
 
+    String fileName = "";
+    File outputFile;
+    fileName = "BALANCE SHEET - " + balancedate ;
+   
 
+    try {
+    	 logger.info("Getting Output file : Month");
+    	
+        InputStream jasperFile;
+        
+        if (filetype.equals("pdf")) {
+            System.out.println("inner pdf");
+            jasperFile = this.getClass().getResourceAsStream("/static/jasper/BalanceSheetReport.jrxml");
+        } else {
+            jasperFile = this.getClass().getResourceAsStream("/static/jasper/BalanceSheetReport.jrxml");
+        }
+        
+      
+        
+        JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("DATE", balancedate);
+        
+        if (filetype.equals("pdf")) {
+            fileName = fileName + ".pdf";
+            path = path + fileName;
+            JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+            JasperExportManager.exportReportToPdfFile(jp, path);
+        } else {
+            fileName = fileName + ".xlsx";
+            path += fileName;
+            SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+            reportConfig.setSheetNames(new String[]{fileName});
+            JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jp));
+            exporter.setConfiguration(reportConfig);
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+            exporter.exportReport();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new JRException("Error generating Jasper report", e);
+    }
+
+    outputFile = new File(path);
+    return outputFile;
+
+}
+
+public File getProfitLossDownload(String filetype, String balancedate) 
+		throws FileNotFoundException, JRException, SQLException, IllegalArgumentException {
+	
+    String path = env.getProperty("output.exportpath");
+    System.out.println("Export Path"+path);
+
+    String fileName = "";
+    File outputFile;
+    fileName = "PROFIT AND LOSS - " + balancedate ;
+   
+
+    try {
+    	 logger.info("Getting Output file : Profit and Loss");
+    	
+        InputStream jasperFile;
+        
+        if (filetype.equals("pdf")) {
+            System.out.println("inner pdf");
+            jasperFile = this.getClass().getResourceAsStream("/static/jasper/ProfitLossReport.jrxml");
+        } else {
+            jasperFile = this.getClass().getResourceAsStream("/static/jasper/ProfitLossReport.jrxml");
+        }
+        
+      
+        
+        JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("DATE", balancedate);
+        
+        if (filetype.equals("pdf")) {
+            fileName = fileName + ".pdf";
+            path = path + fileName;
+            JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+            JasperExportManager.exportReportToPdfFile(jp, path);
+        } else {
+            fileName = fileName + ".xlsx";
+            path += fileName;
+            SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+            reportConfig.setSheetNames(new String[]{fileName});
+            JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jp));
+            exporter.setConfiguration(reportConfig);
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+            exporter.exportReport();
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new JRException("Error generating Jasper report", e);
+    }
+
+    outputFile = new File(path);
+    return outputFile;
 
 	}
 
+	public byte[] getBalanceSheetBytes(String filetype, String balancedate) throws Exception {
+		logger.info("Generating Balance Sheet Report in memory for date: " + balancedate);
+		InputStream jasperFile = this.getClass().getResourceAsStream("/static/jasper/BalanceSheetReport.jrxml");
+		if (jasperFile == null) {
+			throw new FileNotFoundException("Jasper template /static/jasper/BalanceSheetReport.jrxml not found in classpath");
+		}
+		JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("DATE", balancedate);
+		JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
 
+		if ("pdf".equalsIgnoreCase(filetype)) {
+			return JasperExportManager.exportReportToPdf(jp);
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+			reportConfig.setSheetNames(new String[]{"BALANCE SHEET"});
+			JRXlsxExporter exporter = new JRXlsxExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+			exporter.setConfiguration(reportConfig);
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+			exporter.exportReport();
+			return baos.toByteArray();
+		}
+	}
+
+	public byte[] getProfitLossBytes(String filetype, String balancedate) throws Exception {
+		logger.info("Generating Profit & Loss Report in memory for date: " + balancedate);
+		InputStream jasperFile = this.getClass().getResourceAsStream("/static/jasper/ProfitLossReport.jrxml");
+		if (jasperFile == null) {
+			throw new FileNotFoundException("Jasper template /static/jasper/ProfitLossReport.jrxml not found in classpath");
+		}
+		JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("DATE", balancedate);
+		JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+		if ("pdf".equalsIgnoreCase(filetype)) {
+			return JasperExportManager.exportReportToPdf(jp);
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+			reportConfig.setSheetNames(new String[]{"PROFIT AND LOSS"});
+			JRXlsxExporter exporter = new JRXlsxExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+			exporter.setConfiguration(reportConfig);
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+			exporter.exportReport();
+			return baos.toByteArray();
+		}
+	}
+}

@@ -15043,6 +15043,48 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		return result;
 	}
 	
+	@RequestMapping(value = "balanceSheetDownload", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> balanceSheetDownload(HttpServletResponse response,
+			@RequestParam(required = false) String balancedate) {
+		try {
+			logger.info("Getting download Balance Sheet File for date :" + balancedate);
+			String filetype = "xlsx";
+			byte[] data = placementServices.getBalanceSheetBytes(filetype, balancedate);
+			String filename = "BALANCE_SHEET_" + (balancedate != null ? balancedate : "") + ".xlsx";
+
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating Balance Sheet Excel download", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@RequestMapping(value = "profitLossDownload", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> profitLossDownload(HttpServletResponse response,
+			@RequestParam(required = false) String balancedate) {
+		try {
+			logger.info("Getting download Profit Loss File for date :" + balancedate);
+			String filetype = "xlsx";
+			byte[] data = placementServices.getProfitLossBytes(filetype, balancedate);
+			String filename = "PROFIT_AND_LOSS_" + (balancedate != null ? balancedate : "") + ".xlsx";
+
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating Profit & Loss Excel download", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+
+	
 	@RequestMapping(value = "journalEntries2", method = { RequestMethod.GET, RequestMethod.POST })
 	public String journalEntries2(@RequestParam(required = false) String formmode,
 			@RequestParam(required = false) String acct_num, @RequestParam(required = false) String part_tran,

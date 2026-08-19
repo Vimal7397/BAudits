@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created for Profit & Loss side-by-side single-sheet Excel export -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+              name="ProfitLossReport" 
+              pageWidth="1290" 
+              pageHeight="842" 
+              columnWidth="1290" 
+              leftMargin="0" 
+              rightMargin="0" 
+              topMargin="0" 
+              bottomMargin="0" 
+              isIgnorePagination="true" 
+              uuid="8e30587e-22ae-5f93-b059-b9f40d08be61">
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<parameter name="DATE" class="java.lang.String">
+		<defaultValueExpression><![CDATA["31-03-2026"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[WITH INCOMES AS (
+    SELECT 
+        a.GLSH_CODE || '-' || a.GLSH_DESC AS I_GL_HEAD,
+        a.ACCT_NUM AS I_ACCT_NUM,
+        a.ACCT_NAME AS I_ACCT_NAME,
+        a.ACCT_CRNCY AS I_ACCT_CRNCY,
+        ABS(b.TRAN_DATE_BAL) AS I_AMOUNT,
+        ROW_NUMBER() OVER (ORDER BY a.ACCT_NUM ASC) AS RNUM
+    FROM DAB_VIEW b
+    JOIN COA_VIEW a ON a.ACCT_NUM = b.ACCT_NUM
+    WHERE a.CLASSIFICATION IN ('Income', 'Incomes')
+      AND TO_DATE($P{DATE}, 'DD-MM-YYYY') BETWEEN b.TRAN_DATE AND b.END_TRAN_DATE
+),
+EXPENDITURES AS (
+    SELECT 
+        a.GLSH_CODE || '-' || a.GLSH_DESC AS E_GL_HEAD,
+        a.ACCT_NUM AS E_ACCT_NUM,
+        a.ACCT_NAME AS E_ACCT_NAME,
+        a.ACCT_CRNCY AS E_ACCT_CRNCY,
+        ABS(b.TRAN_DATE_BAL) AS E_AMOUNT,
+        ROW_NUMBER() OVER (ORDER BY a.ACCT_NUM ASC) AS RNUM
+    FROM DAB_VIEW b
+    JOIN COA_VIEW a ON a.ACCT_NUM = b.ACCT_NUM
+    WHERE a.CLASSIFICATION IN ('Expenses', 'Expense', 'Expenditure')
+      AND TO_DATE($P{DATE}, 'DD-MM-YYYY') BETWEEN b.TRAN_DATE AND b.END_TRAN_DATE
+),
+NUMS AS (
+    SELECT RNUM FROM INCOMES
+    UNION
+    SELECT RNUM FROM EXPENDITURES
+)
+SELECT 
+    i.I_GL_HEAD, i.I_ACCT_NUM, i.I_ACCT_NAME, i.I_ACCT_CRNCY, i.I_AMOUNT,
+    e.E_GL_HEAD, e.E_ACCT_NUM, e.E_ACCT_NAME, e.E_ACCT_CRNCY, e.E_AMOUNT
+FROM NUMS n
+LEFT JOIN INCOMES i ON n.RNUM = i.RNUM
+LEFT JOIN EXPENDITURES e ON n.RNUM = e.RNUM
+ORDER BY n.RNUM ASC]]>
+	</queryString>
+	<field name="I_GL_HEAD" class="java.lang.String"/>
+	<field name="I_ACCT_NUM" class="java.lang.String"/>
+	<field name="I_ACCT_NAME" class="java.lang.String"/>
+	<field name="I_ACCT_CRNCY" class="java.lang.String"/>
+	<field name="I_AMOUNT" class="java.math.BigDecimal"/>
+	<field name="E_GL_HEAD" class="java.lang.String"/>
+	<field name="E_ACCT_NUM" class="java.lang.String"/>
+	<field name="E_ACCT_NAME" class="java.lang.String"/>
+	<field name="E_ACCT_CRNCY" class="java.lang.String"/>
+	<field name="E_AMOUNT" class="java.math.BigDecimal"/>
+	<variable name="TOTAL_INCOME" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{I_AMOUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.math.BigDecimal("0.00")]]></initialValueExpression>
+	</variable>
+	<variable name="TOTAL_EXPENSE" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{E_AMOUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.math.BigDecimal("0.00")]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<!-- Report Status at Top -->
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="0" y="0" width="1290" height="25" backcolor="#FFFFFF" uuid="10000000-0000-0000-0000-000000000005"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Report Status : " + ($V{TOTAL_INCOME} == null || $V{TOTAL_EXPENSE} == null ? "N/A" : ($V{TOTAL_INCOME}.compareTo($V{TOTAL_EXPENSE}) > 0 ? "Profit" : ($V{TOTAL_INCOME}.compareTo($V{TOTAL_EXPENSE}) < 0 ? "Loss" : "Break-even")))]]></textFieldExpression>
+			</textField>
+
+			<!-- Profit / Loss Amount at Top -->
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="0" y="25" width="1290" height="25" backcolor="#FFFFFF" uuid="10000000-0000-0000-0000-000000000006"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_INCOME} == null || $V{TOTAL_EXPENSE} == null ? "" : ($V{TOTAL_INCOME}.compareTo($V{TOTAL_EXPENSE}) > 0 ? "Profit Amount: " + new java.text.DecimalFormat("#,##0.00").format($V{TOTAL_INCOME}.subtract($V{TOTAL_EXPENSE})) : ($V{TOTAL_INCOME}.compareTo($V{TOTAL_EXPENSE}) < 0 ? "Loss Amount: " + new java.text.DecimalFormat("#,##0.00").format($V{TOTAL_EXPENSE}.subtract($V{TOTAL_INCOME})) : "No Profit or Loss"))]]></textFieldExpression>
+			</textField>
+
+			<!-- INCOME Header -->
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="50" width="160" height="30" backcolor="#E9ECEF" uuid="10000000-0000-0000-0000-000000000001"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph leftIndent="8"/>
+				</textElement>
+				<text><![CDATA[INCOME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="160" y="50" width="470" height="30" backcolor="#E9ECEF" uuid="10000000-0000-0000-0000-000000000002"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PROFIT AND LOSS ACCOUNT]]></text>
+			</staticText>
+			<!-- Spacer Column (Col F) -->
+			<staticText>
+				<reportElement x="630" y="50" width="30" height="30" uuid="10000000-0000-0000-0000-000000000003"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<!-- EXPENDITURE Header -->
+			<staticText>
+				<reportElement mode="Opaque" x="660" y="50" width="630" height="30" backcolor="#E9ECEF" uuid="10000000-0000-0000-0000-000000000004"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="11" isBold="true"/>
+					<paragraph leftIndent="8"/>
+				</textElement>
+				<text><![CDATA[EXPENDITURE]]></text>
+			</staticText>
+		</band>
+	</title>
+
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<!-- INCOME Column Headers -->
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="160" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000001"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[GL HEAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="160" y="0" width="100" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000002"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[ACCT NO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="260" y="0" width="200" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000003"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[ACCT NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="460" y="0" width="50" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000004"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[CUR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="510" y="0" width="120" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000005"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[AMOUNT]]></text>
+			</staticText>
+
+			<!-- Spacer Column (Col F) -->
+			<staticText>
+				<reportElement x="630" y="0" width="30" height="25" uuid="20000000-0000-0000-0000-000000000006"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+
+			<!-- EXPENDITURE Column Headers -->
+			<staticText>
+				<reportElement mode="Opaque" x="660" y="0" width="160" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000007"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[GL HEAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="820" y="0" width="100" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000008"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[ACCT NO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="920" y="0" width="200" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000009"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[ACCT NAME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1120" y="0" width="50" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000010"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[CUR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1170" y="0" width="120" height="25" backcolor="#F8F9FA" uuid="20000000-0000-0000-0000-000000000011"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<text><![CDATA[AMOUNT]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+
+	<detail>
+		<band height="20" splitType="Stretch">
+			<!-- INCOME Details -->
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="160" height="20" uuid="30000000-0000-0000-0000-000000000001"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{I_GL_HEAD}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="160" y="0" width="100" height="20" uuid="30000000-0000-0000-0000-000000000002"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{I_ACCT_NUM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="260" y="0" width="200" height="20" uuid="30000000-0000-0000-0000-000000000003"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{I_ACCT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="460" y="0" width="50" height="20" uuid="30000000-0000-0000-0000-000000000004"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{I_ACCT_CRNCY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="510" y="0" width="120" height="20" uuid="30000000-0000-0000-0000-000000000005"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{I_AMOUNT}]]></textFieldExpression>
+			</textField>
+
+			<!-- Spacer Column (Col F) -->
+			<staticText>
+				<reportElement x="630" y="0" width="30" height="20" uuid="30000000-0000-0000-0000-000000000006"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+
+			<!-- EXPENDITURE Details -->
+			<textField isBlankWhenNull="true">
+				<reportElement x="660" y="0" width="160" height="20" uuid="30000000-0000-0000-0000-000000000007"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{E_GL_HEAD}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="820" y="0" width="100" height="20" uuid="30000000-0000-0000-0000-000000000008"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{E_ACCT_NUM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="920" y="0" width="200" height="20" uuid="30000000-0000-0000-0000-000000000009"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{E_ACCT_NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1120" y="0" width="50" height="20" uuid="30000000-0000-0000-0000-000000000010"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph leftIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{E_ACCT_CRNCY}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="1170" y="0" width="120" height="20" uuid="30000000-0000-0000-0000-000000000011"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{E_AMOUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+
+	<summary>
+		<band height="25" splitType="Stretch">
+			<!-- INCOME Total -->
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="510" height="25" backcolor="#F8F9FA" uuid="40000000-0000-0000-0000-000000000001"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="510" y="0" width="120" height="25" backcolor="#F8F9FA" uuid="40000000-0000-0000-0000-000000000002"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_INCOME}]]></textFieldExpression>
+			</textField>
+
+			<!-- Spacer Column (Col F) -->
+			<staticText>
+				<reportElement x="630" y="0" width="30" height="25" uuid="40000000-0000-0000-0000-000000000003"/>
+				<text><![CDATA[]]></text>
+			</staticText>
+
+			<!-- EXPENDITURE Total -->
+			<staticText>
+				<reportElement mode="Opaque" x="660" y="0" width="510" height="25" backcolor="#F8F9FA" uuid="40000000-0000-0000-0000-000000000004"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="10"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="1170" y="0" width="120" height="25" backcolor="#F8F9FA" uuid="40000000-0000-0000-0000-000000000005"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<leftPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<bottomPen lineWidth="0.5" lineColor="#D3D3D3"/>
+					<rightPen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+					<paragraph rightIndent="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_EXPENSE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

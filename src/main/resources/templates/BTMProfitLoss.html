@@ -399,6 +399,15 @@
 				+ acct_num;
 		}
 
+		function downloadExcel() {
+			var dateVal = $("#incomedate").val();
+			if (!dateVal) {
+				alert("Please select a date first.");
+				return;
+			}
+			window.location.href = './profitLossDownload?balancedate=' + encodeURIComponent(dateVal);
+		}
+
 	</script>
 </head>
 <title>BAUDIT</title>
@@ -507,7 +516,9 @@
 											class="form-control form-control-sm bg-white border border-dark mr-2" style="width: 120px; text-align: center; font-weight: bold;" />
 
 										<button type="button"
-											class="btn btn-xs btn-primary btns p-2 border btn-filter">Filter</button>
+											class="btn btn-xs btn-primary btns p-2 border btn-filter mr-1">Filter</button>
+										<button type="button"
+											class="btn btn-xs btn-primary btns p-2 border" onclick="downloadExcel()">Download</button>
 									</div>
 								</div>
 							</div>
