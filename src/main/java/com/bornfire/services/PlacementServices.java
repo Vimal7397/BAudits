@@ -1,5 +1,6 @@
 package com.bornfire.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -446,6 +447,51 @@ public class PlacementServices {
 		return users;
 
 	}
+	public byte[] getInvoiceBytes(String inv_no, String filetype) throws Exception {
+		InputStream jasperFile = this.getClass().getResourceAsStream("/static/jasper/Invoice_Master1.jrxml");
+		if (jasperFile == null) {
+			throw new FileNotFoundException("Jasper template /static/jasper/Invoice_Master1.jrxml not found in classpath");
+		}
+		JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("INV_NO", inv_no);
+		JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+		if ("pdf".equalsIgnoreCase(filetype)) {
+			return JasperExportManager.exportReportToPdf(jp);
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			JRXlsxExporter exporter = new JRXlsxExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+			exporter.exportReport();
+			return baos.toByteArray();
+		}
+	}
+
+	public byte[] getSPFBytes(String fileType, String mon) throws Exception {
+		String salaryMonth = mon;
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/Origin.jrxml");
+		if (jasperStream == null) {
+			throw new FileNotFoundException("Jasper template /static/jasper/Origin.jrxml not found in classpath");
+		}
+		JasperReport jr = JasperCompileManager.compileReport(jasperStream);
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("salary_month", salaryMonth);
+		JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+		if ("pdf".equalsIgnoreCase(fileType)) {
+			return JasperExportManager.exportReportToPdf(jp);
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			JRXlsxExporter exporter = new JRXlsxExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+			exporter.exportReport();
+			return baos.toByteArray();
+		}
+	}
+
 //==================================JASPER==============
 	public File getFile(String inv_no,  String filetype) throws FileNotFoundException, JRException, SQLException {
 
@@ -2058,6 +2104,52 @@ public File getFile2(String fileType, String mon) throws FileNotFoundException, 
 */
 
 
+public byte[] getFileESI2Bytes(String filetype, String Mon) throws FileNotFoundException, JRException, SQLException, IllegalArgumentException {
+    String Salary_month = Mon;
+    String Year = (Mon != null && Mon.length() >= 4) ? Mon.substring(0, 4) : "";
+    String Month = (Mon != null && Mon.length() >= 6) ? Mon.substring(4, 6) : "";
+    String YearL = "Month";
+    if ("01".equals(Month)) YearL = "Jan";
+    else if ("02".equals(Month)) YearL = "Feb";
+    else if ("03".equals(Month)) YearL = "Mar";
+    else if ("04".equals(Month)) YearL = "Apr";
+    else if ("05".equals(Month)) YearL = "May";
+    else if ("06".equals(Month)) YearL = "Jun";
+    else if ("07".equals(Month)) YearL = "Jul";
+    else if ("08".equals(Month)) YearL = "Aug";
+    else if ("09".equals(Month)) YearL = "Sep";
+    else if ("10".equals(Month)) YearL = "Oct";
+    else if ("11".equals(Month)) YearL = "Nov";
+    else if ("12".equals(Month)) YearL = "Dec";
+
+    String fileName = "BORNFIRE-ESIC-" + Year + "-" + YearL;
+
+    InputStream jasperFile = this.getClass().getResourceAsStream("/static/jasper/lastesi.jrxml");
+    if (jasperFile == null) {
+        throw new FileNotFoundException("Jasper template /static/jasper/lastesi.jrxml not found");
+    }
+
+    JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("salary_month", Salary_month);
+
+    JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+    if ("pdf".equalsIgnoreCase(filetype)) {
+        return JasperExportManager.exportReportToPdf(jp);
+    } else {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        SimpleXlsxReportConfiguration reportConfig = new SimpleXlsxReportConfiguration();
+        reportConfig.setSheetNames(new String[]{fileName});
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jp));
+        exporter.setConfiguration(reportConfig);
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+        exporter.exportReport();
+        return baos.toByteArray();
+    }
+}
+
 public File getFileESI2(String filetype, String Mon) throws FileNotFoundException, JRException, SQLException,IllegalArgumentException {
 		String Salary_month=Mon;
 		String Year=Mon.substring(0,4);
@@ -2603,6 +2695,61 @@ public File gettdsexcel(String filename, String filetype, String moths, String y
 
     return outputFile;
  }
+
+public byte[] getAccountLedgerBytes(String filetype, String acct_num, String fromdate, String todate)
+        throws FileNotFoundException, JRException, SQLException, IllegalArgumentException {
+    logger.info("Generating Account Ledger Report in memory for Account: " + acct_num);
+
+    InputStream jasperFile = this.getClass().getResourceAsStream("/static/jasper/ACCOUNT_LEDGER_CSV.jrxml");
+    if (jasperFile == null) {
+        throw new FileNotFoundException("Jasper template /static/jasper/ACCOUNT_LEDGER_CSV.jrxml not found in classpath");
+    }
+
+    JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+
+    HashMap<String, Object> map = new HashMap<>();
+    map.put("ACCOUNT_NO", acct_num);
+    map.put("FROM_DATE", fromdate);
+    map.put("TODATE", todate);
+
+    JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    switch (filetype.toLowerCase()) {
+        case "pdf":
+            return JasperExportManager.exportReportToPdf(jp);
+
+        case "xlsx":
+            SimpleXlsxReportConfiguration xlsxConfig = new SimpleXlsxReportConfiguration();
+            xlsxConfig.setSheetNames(new String[]{"Account Ledger"});
+            JRXlsxExporter xlsxExporter = new JRXlsxExporter();
+            xlsxExporter.setExporterInput(new SimpleExporterInput(jp));
+            xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+            xlsxExporter.setConfiguration(xlsxConfig);
+            xlsxExporter.exportReport();
+            return baos.toByteArray();
+
+        case "csv":
+            JRCsvExporter csvExporter = new JRCsvExporter();
+            csvExporter.setExporterInput(new SimpleExporterInput(jp));
+            SimpleWriterExporterOutput exporterOutput = new SimpleWriterExporterOutput(
+                new java.io.OutputStreamWriter(baos, java.nio.charset.StandardCharsets.UTF_8)
+            );
+            csvExporter.setExporterOutput(exporterOutput);
+
+            SimpleCsvExporterConfiguration csvConfig = new SimpleCsvExporterConfiguration();
+            csvConfig.setFieldDelimiter(",");
+            csvConfig.setRecordDelimiter("\n");
+            csvExporter.setConfiguration(csvConfig);
+
+            csvExporter.exportReport();
+            return baos.toByteArray();
+
+        default:
+            throw new IllegalArgumentException("Unsupported file type: " + filetype);
+    }
+}
 
 public File getFileAcccount_Ledger(String filetype, String acct_num, String fromdate, String todate)
         throws FileNotFoundException, JRException, SQLException, IllegalArgumentException {

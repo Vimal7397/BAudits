@@ -1,5 +1,6 @@
 package com.bornfire.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -34,6 +35,105 @@ public class ReportServices {
 
 	@Autowired
 	DataSource srcdataSource;
+
+	private byte[] exportToBytes(InputStream jasperStream, HashMap<String, Object> map, String report_type) throws Exception {
+		if (jasperStream == null) {
+			throw new FileNotFoundException("Jasper report template not found in classpath");
+		}
+		JasperReport jr = JasperCompileManager.compileReport(jasperStream);
+		JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+		if ("Pdf".equalsIgnoreCase(report_type)) {
+			return JasperExportManager.exportReportToPdf(jp);
+		} else {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			JRXlsxExporter exporter = new JRXlsxExporter();
+			exporter.setExporterInput(new SimpleExporterInput(jp));
+			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+			exporter.exportReport();
+			return baos.toByteArray();
+		}
+	}
+
+	public byte[] getAttendanceBytes(String emp_id, String cal_month, String cal_year, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/AttendanceRegister_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("emp_id", emp_id);
+		map.put("cal_month", cal_month);
+		map.put("cal_year", cal_year);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getDailyAttendanceBytes(String cal_year, String cal_month, String cal_date, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/AttendanceRegister_Daily_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("CAL_YEAR", cal_year);
+		map.put("CAL_MONTH", cal_month);
+		map.put("CAL_DATE", cal_date);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getMonthlyAttendanceBytes(String cal_month, String cal_year, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/Attendence_month_report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("CAL_YEAR", cal_year);
+		map.put("CAL_MONTH", cal_month);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getLeaveRegisterALLBytes(String employee_id, String year, String leave_category, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/Leaveregisterall_leave.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("EMPLOYEE_ID", employee_id);
+		map.put("YEAR", year);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getLeaveRegisterBytes(String employee_id, String year, String leave_category, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/LeaveRegister_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("EMPLOYEE_ID", employee_id);
+		map.put("YEAR", year);
+		map.put("LEAVE_CATEGORY", leave_category);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getTimeSheetBytes(String emp_id, String year, String month, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/TimesheerReport.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("emp_id", emp_id);
+		map.put("year", year);
+		map.put("month", month);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getWorkAssignBytes(String emp_id, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/WorkAssign_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("emp_id", emp_id);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getProfileMasterBytes(String emp_id, String ProfileType, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/ProfileMaster_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("EMP_ID", emp_id);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getProjectBytes(String proj_id, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/ProjectMaster_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("PROJ_ID", proj_id);
+		return exportToBytes(jasperStream, map, report_type);
+	}
+
+	public byte[] getHolidayListBytes(String cal_year, String report_type) throws Exception {
+		InputStream jasperStream = this.getClass().getResourceAsStream("/static/jasper/Holiday_List_Report.jrxml");
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("CAL_YEAR", cal_year);
+		return exportToBytes(jasperStream, map, report_type);
+	}
 
 	public File getFileAttendance(String emp_id, String cal_month, String cal_year, String report_type)
 			throws FileNotFoundException, JRException, SQLException {

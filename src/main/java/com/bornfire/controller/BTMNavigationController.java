@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
@@ -3429,337 +3430,239 @@ public class BTMNavigationController {
 	// ========================== Jasper download ========================/
 
 	@RequestMapping(value = "invoiceReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource invoiceReportDownload(HttpServletResponse response,
-
+	public ResponseEntity<byte[]> invoiceReportDownload(HttpServletResponse response,
 			@RequestParam(value = "inv_no", required = false) String inv_no,
-
-			@RequestParam(value = "filetype", required = false) String filetype) throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "filetype", required = false) String filetype) {
 		try {
+			String type = (filetype != null) ? filetype : "pdf";
+			byte[] data = placementServices.getInvoiceBytes(inv_no, type);
+			String ext = "pdf".equalsIgnoreCase(type) ? ".pdf" : ".xlsx";
+			String filename = "INVOICE_" + inv_no + ext;
 
-			logger.info("Getting download File :" + inv_no + ", FileType :" + filetype + "");
-
-			File repfile = placementServices.getFile(inv_no, filetype);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating invoice report download", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "AttendanceReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource AttendanceReportDownload(HttpServletResponse response,
-
+	public ResponseEntity<byte[]> AttendanceReportDownload(HttpServletResponse response,
 			@RequestParam(value = "emp_id", required = false) String emp_id,
 			@RequestParam(value = "cal_month", required = false) String cal_month,
 			@RequestParam(value = "cal_year", required = false) String cal_year,
-
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getAttendanceBytes(emp_id, cal_month, cal_year, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Attendance_Report_" + emp_id + "_" + cal_month + "_" + cal_year + ext;
 
-			logger.info("Getting download File :" + emp_id + ", FileType :" + report_type + "");
-
-			File repfile = reportServices.getFileAttendance(emp_id, cal_month, cal_year, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating attendance report download", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "AttendanceRegisterDailyReport", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource AttendanceRegisterDailyReport(HttpServletResponse response,
-
+	public ResponseEntity<byte[]> AttendanceRegisterDailyReport(HttpServletResponse response,
 			@RequestParam(value = "login_time", required = false) Date login_time,
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-		SimpleDateFormat formatday = new SimpleDateFormat("dd");
-		SimpleDateFormat formatMonth = new SimpleDateFormat("MM");
-		SimpleDateFormat formatyear = new SimpleDateFormat("yyyy");
-		String cal_month = formatMonth.format(login_time);
-		String cal_year = formatyear.format(login_time);
-		String cal_date = formatday.format(login_time);
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			SimpleDateFormat formatday = new SimpleDateFormat("dd");
+			SimpleDateFormat formatMonth = new SimpleDateFormat("MM");
+			SimpleDateFormat formatyear = new SimpleDateFormat("yyyy");
+			String cal_month = login_time != null ? formatMonth.format(login_time) : "";
+			String cal_year = login_time != null ? formatyear.format(login_time) : "";
+			String cal_date = login_time != null ? formatday.format(login_time) : "";
 
-			logger.info("Getting download File :" + cal_month + "_" + cal_year + "_" + cal_date + ", FileType :"
-					+ report_type + "");
+			byte[] data = reportServices.getDailyAttendanceBytes(cal_year, cal_month, cal_date, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Attendance_Daily_Report_" + cal_date + "_" + cal_month + "_" + cal_year + ext;
 
-			File repfile = reportServices.getFileDailyAttendance(cal_year, cal_month, cal_date, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating daily attendance report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "AttendanceRegisterMonthReport", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource AttendanceRegisterMonthReport(HttpServletResponse response,
+	public ResponseEntity<byte[]> AttendanceRegisterMonthReport(HttpServletResponse response,
 			@RequestParam(value = "cal_month", required = false) String cal_month,
 			@RequestParam(value = "cal_year", required = false) String cal_year,
-
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getMonthlyAttendanceBytes(cal_month, cal_year, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Attendance_Month_Report_" + cal_month + "_" + cal_year + ext;
 
-			logger.info("Getting download File :" + cal_month + ", FileType :" + report_type + "");
-
-			File repfile = reportServices.getFileMonthyAttendance(cal_month, cal_year, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating monthly attendance report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "leaveRegisterReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource leaveRegisterReportDownload(HttpServletResponse response,
+	public ResponseEntity<byte[]> leaveRegisterReportDownload(HttpServletResponse response,
 			@RequestParam(value = "employee_id", required = false) String employee_id,
 			@RequestParam(value = "year1", required = false) String year1,
 			@RequestParam(required = false) String leave_category,
-
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		int year = Integer.parseInt(year1);
-		System.out.println(year1 + "year11111" + employee_id + "employee_iddddd");
-
-		String updateLeaveBalancesForAllEmployees = "yes";
-		if (updateLeaveBalancesForAllEmployees == "yes") {
-			int updateleave = leaveMasterRep.updateLeaveBalances(employee_id, year);
-			System.out.println(updateleave + "updateleaveeeee");
-		}
-		System.out.println(leave_category + "leave_category");
-		response.setContentType("application/octet-stream");
-		InputStreamResource resource = null;
-		if ("ALL".equals(leave_category)) {
-			try {
-				System.out.println("all here we give all the leave of the resources ");
-				logger.info("Getting download File :" + employee_id + ", FileType :" + report_type + "");
-
-				File repfile = reportServices.getFileLeaveRegisterALL(employee_id, year1, leave_category, report_type);
-
-				response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-				resource = new InputStreamResource(new FileInputStream(repfile));
-
-			} catch (JRException e) {
-
-				e.printStackTrace();
+			@RequestParam(value = "report_type", required = false) String report_type) {
+		try {
+			if (year1 != null) {
+				int year = Integer.parseInt(year1);
+				leaveMasterRep.updateLeaveBalances(employee_id, year);
 			}
-		} else {
-			try {
-
-				logger.info("Getting download File :" + employee_id + ", FileType :" + report_type + "");
-
-				File repfile = reportServices.getFileLeaveRegister(employee_id, year1, leave_category, report_type);
-
-				response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-				resource = new InputStreamResource(new FileInputStream(repfile));
-
-			} catch (JRException e) {
-
-				e.printStackTrace();
+			byte[] data;
+			if ("ALL".equals(leave_category)) {
+				data = reportServices.getLeaveRegisterALLBytes(employee_id, year1, leave_category, report_type);
+			} else {
+				data = reportServices.getLeaveRegisterBytes(employee_id, year1, leave_category, report_type);
 			}
-		}
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Leave_Register_" + employee_id + "_" + year1 + ext;
 
-		return resource;
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating leave register report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 
 	@RequestMapping(value = "projectMasterReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource projectMasterReportDownload(HttpServletResponse response,
+	public ResponseEntity<byte[]> projectMasterReportDownload(HttpServletResponse response,
 			@RequestParam(value = "proj_id", required = false) String proj_id,
-
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getProjectBytes(proj_id, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Project_Master_" + proj_id + ext;
 
-			logger.info("Getting download File for proj master :" + proj_id + ", FileType :" + report_type + "");
-
-			File repfile = reportServices.getFileProject(proj_id, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating project master report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "holidayListReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource holidayListReportDownload(HttpServletResponse response,
+	public ResponseEntity<byte[]> holidayListReportDownload(HttpServletResponse response,
 			@RequestParam(value = "cal_year", required = true) String cal_year,
 			@RequestParam(value = "detailsRequired", required = false) String detailsRequired,
-
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getHolidayListBytes(cal_year, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Holiday_List_" + cal_year + ext;
 
-			logger.info("Getting download File :" + cal_year + ", FileType :" + report_type + "");
-			if (detailsRequired.equals("No")) {
-				File repfile = reportServices.getFileHolidayList(cal_year, report_type);
-
-				response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-				resource = new InputStreamResource(new FileInputStream(repfile));
-			} else if (detailsRequired.equals("Yes")) {
-				File repfile = reportServices.getFileHolidayDetailsList(cal_year, report_type);
-
-				response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-				resource = new InputStreamResource(new FileInputStream(repfile));
-			}
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating holiday list report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "timesheetReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource timesheetReportDownload(HttpServletResponse response,
+	public ResponseEntity<byte[]> timesheetReportDownload(HttpServletResponse response,
 			@RequestParam(value = "emp_id", required = true) String emp_id,
 			@RequestParam(value = "year", required = false) String year,
 			@RequestParam(value = "month", required = false) String month,
-
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getTimeSheetBytes(emp_id, year, month, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Timesheet_Report_" + emp_id + "_" + year + ext;
 
-			logger.info("Getting download File :" + emp_id + ", FileType :" + report_type + "");
-
-			File repfile = reportServices.getFileTimeSheet(emp_id, year, month, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating timesheet report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "workAssignReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource workAssignReportDownload(HttpServletResponse response,
+	public ResponseEntity<byte[]> workAssignReportDownload(HttpServletResponse response,
 			@RequestParam(value = "emp_id", required = true) String emp_id,
-			@RequestParam(value = "report_type", required = false) String report_type)
-			throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "report_type", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getWorkAssignBytes(emp_id, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Work_Assign_" + emp_id + ext;
 
-			logger.info("Getting download File :" + emp_id + ", FileType :" + report_type + "");
-
-			File repfile = reportServices.getFileWorkAssign(emp_id, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating work assignment report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "profileMasterReportDownload", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource profileMasterReportDownload(HttpServletResponse response,
+	public ResponseEntity<byte[]> profileMasterReportDownload(HttpServletResponse response,
 			@RequestParam(value = "emp_id", required = true) String emp_id,
 			@RequestParam(value = "profileType", required = false) String profileType,
-			@RequestParam(value = "reportType", required = false) String report_type) throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-
-		InputStreamResource resource = null;
+			@RequestParam(value = "reportType", required = false) String report_type) {
 		try {
+			byte[] data = reportServices.getProfileMasterBytes(emp_id, profileType, report_type);
+			String ext = "Pdf".equalsIgnoreCase(report_type) ? ".pdf" : ".xlsx";
+			String filename = "Profile_Master_" + emp_id + ext;
 
-			logger.info("Getting downloaded File :" + emp_id + ", FileType :" + report_type + "");
-
-			File repfile = reportServices.getFileProfileMaster(emp_id, profileType, report_type);
-
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating profile master report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	// ========================================== Maintenance Module
@@ -4830,32 +4733,24 @@ public class BTMNavigationController {
 	}
 
 	@RequestMapping(value = "SPFDownload1", method = RequestMethod.GET)
-
 	@ResponseBody
-	public InputStreamResource SPFDownload1(HttpServletResponse response, @RequestParam(required = false) String MONTH
-
-	) throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-		System.out.println("===============" + MONTH);
-		InputStreamResource resource = null;
+	public ResponseEntity<byte[]> SPFDownload1(HttpServletResponse response, @RequestParam(required = false) String MONTH) {
 		try {
-
 			String filetype = "Excel";
 			String Mon = MONTH;
-			// logger.info("Getting download File :" + + ", FileType :Excel" + + "");
+			byte[] data = placementServices.getSPFBytes(filetype, Mon);
 
-			File repfile = placementServices.getFile2(filetype, Mon);
+			String filename = "SPF_" + (Mon != null ? Mon : "") + ".xlsx";
 
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating SPF download report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "SalaryDownload1", method = RequestMethod.GET)
@@ -4890,30 +4785,39 @@ public class BTMNavigationController {
 
 	@RequestMapping(value = "ESIDownload1", method = RequestMethod.GET)
 	@ResponseBody
-	public InputStreamResource ESIDownload1(HttpServletResponse response, @RequestParam(required = false) String MONTH
-
-	) throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-		System.out.println("===============" + MONTH);
-		InputStreamResource resource = null;
+	public ResponseEntity<byte[]> ESIDownload1(HttpServletResponse response, @RequestParam(required = false) String MONTH) {
 		try {
-
 			String filetype = "Excel";
 			String Mon = MONTH;
-			// logger.info("Getting download File :" + + ", FileType :Excel" + + "");
+			byte[] data = placementServices.getFileESI2Bytes(filetype, Mon);
 
-			File repfile = placementServices.getFileESI2(filetype, Mon);
+			String Year = (Mon != null && Mon.length() >= 4) ? Mon.substring(0, 4) : "";
+			String Month = (Mon != null && Mon.length() >= 6) ? Mon.substring(4, 6) : "";
+			String YearL = "Month";
+			if ("01".equals(Month)) YearL = "Jan";
+			else if ("02".equals(Month)) YearL = "Feb";
+			else if ("03".equals(Month)) YearL = "Mar";
+			else if ("04".equals(Month)) YearL = "Apr";
+			else if ("05".equals(Month)) YearL = "May";
+			else if ("06".equals(Month)) YearL = "Jun";
+			else if ("07".equals(Month)) YearL = "Jul";
+			else if ("08".equals(Month)) YearL = "Aug";
+			else if ("09".equals(Month)) YearL = "Sep";
+			else if ("10".equals(Month)) YearL = "Oct";
+			else if ("11".equals(Month)) YearL = "Nov";
+			else if ("12".equals(Month)) YearL = "Dec";
 
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
+			String filename = "BORNFIRE-ESIC-" + Year + "-" + YearL + ".xlsx";
 
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating ESI Download report", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 
 	@RequestMapping(value = "viewtospf", method = RequestMethod.POST)
@@ -14317,30 +14221,30 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
    // BY SURIYA
 	@RequestMapping(value = "accountledgerdownload", method = RequestMethod.GET)
 	@ResponseBody
-	public InputStreamResource AccountLedgerDownload(HttpServletResponse response, 
+	public ResponseEntity<byte[]> AccountLedgerDownload(HttpServletResponse response, 
 			@RequestParam(required = false) String acct_num,
 			@RequestParam(required = false) String fromdate,
 			@RequestParam(required = false) String todate,
 			@RequestParam(required = false) String format
-	) throws IOException, SQLException {
-
-		response.setContentType("application/octet-stream");
-		System.out.println("===============" + acct_num);
-		InputStreamResource resource = null;
+	) {
 		try {
+			String filetype = (format != null) ? format : "pdf";
+			byte[] data = placementServices.getAccountLedgerBytes(filetype, acct_num, fromdate, todate);
 
-			String filetype = format;
-			File repfile = placementServices.getFileAcccount_Ledger(filetype, acct_num ,fromdate ,todate);
+			String ext = "pdf".equalsIgnoreCase(filetype) ? ".pdf" : ("xlsx".equalsIgnoreCase(filetype) ? ".xlsx" : ".csv");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
+			String timestamp = LocalDateTime.now().format(formatter);
+			String filename = "ACL" + (acct_num != null ? acct_num : "") + "_" + timestamp + ext;
 
-			response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-			resource = new InputStreamResource(new FileInputStream(repfile));
-
-		} catch (JRException e) {
-
-			e.printStackTrace();
+			return ResponseEntity.ok()
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+					.contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.contentLength(data.length)
+					.body(data);
+		} catch (Exception e) {
+			logger.error("Error generating Account Ledger report download", e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
-
-		return resource;
 	}
 	@PostMapping("/toggle")
 	public ResponseEntity<String> toggleScheduler(@RequestParam boolean enable) {
