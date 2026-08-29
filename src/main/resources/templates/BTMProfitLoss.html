@@ -121,6 +121,37 @@
 		.filterable .filters input[disabled]::-webkit-input-placeholder {
 			color: #333;
 		}
+
+		.card {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.table-responsive {
+			overflow-y: auto;
+			flex: 1 1 auto;
+		}
+
+		.filterable thead.thead-light th {
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			background-color: #f8f9fa;
+		}
+
+		.row-formline {
+			flex: 0 0 auto;
+			background-color: #fff;
+			border-top: 1px solid #ddd;
+		}
+
+		.card-footer {
+			flex: 0 0 auto;
+		}
+
+		.card-header {
+			flex: 0 0 auto;
+		}
 	</style>
 
 	<script th:inline="javascript">
@@ -376,6 +407,7 @@
 				const element = document.getElementById(id);
 				if (element) {
 					element.style.maxHeight = `${viewportHeight * 0.95}px`;
+					element.style.minHeight = `${viewportHeight * 0.95}px`;
 				}
 			});
 		}
@@ -423,7 +455,7 @@
 				<div th:if="${formmode}=='list'">
 					<div class="panel panel-primary filterable">
 						<div class="card w-100 border panel panel-primary filterable" id="cardbody1"
-							style="overflow-y: auto; border: 1px solid #ddd;">
+							style="border: 1px solid #ddd;">
 							<div class="card-header" style="background-color: #e9ecef">
 								<div class="float-left"
 									style="display: flex; margin-left: -10px; justify-content: space-between; align-items: center;">
@@ -507,7 +539,7 @@
 				<div th:if="${formmode}=='list'">
 					<div class="panel panel-primary filterable">
 						<div class="card w-100 border panel panel-primary filterable" id="cardBody"
-							style="overflow-y: auto; border: 1px solid #ddd;">
+							style="border: 1px solid #ddd;">
 							<div class="card-header" style="background-color: #e9ecef">
 								<div class="d-flex justify-content-between align-items-center">
 									<h5 class=" mb-0">EXPENDITURE</h5>
