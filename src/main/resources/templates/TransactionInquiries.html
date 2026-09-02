@@ -34,6 +34,23 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
 	<style>
+		body {
+			font-size: 0.8rem;
+		}
+
+		.btn {
+			line-height: 0rem;
+		}
+
+		.container-manager {
+			width: 83.5%;
+			padding-right: 15px;
+			padding-left: 15px;
+			margin-right: auto;
+			margin-left: 17.3%;
+			margin-top: 80px;
+		}
+
 		.btns {
 			float: right;
 			margin: 5px;
@@ -649,19 +666,19 @@
 
 <body>
 	<div th:insert="BTMHeaderMenu :: header"></div>
-	<div class="container-fluid " style="margin-top: 100px;">
-		<div class="card mt-5" style="width:1500px;margin-left:400px;margin-top:400px">
+	<div class="container-manager">
+		<div class="card">
 			<div class="card-header p-2 d-flex justify-content-between align-items-center">
 				<h4 class="mb-0">Transaction Inquiries</h4>
 				<div style="display: flex;align-items: center;justify-content: space-between;">
-					<h6 class="mr-1 ">Order By</h6>
+					<h6 class="mr-1 mb-0">Order By</h6>
 					<input id="transactionSelect" name="transactionSelect" style="width: 200px;" disabled 
 					autocomplete="off"/>
 
 				</div>
 			</div>
 
-			<div class="card-body ">
+			<div class="card-body">
 				<div class="row formline mt-2">
 					<div class="col-sm-0.5"></div>
 					<div class="col-sm-2">
@@ -734,8 +751,8 @@
 
 
 			</div>
-			<div id="tabledata" style="width:1500px; max-height: 670px; overflow-y: auto;">
-				<table class="table table-sm" id="transactionTable" style="display:none; border-collapse: collapse;">
+			<div id="tabledata" style="width: 100%; max-height: 670px; overflow-y: auto;">
+				<table class="table table-sm" id="transactionTable" style="display:none; border-collapse: collapse; width: 100%;">
 					<thead style="position: sticky; top: 0; background-color: #f8f9fa;">
 						<tr style="line-height: 1;">
 							<th>Sno</th>
@@ -762,12 +779,7 @@
 				<button type="button" class="btn btn-xs headerbutton" id="" onclick="back();">Back</button>
 			</div>
 		</div>
-
 	</div>
-
-	</div>
-
-
 </body>
 
 </html>

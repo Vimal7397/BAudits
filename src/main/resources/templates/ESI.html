@@ -442,7 +442,7 @@
 						<div class="col-sm-12">
 							<div class="container-fluid content">
 								<div class="row">
-									<div class="card " style="width: 80%;">
+									<div class="card " style="width: 100%;">
 										<div class="panel panel-primary filterable">
 											<div class="card-header d-flex justify-content-between"
 												style="background-color: #BBC3CB;">
@@ -458,19 +458,24 @@
 														<li><a onclick="xcelCustomerdown(this);">Excel-All</a></li>
 														<li><a onclick="xcelCustomerdown1(this);">Excel-Month</a></li>
 													</ul>
-													
+
 													<button
 														class="btn text-white  btn-filter btn-primary">Filter</button>
 												</div>
 
 											</div>
-											<input class="js-monthpicker" type="hidden"
-												placeholder="Select Month and year" onchange="selectedmy()"><input
-												id="MY" type="text" placeholder="Select Month and year">
-											<input type="hidden" id="My2" th:value="${month}">
-											<input type="text" th:value="${#temporals.format(monthDate,'MMMM yyyy')}"
-											       style="border:none; background:none; outline:none; font-family: inherit; font-size: inherit;
-												   margin-left: 30rem;font-weight: bold;" readonly>
+											<div class="d-flex align-items-center p-2" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+												<input class="js-monthpicker" type="hidden"
+													placeholder="Select Month and year" onchange="selectedmy()">
+												<input id="MY" class="form-control d-inline-block ml-2" type="text"
+													placeholder="Select Month and year"
+													style="width: 220px; font-size: 0.95rem; font-weight: 600; color: black; background-color: #ffffff; cursor: pointer;"
+													autocomplete="off">
+												<input type="hidden" id="My2" th:value="${month}">
+												<input type="text" th:value="${#temporals.format(monthDate,'MMMM yyyy')}"
+													style="border:none; background:none; outline:none; font-family: inherit; font-size: 1.35rem;
+													   font-weight: bold; color: #1c6ea4; margin-left: auto; text-align: right; width: 250px;" readonly>
+											</div>
 
 
 											<div class="card-body p-0">
@@ -563,7 +568,7 @@
 						<div class="col-sm-12">
 							<div class="container-fluid content">
 								<div class="row">
-									<div class="card ">
+									<div class="card " style="width: 100%;">
 										<div class="panel panel-primary filterable">
 											<div class="card-header d-flex justify-content-between"
 												style="background-color: #BBC3CB;">
@@ -584,10 +589,15 @@
 												</div>
 
 											</div>
-											<input class="js-monthpicker" type="hidden"
-												placeholder="Select Month and year" onchange="selectedmy()"><input
-												id="MY" type="text" placeholder="Select Month and year">
-											<input type="hidden" id="My2" th:value="${month}">
+											<div class="d-flex align-items-center p-2" style="background-color: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+												<input class="js-monthpicker" type="hidden"
+													placeholder="Select Month and year" onchange="selectedmy()">
+												<input id="MY" class="form-control d-inline-block ml-2" type="text"
+													placeholder="Select Month and year"
+													style="width: 220px; font-size: 0.95rem; font-weight: 600; color: black; background-color: #ffffff; cursor: pointer;"
+													autocomplete="off">
+												<input type="hidden" id="My2" th:value="${month}">
+											</div>
 											<div class="card-body p-0">
 												<div class="table-responsive">
 													<table class="table">
@@ -1151,7 +1161,7 @@
 	</script>
 
 	<script>
-		$('.js-monthpicker').monthpicker({altFormat: 'MM yy'});
+		$('.js-monthpicker').monthpicker({ altFormat: 'MM yy' });
 	</script>
 </body>
 
