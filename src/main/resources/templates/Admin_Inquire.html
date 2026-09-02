@@ -47,12 +47,11 @@
 		}
 
 		.container-manager {
-			width: 83.5%;
+			width: 82.5%;
 			padding-right: 15px;
 			padding-left: 15px;
 			margin-right: auto;
-			margin-left: 17.3%;
-			margin-top: 80px;
+			margin-left: 17.5%;
 			margin-top: 80px;
 		}
 
@@ -598,7 +597,7 @@
 		#TabButtons {
 			display: flex;
 			gap: 10px;
-			margin-left: 100px;
+			margin-left: 20px;
 			align-items: center;
 		}
 
@@ -1082,30 +1081,32 @@
 
 <body>
 
-	<div class="container-fluid" style="margin-top: 100px; width: 1000px; margin-left: 350px">
+	<div class="col-sm-2">
+		<div th:insert="BTMHeaderMenu :: header"></div>
+	</div>
+
+	<div class="container-manager">
 		<div class="row">
-			<div class="col-sm-2">
-				<div th:insert="BTMHeaderMenu :: header"></div>
-			</div>
-			<div th:if="${formmode}=='add'">
-				<div class="card" style="width: 1500px;margin-left:5rem">
+			<div class="col-sm-12">
+				<div th:if="${formmode}=='add'">
+					<div class="card w-100 border">
 
 
-					<div class="card-header"
-						style="background-color: #e9ecef; height: 50px; display: flex; align-items: center;">
-						<div class="float-left">
-							<h6 style="font-size: 1.2rem; color: black; margin: 0;">Audit
-								Inquiry</h6>
-						</div>
-						<div class="tab" id="TabButtons" style="display: none; gap: 10px; margin-left: 100px;">
-							<button class="tablinks" onclick="showTab('tab1')"
-								style="font-size: 16px; padding: 4px 20px; height: 100%; flex: 1; width: 200px; border: 2px solid black;">Account
-								Ledger</button>
-							<button class="tablinks ml-4" onclick="showTab('tab2')"
-								style="font-size: 16px; padding: 4px 20px; height: 100%; flex: 1; width: 200px; border: 2px solid black;">Transaction</button>
-							<button class="tablinks ml-4" onclick="showTab('tab3')"
-								style="font-size: 16px; padding: 4px 20px; height: 100%; flex: 1; width: 200px; border: 2px solid black;">Journal
-								Entries</button>
+						<div class="card-header"
+							style="background-color: #e9ecef; min-height: 50px; display: flex; align-items: center; flex-wrap: wrap;">
+							<div class="float-left">
+								<h6 style="font-size: 1.2rem; color: black; margin: 0;">Audit
+									Inquiry</h6>
+							</div>
+							<div class="tab" id="TabButtons" style="display: none; gap: 10px; margin-left: 20px;">
+								<button class="tablinks" onclick="showTab('tab1')"
+									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Account
+									Ledger</button>
+								<button class="tablinks ml-2" onclick="showTab('tab2')"
+									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Transaction</button>
+								<button class="tablinks ml-2" onclick="showTab('tab3')"
+									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Journal
+									Entries</button>
 
 
 						</div>
@@ -1193,41 +1194,43 @@
 					</div>
 
 
-					<table style="width: 100%; text-align: left; margin-left: 100px;" id="CommonTable">
-						<tr>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="showAccountList5();showTabButtons">GST Receipts</a></td>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 1500001510);showTabButtons">GST
-									Payments</a></td>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 2700002710);showTabButtons">GST Reversals</a></td>
-						</tr>
-						<tr>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 1100001185);showTabButtons">TDS
-									Receivables</a></td>
-							<td style="padding: 10px;" onclick="showAccountList();showTabButtons">TDS Payments</td>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 1100001196);showTabButtons">EdgeVerve</a></td>
-						</tr>
-						<tr>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 1100001199);showTabButtons">Genius</a></td>
-							<td style="padding: 10px;" onclick="showAccountList2();showTabButtons">WhiteStone</td>
-							<td style="padding: 10px;" onclick="showAccountList3();showTabButtons">SPF</td>
-						</tr>
-						<tr>
-							<td style="padding: 10px;" onclick="showAccountList4();showTabButtons">ESI</td>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 2100002190);showTabButtons">ProfTax</a></td>
-							<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-									onclick="enableTabs('tab1', 1500001510);showTabButtons">Payments</a></td>
-						</tr>
-					</table>
+					<div class="p-3">
+						<table style="width: 100%; text-align: left;" id="CommonTable">
+							<tr>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="showAccountList5();showTabButtons">GST Receipts</a></td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 1500001510);showTabButtons">GST
+										Payments</a></td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 2700002710);showTabButtons">GST Reversals</a></td>
+							</tr>
+							<tr>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 1100001185);showTabButtons">TDS
+										Receivables</a></td>
+								<td style="padding: 10px;" onclick="showAccountList();showTabButtons">TDS Payments</td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 1100001196);showTabButtons">EdgeVerve</a></td>
+							</tr>
+							<tr>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 1100001199);showTabButtons">Genius</a></td>
+								<td style="padding: 10px;" onclick="showAccountList2();showTabButtons">WhiteStone</td>
+								<td style="padding: 10px;" onclick="showAccountList3();showTabButtons">SPF</td>
+							</tr>
+							<tr>
+								<td style="padding: 10px;" onclick="showAccountList4();showTabButtons">ESI</td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 2100002190);showTabButtons">ProfTax</a></td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabs('tab1', 1500001510);showTabButtons">Payments</a></td>
+							</tr>
+						</table>
+					</div>
 
-					<div id="tab1" class="tabcontent filterable card panel panel-primary filterable" data-tab="tab1"
-						style="display: none; width: 1470px; margin-left: 10px;">
+					<div id="tab1" class="tabcontent filterable card panel panel-primary filterable w-100" data-tab="tab1"
+						style="display: none;">
 						<div class="card-header">
 							<button type="button" class="btn btns btn-filter headerbutton"
 								style="float: right;margin-top:-15px">
@@ -1306,18 +1309,15 @@
 								</table>
 							</div>
 						</div>
-						<div style="margin-left: 700px">
-							<button onclick="Home()" class="btn btn-secondary mt-3">Home</button>
-							<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
+						<div class="text-center my-3">
+							<button onclick="Home()" class="btn btn-secondary">Home</button>
+							<button onclick="showCommonTable()" class="btn btn-secondary">Back</button>
 						</div>
 					</div>
 
-
-
-
 					<!-- ----------------------------------------------------TAB2------------------------------------------------------------------------- -->
-					<div id="tab2" class="tabcontent filterable card panel panel-primary filterable" data-tab="tab2"
-						style="display: none; width: 1470px; margin-left: 10px;">
+					<div id="tab2" class="tabcontent filterable card panel panel-primary filterable w-100" data-tab="tab2"
+						style="display: none;">
 						<div class="card-header">
 							<button type="button" class="btn btns btn-filter headerbutton"
 								style="float: right;margin-top:-15px">
@@ -1417,11 +1417,10 @@
 								</div>
 
 							</div>
-							<div style="margin-left: 700px">
-								<button onclick="Home()" class="btn btn-secondary mt-3">Home</button>
-								<button onclick="getModelValue()" class="btn btn-secondary mt-3">Summary</button>
-								<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
-
+							<div class="text-center my-3">
+								<button onclick="Home()" class="btn btn-secondary">Home</button>
+								<button onclick="getModelValue()" class="btn btn-secondary">Summary</button>
+								<button onclick="showCommonTable()" class="btn btn-secondary">Back</button>
 							</div>
 
 						</div>
@@ -1432,8 +1431,8 @@
 
 					<!-- ------------------------------------------------------------TAB3----------------------------------------------------- -->
 
-					<div id="tab3" class="tabcontent card panel panel-primary filterable"
-						style="display: none; width: 1470px; margin-left: 10px;">
+					<div id="tab3" class="tabcontent card panel panel-primary filterable w-100"
+						style="display: none;">
 						<div class="card-header">
 							<button type="button" class="btn btns btn-filter headerbutton"
 								style="float: right;margin-top:-15px">
@@ -1536,10 +1535,9 @@
 								</div>
 
 							</div>
-							<div style="margin-left: 700px">
-								<button onclick="Home()" class="btn btn-secondary mt-3">Home</button>
-								<button onclick="showCommonTable()" class="btn btn-secondary mt-3">Back</button>
-
+							<div class="text-center my-3">
+								<button onclick="Home()" class="btn btn-secondary">Home</button>
+								<button onclick="showCommonTable()" class="btn btn-secondary">Back</button>
 							</div>
 						</div>
 					</div>
@@ -1550,14 +1548,12 @@
 					</div>
 
 				</div>
-			</div>
+				</div>
 
-		</div>
+				<!-- -----------------------------------------------View-------------------------------------------------------------------------- -->
+				<div th:if="${formmode}=='view'">
 
-		<!-- -----------------------------------------------View-------------------------------------------------------------------------- -->
-		<div th:if="${formmode}=='view'">
-
-			<div class="card border" style="width: 1400px;margin-left:5rem">
+					<div class="card w-100 border">
 				<div class="card-header" style="background-color: #e9ecef; height: 50px">
 					<div class="d-flex justify-content-between align-items-center h-100">
 						<!-- Left side: Title -->
@@ -2012,6 +2008,8 @@
 		</div>
 
 	</div>
+</div>
+</div>
 
 	<div id="myModal" class="modal" data-backdrop="false">
 		<div class="modal-content" id="submodel">

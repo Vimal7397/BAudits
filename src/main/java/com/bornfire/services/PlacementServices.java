@@ -3051,4 +3051,58 @@ public File getProfitLossDownload(String filetype, String balancedate)
 			return baos.toByteArray();
 		}
 	}
+
+	public byte[] getTrailBalanceBytes(String filetype, String tran_date)
+			throws FileNotFoundException, JRException, SQLException, IllegalArgumentException {
+		logger.info("Generating Trail Balance Report in memory for date: " + tran_date);
+
+		InputStream jasperFile = this.getClass().getResourceAsStream("/static/jasper/TRAIL_BALANCE_1.jrxml");
+		if (jasperFile == null) {
+			throw new FileNotFoundException("Jasper template /static/jasper/TRAIL_BALANCE_1.jrxml not found in classpath");
+		}
+
+		JasperReport jr = JasperCompileManager.compileReport(jasperFile);
+
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("DATE", tran_date);
+
+		JasperPrint jp = JasperFillManager.fillReport(jr, map, srcdataSource.getConnection());
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		switch (filetype.toLowerCase()) {
+			case "pdf":
+				return JasperExportManager.exportReportToPdf(jp);
+
+			case "xlsx":
+			case "excel":
+				SimpleXlsxReportConfiguration xlsxConfig = new SimpleXlsxReportConfiguration();
+				xlsxConfig.setSheetNames(new String[]{"Trail Balance"});
+				JRXlsxExporter xlsxExporter = new JRXlsxExporter();
+				xlsxExporter.setExporterInput(new SimpleExporterInput(jp));
+				xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+				xlsxExporter.setConfiguration(xlsxConfig);
+				xlsxExporter.exportReport();
+				return baos.toByteArray();
+
+			case "csv":
+				JRCsvExporter csvExporter = new JRCsvExporter();
+				csvExporter.setExporterInput(new SimpleExporterInput(jp));
+				SimpleWriterExporterOutput exporterOutput = new SimpleWriterExporterOutput(
+					new java.io.OutputStreamWriter(baos, java.nio.charset.StandardCharsets.UTF_8)
+				);
+				csvExporter.setExporterOutput(exporterOutput);
+
+				SimpleCsvExporterConfiguration csvConfig = new SimpleCsvExporterConfiguration();
+				csvConfig.setFieldDelimiter(",");
+				csvConfig.setRecordDelimiter("\n");
+				csvExporter.setConfiguration(csvConfig);
+
+				csvExporter.exportReport();
+				return baos.toByteArray();
+
+			default:
+				throw new IllegalArgumentException("Unsupported file type: " + filetype);
+		}
+	}
 }

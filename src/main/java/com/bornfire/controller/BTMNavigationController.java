@@ -15265,27 +15265,28 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 	   // BY SURIYA
 		@RequestMapping(value = "TrailBalancedownload", method = RequestMethod.GET)
 		@ResponseBody
-		public InputStreamResource TrailBalancedownload(HttpServletResponse response, 
-				@RequestParam(required = false) String tran_date
-		) throws IOException, SQLException {
-
-			response.setContentType("application/octet-stream");
-			System.out.println("===============" + tran_date);
-			InputStreamResource resource = null;
+		public ResponseEntity<byte[]> TrailBalancedownload(HttpServletResponse response, 
+				@RequestParam(required = false) String tran_date,
+				@RequestParam(required = false) String format
+		) {
 			try {
+				String filetype = (format != null && !format.isEmpty()) ? format : "xlsx";
+				byte[] data = placementServices.getTrailBalanceBytes(filetype, tran_date);
 
-				String filetype = "Excel";
-				File repfile = placementServices.getFileTrailBalance(filetype,tran_date);
+				String ext = "pdf".equalsIgnoreCase(filetype) ? ".pdf" : ("csv".equalsIgnoreCase(filetype) ? ".csv" : ".xlsx");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyyHHmmss");
+				String timestamp = LocalDateTime.now().format(formatter);
+				String filename = "TB_" + (tran_date != null ? tran_date.replace("-", "") : "") + "_" + timestamp + ext;
 
-				response.setHeader("Content-Disposition", "attachment; filename=" + repfile.getName());
-				resource = new InputStreamResource(new FileInputStream(repfile));
-
-			} catch (JRException e) {
-
-				e.printStackTrace();
+				return ResponseEntity.ok()
+						.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+						.contentType(MediaType.APPLICATION_OCTET_STREAM)
+						.contentLength(data.length)
+						.body(data);
+			} catch (Exception e) {
+				logger.error("Error generating Trail Balance report download", e);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 			}
-
-			return resource;
 		}
 
 	
