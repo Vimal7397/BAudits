@@ -112,6 +112,10 @@
 .filterable .filters input[disabled]::-webkit-input-placeholder {
 	color: #333;
 }
+
+#ui-datepicker-div, .ui-datepicker {
+	z-index: 99999 !important;
+}
 </style>
 
 <script th:inline="javascript">
@@ -204,22 +208,26 @@
 <script>
 $(function () {
     var fixedDateStr = "31-03-2026"; // dd-mm-yy format
-    var minAllowedDate = new Date(2026, 2, 31); 
-    var maxAllowedDate = new Date(2026,3, 1);
+    var minAllowedDate = new Date(2025, 0, 1); // 01-Jan-2025
+    var maxAllowedDate = new Date(2026, 3, 1); // 01-Apr-2026
 
     $("#reportDate").datepicker({
         changeMonth: true,
         changeYear: true,
+        yearRange: "2025:2026",
         dateFormat: "dd-mm-yy",
         minDate: minAllowedDate,
         maxDate: maxAllowedDate,
-        beforeShowDay: function (date) {
-            // Allow only between 01-04-2017 and 01-04-2025
-            return [date >= minAllowedDate && date <= maxAllowedDate];
-        },
         onSelect: function (selected) {
-            var reportDate = $("#reportDate").val();
-                funcall();
+            funcall();
+        }
+    });
+
+    // Enable manual typing + Enter key to trigger data fetch
+    $("#reportDate").on("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            funcall();
         }
     });
 

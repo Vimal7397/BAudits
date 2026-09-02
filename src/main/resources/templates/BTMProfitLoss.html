@@ -152,6 +152,10 @@
 		.card-header {
 			flex: 0 0 auto;
 		}
+
+		#ui-datepicker-div, .ui-datepicker {
+			z-index: 99999 !important;
+		}
 	</style>
 
 	<script th:inline="javascript">
@@ -167,27 +171,33 @@
 	</script>
 	<!-- DATE PICKER -->
 	<script>
-		
 		$(function () {
 		    var fixedDateStr = "31-03-2026";
-		    var minAllowedDate = new Date(2026, 2, 31); 
-		    var maxAllowedDate = new Date(2026, 3, 1);
+		    var minAllowedDate = new Date(2025, 0, 1); // 01-Jan-2025
+		    var maxAllowedDate = new Date(2026, 3, 1); // 01-Apr-2026
 
 		    $("#incomedate").datepicker({
 		        changeMonth: true,
 		        changeYear: true,
+		        yearRange: "2025:2026",
 		        dateFormat: "dd-mm-yy",
 		        minDate: minAllowedDate,
 		        maxDate: maxAllowedDate,
-		        beforeShowDay: function (date) {
-		            return [date >= minAllowedDate && date <= maxAllowedDate];
-		        },
 		        onSelect: function (selected) {
 		            funcall();
 		        }
 		    });
 
+		    // Enable manual typing + Enter key to trigger data fetch
+		    $("#incomedate").on("keydown", function (e) {
+		        if (e.key === "Enter") {
+		            e.preventDefault();
+		            funcall();
+		        }
+		    });
+
 		    $("#incomedate").val(fixedDateStr);
+		    funcall();
 		});
 
 		let balancedate;
