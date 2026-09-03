@@ -1099,17 +1099,21 @@
 									Inquiry</h6>
 							</div>
 							<div class="tab" id="TabButtons" style="display: none; gap: 10px; margin-left: 20px;">
-								<button class="tablinks" onclick="showTab('tab1')"
+								<button class="tablinks" onclick="showTab('tab1')" id="tab1_btn"
 									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Account
 									Ledger</button>
-								<button class="tablinks ml-2" onclick="showTab('tab2')"
+								<button class="tablinks ml-2" onclick="showTab('tab2')" id="tab2_btn"
 									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Transaction</button>
-								<button class="tablinks ml-2" onclick="showTab('tab3')"
+								<button class="tablinks ml-2" onclick="showTab('tab3')" id="tab3_btn"
 									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Journal
 									Entries</button>
-
-
-						</div>
+								<button class="tablinks ml-2" onclick="enableTabsDeleted('tab3', acct_num)" id="deleted_btn"
+									style="display: none; font-size: 16px; padding: 4px 20px; border: 2px solid black;">Deleted</button>
+								<button class="tablinks ml-2" onclick="enableTabsModified('tab3', acct_num)" id="modified_btn"
+									style="display: none; font-size: 16px; padding: 4px 20px; border: 2px solid black;">Modified</button>
+								<button class="tablinks ml-2" onclick="enableTabsSubstituted('tab3', acct_num)" id="substituted_btn"
+									style="display: none; font-size: 16px; padding: 4px 20px; border: 2px solid black;">Substituted</button>
+							</div>
 						<div id="acctList" class="acct-list" style="display: none; height: 40px; margin: 0px">
 							<ul
 								style="display: flex; list-style: none; align-item: center; justify-content: space-around;">
@@ -1169,28 +1173,6 @@
 							</ul>
 						</div>
 
-						<div id="extraButtons" style="gap: 10px; display: none;">
-							<button onclick="JournalDelete()"
-								style="font-size: 12px; padding: 2px 12px; border: 2px solid black; ">
-								Deleted
-							</button>
-							<button onclick="JournalUnverfied()"
-								style="font-size: 12px; padding: 2px 12px; border: 2px solid black;">
-								Unverified
-							</button>
-						</div>
-
-						<div id="extraButtons1" style="gap: 10px; display: none;">
-							<button onclick="JournalDelete1()"
-								style="font-size: 12px; padding: 2px 12px; border: 2px solid black; ">
-								Deleted
-							</button>
-							<button onclick="JournalUnverfied1()"
-								style="font-size: 12px; padding: 2px 12px; border: 2px solid black;">
-								Unverified
-							</button>
-						</div>
-
 					</div>
 
 
@@ -1225,6 +1207,14 @@
 										onclick="enableTabs('tab1', 2100002190);showTabButtons">ProfTax</a></td>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
 										onclick="enableTabs('tab1', 1500001510);showTabButtons">Payments</a></td>
+							</tr>
+							<tr>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabsDeleted('tab3', 1500001510);showTabButtons()">Deleted</a></td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabsModified('tab3', 1500001510);showTabButtons()">Modified</a></td>
+								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
+										onclick="enableTabsSubstituted('tab3', 1500001510);showTabButtons()">Substituted</a></td>
 							</tr>
 						</table>
 					</div>
@@ -2192,6 +2182,8 @@
 	function enableTabs(initialTabId, acctnum) {
 		console.log("acct_num: " + acctnum);
 		acct_num = acctnum;
+		$('#tab1_btn, #tab2_btn, #tab3_btn').show();
+		$('#deleted_btn, #modified_btn, #substituted_btn').hide();
 		var currentdateElement = document.getElementById("todate3");
 		console.log("currentdate1" + currentdateElement);
 
@@ -2405,6 +2397,558 @@
 		}
 	}
 
+	function enableTabsDeleted(initialTabId, acctnum) {
+		console.log("acct_num (Deleted): " + acctnum);
+		acct_num = acctnum;
+		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
+		$('#deleted_btn, #modified_btn, #substituted_btn').show();
+		$('#deleted_btn').css({'background-color': '#13739F', 'color': 'white'});
+		$('#modified_btn, #substituted_btn').css({'background-color': '', 'color': ''});
+		$('#loader-overlay').show();
+		const ajaxPromises = [];
+
+		const acctDetailsPromise = $.ajax({
+			url: './gettranvalueDeleted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (data) {
+				if (data.acct_num && data.acct_name) {
+					$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
+					$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
+				} else {
+					$('#acct_num1, #acct_num2, #acct_num3').val('');
+					$('#acct_name1, #acct_name2, #acct_name3').val('');
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching account details:', error);
+			}
+		});
+		ajaxPromises.push(acctDetailsPromise);
+
+		const transactionBalancePromise = $.ajax({
+			url: './getTranbal2Deleted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (balanceData) {
+				let tableBody = $('#usertable tbody');
+				tableBody.empty();
+				let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
+
+				if (balanceData1.includes(',')) {
+					let [dateString, balance] = balanceData1.split(',');
+					let date = new Date(dateString);
+					let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+					let formattedBalance = parseFloat(balance);
+
+					let headerHTML = ` 
+                    <tr>
+						<td colspan="2"></td>
+						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
+                        <td colspan="3"></td>
+                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>`;
+					tableBody.append(headerHTML);
+
+					$.ajax({
+						url: './getledgerdataDeleted',
+						type: 'GET',
+						data: {acctnum: acctnum},
+						success: function (data) {
+							let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
+							$('#fromdate').val(firstTranDate);
+
+							let currentBalance = formattedBalance;
+
+							data.forEach(function (entry) {
+								let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
+								let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
+								let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
+								currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
+
+								let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let indicator = currentBalance < 0 ? 'DR' : 'CR';
+
+								tableBody.append(`
+                                <tr>
+                                    <td>${formattedDate}</td>
+                                    <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+                                        onclick="showdetails('${entry.tran_id}', '${entry.part_tran_id}', '${entry.acct_num}')">
+                                        ${entry.tran_id} / ${entry.part_tran_id}
+                                    </td>
+                                    <td>${entry.tran_particular}</td>
+                                    <td>${entry.acct_crncy}</td>
+                                    <td style="text-align:right">${formattedDebit}</td>
+                                    <td style="text-align:right">${formattedCredit}</td>
+                                    <td style="text-align:right">${formattedUpdatedBalance}</td>
+                                    <td style="text-align:right">${indicator}</td>
+                                </tr>
+                            `);
+							});
+						},
+						error: function (error) {
+							console.error("Error fetching ledger data:", error);
+						}
+					});
+				}
+			},
+			error: function (error) {
+				console.error("Error fetching transaction balance:", error);
+			}
+		});
+		ajaxPromises.push(transactionBalancePromise);
+
+		const list2DataPromise = $.ajax({
+			url: './setlist2Deleted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (list2Data) {
+				$('#list2 tbody, #list3 tbody').empty();
+				if (list2Data && list2Data.length > 0) {
+					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+					$('#fromdate2').val(firstTranDate);
+					list2Data.forEach(function (item) {
+						let row = `
+                        <tr>
+                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+                            <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
+                            <td>${item.part_tran_type || ''}</td>
+                            <td>${item.acct_crncy || ''}</td>
+                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+                            <td style="text-align: right;cursor:pointer" 
+							onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+							onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${item.tran_status || ''}</td>
+                        </tr>
+                    `;
+						$('#list2 tbody').append(row);
+					});
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching list2 data:', error);
+			}
+		});
+		ajaxPromises.push(list2DataPromise);
+
+		const fourthDataPromise = $.ajax({
+			url: './setlist3Deleted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (additionalData) {
+				$('#list3 tbody').empty();
+				if (additionalData && additionalData.length > 0) {
+					let firstTranDate = additionalData[0].tran_date ? formatDate(additionalData[0].tran_date) : '';
+					$('#fromdate3').val(firstTranDate);
+					additionalData.forEach(function (item) {
+						let row = `
+                        <tr>
+                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+                            <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
+                            <td>${item.part_tran_type || ''}</td>
+                            <td>${item.acct_crncy || ''}</td>
+                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+                            <td style="text-align: right;cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+							onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${item.tran_status || ''}</td>
+                        </tr>
+                    `;
+						$('#list3 tbody').append(row);
+					});
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching additional data:', error);
+			}
+		});
+		ajaxPromises.push(fourthDataPromise);
+
+		Promise.all(ajaxPromises).then(() => {
+			$('#loader-overlay').hide();
+		}).catch((error) => {
+			console.error("Error in one of the AJAX calls:", error);
+			$('#loader-overlay').hide();
+		});
+
+		document.getElementById('CommonTable').style.display = 'none';
+		document.getElementById('TabButtons').style.display = 'block';
+		showTab('tab3', 'deleted_btn');
+	}
+
+	function enableTabsModified(initialTabId, acctnum) {
+		console.log("acct_num (Modified): " + acctnum);
+		acct_num = acctnum;
+		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
+		$('#deleted_btn, #modified_btn, #substituted_btn').show();
+		$('#modified_btn').css({'background-color': '#13739F', 'color': 'white'});
+		$('#deleted_btn, #substituted_btn').css({'background-color': '', 'color': ''});
+		$('#loader-overlay').show();
+		const ajaxPromises = [];
+
+		const acctDetailsPromise = $.ajax({
+			url: './gettranvalueModified',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (data) {
+				if (data.acct_num && data.acct_name) {
+					$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
+					$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
+				} else {
+					$('#acct_num1, #acct_num2, #acct_num3').val('');
+					$('#acct_name1, #acct_name2, #acct_name3').val('');
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching account details:', error);
+			}
+		});
+		ajaxPromises.push(acctDetailsPromise);
+
+		const transactionBalancePromise = $.ajax({
+			url: './getTranbal2Modified',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (balanceData) {
+				let tableBody = $('#usertable tbody');
+				tableBody.empty();
+				let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
+
+				if (balanceData1.includes(',')) {
+					let [dateString, balance] = balanceData1.split(',');
+					let date = new Date(dateString);
+					let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+					let formattedBalance = parseFloat(balance);
+
+					let headerHTML = ` 
+                    <tr>
+						<td colspan="2"></td>
+						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
+                        <td colspan="3"></td>
+                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>`;
+					tableBody.append(headerHTML);
+
+					$.ajax({
+						url: './getledgerdataModified',
+						type: 'GET',
+						data: {acctnum: acctnum},
+						success: function (data) {
+							let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
+							$('#fromdate').val(firstTranDate);
+
+							let currentBalance = formattedBalance;
+
+							data.forEach(function (entry) {
+								let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
+								let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
+								let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
+								currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
+
+								let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let indicator = currentBalance < 0 ? 'DR' : 'CR';
+
+								tableBody.append(`
+                                <tr>
+                                    <td>${formattedDate}</td>
+                                    <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+                                        onclick="showdetails('${entry.tran_id}', '${entry.part_tran_id}', '${entry.acct_num}')">
+                                        ${entry.tran_id} / ${entry.part_tran_id}
+                                    </td>
+                                    <td>${entry.tran_particular}</td>
+                                    <td>${entry.acct_crncy}</td>
+                                    <td style="text-align:right">${formattedDebit}</td>
+                                    <td style="text-align:right">${formattedCredit}</td>
+                                    <td style="text-align:right">${formattedUpdatedBalance}</td>
+                                    <td style="text-align:right">${indicator}</td>
+                                </tr>
+                            `);
+							});
+						},
+						error: function (error) {
+							console.error("Error fetching ledger data:", error);
+						}
+					});
+				}
+			},
+			error: function (error) {
+				console.error("Error fetching transaction balance:", error);
+			}
+		});
+		ajaxPromises.push(transactionBalancePromise);
+
+		const list2DataPromise = $.ajax({
+			url: './setlist2Modified',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (list2Data) {
+				$('#list2 tbody, #list3 tbody').empty();
+				if (list2Data && list2Data.length > 0) {
+					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+					$('#fromdate2').val(firstTranDate);
+					list2Data.forEach(function (item) {
+						let row = `
+                        <tr>
+                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+                            <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
+                            <td>${item.part_tran_type || ''}</td>
+                            <td>${item.acct_crncy || ''}</td>
+                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+                            <td style="text-align: right;cursor:pointer" 
+							onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+							onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${item.tran_status || ''}</td>
+                        </tr>
+                    `;
+						$('#list2 tbody').append(row);
+					});
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching list2 data:', error);
+			}
+		});
+		ajaxPromises.push(list2DataPromise);
+
+		const fourthDataPromise = $.ajax({
+			url: './setlist3Modified',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (additionalData) {
+				$('#list3 tbody').empty();
+				if (additionalData && additionalData.length > 0) {
+					let firstTranDate = additionalData[0].tran_date ? formatDate(additionalData[0].tran_date) : '';
+					$('#fromdate3').val(firstTranDate);
+					additionalData.forEach(function (item) {
+						let row = `
+                        <tr>
+                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+                            <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
+                            <td>${item.part_tran_type || ''}</td>
+                            <td>${item.acct_crncy || ''}</td>
+                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+                            <td style="text-align: right;cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+							onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${item.tran_status || ''}</td>
+                        </tr>
+                    `;
+						$('#list3 tbody').append(row);
+					});
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching additional data:', error);
+			}
+		});
+		ajaxPromises.push(fourthDataPromise);
+
+		Promise.all(ajaxPromises).then(() => {
+			$('#loader-overlay').hide();
+		}).catch((error) => {
+			console.error("Error in one of the AJAX calls:", error);
+			$('#loader-overlay').hide();
+		});
+
+		document.getElementById('CommonTable').style.display = 'none';
+		document.getElementById('TabButtons').style.display = 'block';
+		showTab('tab3', 'modified_btn');
+	}
+
+	function enableTabsSubstituted(initialTabId, acctnum) {
+		console.log("acct_num (Substituted): " + acctnum);
+		acct_num = acctnum;
+		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
+		$('#deleted_btn, #modified_btn, #substituted_btn').show();
+		$('#substituted_btn').css({'background-color': '#13739F', 'color': 'white'});
+		$('#deleted_btn, #modified_btn').css({'background-color': '', 'color': ''});
+		$('#loader-overlay').show();
+		const ajaxPromises = [];
+
+		const acctDetailsPromise = $.ajax({
+			url: './gettranvalueSubstituted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (data) {
+				if (data.acct_num && data.acct_name) {
+					$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
+					$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
+				} else {
+					$('#acct_num1, #acct_num2, #acct_num3').val('');
+					$('#acct_name1, #acct_name2, #acct_name3').val('');
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching account details:', error);
+			}
+		});
+		ajaxPromises.push(acctDetailsPromise);
+
+		const transactionBalancePromise = $.ajax({
+			url: './getTranbal2Substituted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (balanceData) {
+				let tableBody = $('#usertable tbody');
+				tableBody.empty();
+				let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
+
+				if (balanceData1.includes(',')) {
+					let [dateString, balance] = balanceData1.split(',');
+					let date = new Date(dateString);
+					let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+					let formattedBalance = parseFloat(balance);
+
+					let headerHTML = ` 
+                    <tr>
+						<td colspan="2"></td>
+						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
+                        <td colspan="3"></td>
+                        <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    </tr>`;
+					tableBody.append(headerHTML);
+
+					$.ajax({
+						url: './getledgerdataSubstituted',
+						type: 'GET',
+						data: {acctnum: acctnum},
+						success: function (data) {
+							let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
+							$('#fromdate').val(firstTranDate);
+
+							let currentBalance = formattedBalance;
+
+							data.forEach(function (entry) {
+								let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
+								let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
+								let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
+								currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
+
+								let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+								let indicator = currentBalance < 0 ? 'DR' : 'CR';
+
+								tableBody.append(`
+                                <tr>
+                                    <td>${formattedDate}</td>
+                                    <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+                                        onclick="showdetails('${entry.tran_id}', '${entry.part_tran_id}', '${entry.acct_num}')">
+                                        ${entry.tran_id} / ${entry.part_tran_id}
+                                    </td>
+                                    <td>${entry.tran_particular}</td>
+                                    <td>${entry.acct_crncy}</td>
+                                    <td style="text-align:right">${formattedDebit}</td>
+                                    <td style="text-align:right">${formattedCredit}</td>
+                                    <td style="text-align:right">${formattedUpdatedBalance}</td>
+                                    <td style="text-align:right">${indicator}</td>
+                                </tr>
+                            `);
+							});
+						},
+						error: function (error) {
+							console.error("Error fetching ledger data:", error);
+						}
+					});
+				}
+			},
+			error: function (error) {
+				console.error("Error fetching transaction balance:", error);
+			}
+		});
+		ajaxPromises.push(transactionBalancePromise);
+
+		const list2DataPromise = $.ajax({
+			url: './setlist2Substituted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (list2Data) {
+				$('#list2 tbody, #list3 tbody').empty();
+				if (list2Data && list2Data.length > 0) {
+					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+					$('#fromdate2').val(firstTranDate);
+					list2Data.forEach(function (item) {
+						let row = `
+                        <tr>
+                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+                            <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
+                            <td>${item.part_tran_type || ''}</td>
+                            <td>${item.acct_crncy || ''}</td>
+                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+                            <td style="text-align: right;cursor:pointer" 
+							onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+							onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${item.tran_status || ''}</td>
+                        </tr>
+                    `;
+						$('#list2 tbody').append(row);
+					});
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching list2 data:', error);
+			}
+		});
+		ajaxPromises.push(list2DataPromise);
+
+		const fourthDataPromise = $.ajax({
+			url: './setlist3Substituted',
+			type: 'GET',
+			data: {acctnum: acctnum},
+			success: function (additionalData) {
+				$('#list3 tbody').empty();
+				if (additionalData && additionalData.length > 0) {
+					let firstTranDate = additionalData[0].tran_date ? formatDate(additionalData[0].tran_date) : '';
+					$('#fromdate3').val(firstTranDate);
+					additionalData.forEach(function (item) {
+						let row = `
+                        <tr>
+                            <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
+                            <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
+                            <td>${item.part_tran_type || ''}</td>
+                            <td>${item.acct_crncy || ''}</td>
+                            <td style="text-align: right;">${item.tran_amt ? formatDecimal(item.tran_amt, 2) : '0.00'}</td>
+                            <td style="text-align: right;cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
+							onclick="listcharge2('${item.acct_num}')">${item.acct_num || ''}</td>
+                            <td style="text-align: left;">${(item.acct_name || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${(item.tran_particular || '').substring(0, 35)}</td>
+                            <td style="text-align: left;">${item.tran_status || ''}</td>
+                        </tr>
+                    `;
+						$('#list3 tbody').append(row);
+					});
+				}
+			},
+			error: function (error) {
+				console.error('Error fetching additional data:', error);
+			}
+		});
+		ajaxPromises.push(fourthDataPromise);
+
+		Promise.all(ajaxPromises).then(() => {
+			$('#loader-overlay').hide();
+		}).catch((error) => {
+			console.error("Error in one of the AJAX calls:", error);
+			$('#loader-overlay').hide();
+		});
+
+		document.getElementById('CommonTable').style.display = 'none';
+		document.getElementById('TabButtons').style.display = 'block';
+		showTab('tab3', 'substituted_btn');
+	}
+
 
 
 	function showdetails(tranId, partTranId, acct_num) {
@@ -2427,7 +2971,7 @@
 		return `${day}-${month}-${year}`;
 	}
 
-	function showTab(tabId) {
+	function showTab(tabId, activeBtnId) {
 		const tabContents = document.querySelectorAll('.tabcontent');
 		tabContents.forEach((tab) => (tab.style.display = 'none'));
 
@@ -2442,22 +2986,16 @@
 			tab.style.color = ''; // Reset text color if necessary
 		});
 
-		const activeButton = document.querySelector(`.tablinks[onclick="showTab('${tabId}')"]`);
+		let activeButton = null;
+		if (activeBtnId) {
+			activeButton = document.getElementById(activeBtnId);
+		} else {
+			activeButton = document.querySelector(`.tablinks[onclick="showTab('${tabId}')"]`);
+		}
+
 		if (activeButton) {
 			activeButton.style.backgroundColor = '#13739F'; // Active tab background
 			activeButton.style.color = 'white'; // Active tab text color
-		}
-
-		// ✅ Show extra buttons only when tab3 is active
-		const extraButtons = document.getElementById("extraButtons");
-		if (extraButtons) {
-			extraButtons.style.display = tabId === "tab3" ? "flex" : "none";
-		}
-
-		// ✅ Show extraButtons1 only for tab2
-		const extraButtons1 = document.getElementById("extraButtons1");
-		if (extraButtons1) {
-			extraButtons1.style.display = tabId === "tab2" ? "flex" : "none";
 		}
 	}
 
@@ -2466,6 +3004,8 @@
 		const tabContents = document.querySelectorAll('.tabcontent');
 		tabContents.forEach((tab) => (tab.style.display = 'none'));
 
+		$('#tab1_btn, #tab2_btn, #tab3_btn').show();
+		$('#deleted_btn, #modified_btn, #substituted_btn').hide();
 
 		document.getElementById('CommonTable').style.display = 'block';
 		document.getElementById('TabButtons').style.display = 'none';

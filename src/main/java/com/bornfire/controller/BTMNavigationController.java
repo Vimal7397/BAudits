@@ -12857,6 +12857,54 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		return response;
 	}
 
+	@GetMapping("/gettranvalueDeleted")
+	@ResponseBody
+	public Map<String, String> gettranvalueDeleted(@RequestParam(required = false) String acctnum, Model md) {
+		Map<String, String> response = new HashMap<>();
+		List<BAJ_TrmView_Entity> results = bAJ_TrmView_Repo.getvalueDeleted(acctnum);
+		if (!results.isEmpty()) {
+			BAJ_TrmView_Entity firstResult = results.get(0);
+			response.put("acct_num", firstResult.getAcct_num());
+			response.put("acct_name", firstResult.getAcct_name());
+		} else {
+			response.put("acct_num", "");
+			response.put("acct_name", "");
+		}
+		return response;
+	}
+
+	@GetMapping("/gettranvalueModified")
+	@ResponseBody
+	public Map<String, String> gettranvalueModified(@RequestParam(required = false) String acctnum, Model md) {
+		Map<String, String> response = new HashMap<>();
+		List<BAJ_TrmView_Entity> results = bAJ_TrmView_Repo.getvalueModified(acctnum);
+		if (!results.isEmpty()) {
+			BAJ_TrmView_Entity firstResult = results.get(0);
+			response.put("acct_num", firstResult.getAcct_num());
+			response.put("acct_name", firstResult.getAcct_name());
+		} else {
+			response.put("acct_num", "");
+			response.put("acct_name", "");
+		}
+		return response;
+	}
+
+	@GetMapping("/gettranvalueSubstituted")
+	@ResponseBody
+	public Map<String, String> gettranvalueSubstituted(@RequestParam(required = false) String acctnum, Model md) {
+		Map<String, String> response = new HashMap<>();
+		List<BAJ_TrmView_Entity> results = bAJ_TrmView_Repo.getvalueSubstituted(acctnum);
+		if (!results.isEmpty()) {
+			BAJ_TrmView_Entity firstResult = results.get(0);
+			response.put("acct_num", firstResult.getAcct_num());
+			response.put("acct_name", firstResult.getAcct_name());
+		} else {
+			response.put("acct_num", "");
+			response.put("acct_name", "");
+		}
+		return response;
+	}
+
 	@GetMapping("/getledgerdata")
 	@ResponseBody
 	public List<BAJ_TrmView_Entity> getLedgerData(@RequestParam(required = false) String acctnum) {
@@ -12865,6 +12913,24 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		// Fetch ledger data from repository
 		List<BAJ_TrmView_Entity> results = bAJ_TrmView_Repo.getLedgerEntries(acctnum);
 		return results;
+	}
+
+	@GetMapping("/getledgerdataDeleted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getLedgerDataDeleted(@RequestParam(required = false) String acctnum) {
+		return bAJ_TrmView_Repo.getLedgerEntriesDeleted(acctnum);
+	}
+
+	@GetMapping("/getledgerdataModified")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getLedgerDataModified(@RequestParam(required = false) String acctnum) {
+		return bAJ_TrmView_Repo.getLedgerEntriesModified(acctnum);
+	}
+
+	@GetMapping("/getledgerdataSubstituted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getLedgerDataSubstituted(@RequestParam(required = false) String acctnum) {
+		return bAJ_TrmView_Repo.getLedgerEntriesSubstituted(acctnum);
 	}
 
 	@GetMapping("/setlist2")
@@ -12891,6 +12957,48 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		return results;
 	}
 
+	@GetMapping("/setlist2Deleted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> setlist2Deleted(@RequestParam(required = false) String acctnum) {
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+		try {
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getLedgerEntries2Deleted(acctnum);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
+	@GetMapping("/setlist2Modified")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> setlist2Modified(@RequestParam(required = false) String acctnum) {
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+		try {
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getLedgerEntries2Modified(acctnum);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
+	@GetMapping("/setlist2Substituted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> setlist2Substituted(@RequestParam(required = false) String acctnum) {
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+		try {
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getLedgerEntries2Substituted(acctnum);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
 	@GetMapping("/setlist3")
 	@ResponseBody
 	public List<BAJ_TrmView_Entity> setlist3(@RequestParam(required = false) String acctnum) {
@@ -12912,6 +13020,48 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 			e.printStackTrace();
 		}
 
+		return results;
+	}
+
+	@GetMapping("/setlist3Deleted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> setlist3Deleted(@RequestParam(required = false) String acctnum) {
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+		try {
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getLedgerEntries3Deleted(acctnum);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
+	@GetMapping("/setlist3Modified")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> setlist3Modified(@RequestParam(required = false) String acctnum) {
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+		try {
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getLedgerEntries3Modified(acctnum);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
+	@GetMapping("/setlist3Substituted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> setlist3Substituted(@RequestParam(required = false) String acctnum) {
+		List<BAJ_TrmView_Entity> results = new ArrayList<>();
+		try {
+			if (acctnum != null && !acctnum.trim().isEmpty()) {
+				results = bAJ_TrmView_Repo.getLedgerEntries3Substituted(acctnum);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return results;
 	}
 

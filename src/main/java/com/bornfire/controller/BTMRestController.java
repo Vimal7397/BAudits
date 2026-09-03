@@ -1538,6 +1538,39 @@ public class BTMRestController {
 		}
 	}
 
+	@GetMapping("/getTranbal2Deleted")
+	@ResponseBody
+	public Object getTranbal2Deleted(@RequestParam(required = false) String acctnum) {
+		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst2Deleted(acctnum);
+		if (tranDateBal != null && tranDateBal.length > 0) {
+			return tranDateBal[0];
+		} else {
+			return "No data found for the given parameters.";
+		}
+	}
+
+	@GetMapping("/getTranbal2Modified")
+	@ResponseBody
+	public Object getTranbal2Modified(@RequestParam(required = false) String acctnum) {
+		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst2Modified(acctnum);
+		if (tranDateBal != null && tranDateBal.length > 0) {
+			return tranDateBal[0];
+		} else {
+			return "No data found for the given parameters.";
+		}
+	}
+
+	@GetMapping("/getTranbal2Substituted")
+	@ResponseBody
+	public Object getTranbal2Substituted(@RequestParam(required = false) String acctnum) {
+		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst2Substituted(acctnum);
+		if (tranDateBal != null && tranDateBal.length > 0) {
+			return tranDateBal[0];
+		} else {
+			return "No data found for the given parameters.";
+		}
+	}
+
 	@GetMapping("transactionaccountdetailsvalues")
 	public BAJ_TrmView_Entity transactionaccountdetailsvalues(@RequestParam(required = false) String acctNum,
 			@RequestParam(required = false) String tranId, @RequestParam(required = false) String partnId) {
