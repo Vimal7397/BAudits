@@ -1462,7 +1462,7 @@
 									<div class="col-sm-1" style="margin-top: 5px">To Date</div>
 									<div class="col-sm-1">
 										<input type="text" name="todate3" id="todate3" placeholder="DD-MM-YYYY"
-											class="form-control-sm" onchange="funcall3()" />
+											class="form-control-sm" />
 									</div>
 								</div>
 
@@ -2179,9 +2179,12 @@
 	}
 
 	var acct_num;
+	var currentMode = 'standard';
 	function enableTabs(initialTabId, acctnum) {
 		console.log("acct_num: " + acctnum);
 		acct_num = acctnum;
+		currentMode = 'standard';
+		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').show();
 		$('#deleted_btn, #modified_btn, #substituted_btn').hide();
 		var currentdateElement = document.getElementById("todate3");
@@ -2400,6 +2403,8 @@
 	function enableTabsDeleted(initialTabId, acctnum) {
 		console.log("acct_num (Deleted): " + acctnum);
 		acct_num = acctnum;
+		currentMode = 'Deleted';
+		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#deleted_btn').css({'background-color': '#13739F', 'color': 'white'});
@@ -2561,10 +2566,13 @@
                     `;
 						$('#list3 tbody').append(row);
 					});
+				} else {
+					$('#list3 tbody').append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 				}
 			},
 			error: function (error) {
 				console.error('Error fetching additional data:', error);
+				$('#list3 tbody').empty().append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 			}
 		});
 		ajaxPromises.push(fourthDataPromise);
@@ -2584,6 +2592,8 @@
 	function enableTabsModified(initialTabId, acctnum) {
 		console.log("acct_num (Modified): " + acctnum);
 		acct_num = acctnum;
+		currentMode = 'Modified';
+		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#modified_btn').css({'background-color': '#13739F', 'color': 'white'});
@@ -2745,10 +2755,13 @@
                     `;
 						$('#list3 tbody').append(row);
 					});
+				} else {
+					$('#list3 tbody').append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 				}
 			},
 			error: function (error) {
 				console.error('Error fetching additional data:', error);
+				$('#list3 tbody').empty().append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 			}
 		});
 		ajaxPromises.push(fourthDataPromise);
@@ -2768,6 +2781,8 @@
 	function enableTabsSubstituted(initialTabId, acctnum) {
 		console.log("acct_num (Substituted): " + acctnum);
 		acct_num = acctnum;
+		currentMode = 'Substituted';
+		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#substituted_btn').css({'background-color': '#13739F', 'color': 'white'});
@@ -2929,10 +2944,13 @@
                     `;
 						$('#list3 tbody').append(row);
 					});
+				} else {
+					$('#list3 tbody').append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 				}
 			},
 			error: function (error) {
 				console.error('Error fetching additional data:', error);
+				$('#list3 tbody').empty().append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 			}
 		});
 		ajaxPromises.push(fourthDataPromise);
@@ -3004,6 +3022,7 @@
 		const tabContents = document.querySelectorAll('.tabcontent');
 		tabContents.forEach((tab) => (tab.style.display = 'none'));
 
+		currentMode = 'standard';
 		$('#tab1_btn, #tab2_btn, #tab3_btn').show();
 		$('#deleted_btn, #modified_btn, #substituted_btn').hide();
 
@@ -3125,6 +3144,10 @@
 				if (dt) {
 					dt.setDate(dt.getDate());
 					$("#todate3").datepicker("option", "minDate", dt);
+				}
+				var todate = $("#todate3").val();
+				if (todate) {
+					funcall3();
 				}
 			}
 		});
@@ -3677,20 +3700,34 @@
 
 		var fromdate = $('#fromdate3').val();
 		var todate = $('#todate3').val();
-		var acct_num = $('#acct_num3').val();
+		var acct_val = $('#acct_num3').val() || acct_num || $('#acct_num1').val();
 
-		console.log("acct_num2" + acct_num);
-		console.log("fromdate" + fromdate);
-		console.log("todate" + todate);
+		console.log("acct_num2: " + acct_val);
+		console.log("fromdate: " + fromdate);
+		console.log("todate: " + todate);
+
+		if (!acct_val) {
+			console.log("No account number available yet.");
+			return;
+		}
+
+		var url = './getTransactionRecords3';
+		if (currentMode === 'Deleted') {
+			url = './getTransactionRecords3Deleted';
+		} else if (currentMode === 'Modified') {
+			url = './getTransactionRecords3Modified';
+		} else if (currentMode === 'Substituted') {
+			url = './getTransactionRecords3Substituted';
+		}
 
 		let tableBody = $('#list3 tbody');
 		tableBody.empty();// Clear previous rows
 		$('#loadingMessage3').show();
 		$.ajax({
-			url: './getTransactionRecords3',
+			url: url,
 			type: 'GET',
 			data: {
-				acct_num: acct_num,
+				acct_num: acct_val,
 				fromdate: fromdate,
 				todate: todate
 			},
@@ -3716,14 +3753,18 @@
                     `;
 
 						$('#list3 tbody').append(row);
-						$('#loadingMessage3').hide();
-
 					});
+				} else {
+					$('#list3 tbody').append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
 				}
-
+				$('#loadingMessage3').hide();
+				$('#loader-overlay').hide();
 			},
 			error: function (error) {
 				console.error("Error fetching transaction records:", error);
+				$('#list3 tbody').empty().append(`<tr><td colspan="9" style="text-align: center; font-weight: bold; color: #6c757d; padding: 20px;">No data available</td></tr>`);
+				$('#loadingMessage3').hide();
+				$('#loader-overlay').hide();
 			}
 		});
 

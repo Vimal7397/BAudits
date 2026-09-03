@@ -1375,47 +1375,57 @@ public class BTMRestController {
 	}
 
 
+	private String parseAndFormatDate(String dateStr, String defaultDate) {
+		if (dateStr == null || dateStr.trim().isEmpty()) {
+			return defaultDate;
+		}
+		String[] patterns = {"dd-MM-yyyy", "yyyy-MM-dd", "dd/MM/yyyy", "dd-MMM-yyyy", "dd-MMM-yy"};
+		for (String pattern : patterns) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+				sdf.setLenient(false);
+				Date parsed = sdf.parse(dateStr.trim());
+				return new SimpleDateFormat("dd-MM-yyyy").format(parsed);
+			} catch (Exception ignored) {
+			}
+		}
+		return defaultDate;
+	}
+
 	@GetMapping("/getTransactionRecords3")
 	@ResponseBody
 	public List<BAJ_TrmView_Entity> getTransactionRecords3(@RequestParam(required = false) String acct_num,
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
-		System.out.println("getTrans------------");
+		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
+		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
+		return bAJ_TrmView_Repo.getTranlstWithInnerQuery(acct_num, formattedDate, formattedDate1);
+	}
 
-		// Define the input date format
-		SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+	@GetMapping("/getTransactionRecords3Deleted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getTransactionRecords3Deleted(@RequestParam(required = false) String acct_num,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
+		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
+		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
+		return bAJ_TrmView_Repo.getTranlstWithInnerQueryDeleted(acct_num, formattedDate, formattedDate1);
+	}
 
-		Date fromDateParsed = null;
-		Date toDateParsed = null;
+	@GetMapping("/getTransactionRecords3Modified")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getTransactionRecords3Modified(@RequestParam(required = false) String acct_num,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
+		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
+		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
+		return bAJ_TrmView_Repo.getTranlstWithInnerQueryModified(acct_num, formattedDate, formattedDate1);
+	}
 
-		try {
-			if (fromdate != null) {
-				fromDateParsed = inputDateFormat.parse(fromdate);
-			}
-			if (todate != null) {
-				toDateParsed = inputDateFormat.parse(todate);
-			}
-		} catch (ParseException e) {
-			e.printStackTrace();
-			// Handle the exception, possibly return an error response
-			// return List.of(); // Return an empty list or handle appropriately
-		}
-
-		// Format dates for display or further processing
-		SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-		String formattedDate = (fromDateParsed != null) ? outputDateFormat.format(fromDateParsed) : null;
-		String formattedDate1 = (toDateParsed != null) ? outputDateFormat.format(toDateParsed) : null;
-
-		System.out.println("Formatted Dates Bharath: From = " + formattedDate + ", To = " + formattedDate1);
-
-		List<BAJ_TrmView_Entity> records = bAJ_TrmView_Repo.getTranlstWithInnerQuery(acct_num, formattedDate,
-				formattedDate1);
-
-		System.out.println("Records: " + records);
-		for (BAJ_TrmView_Entity up1 : records) {
-			System.out.println("Record: " + up1);
-		}
-
-		return records;
+	@GetMapping("/getTransactionRecords3Substituted")
+	@ResponseBody
+	public List<BAJ_TrmView_Entity> getTransactionRecords3Substituted(@RequestParam(required = false) String acct_num,
+			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
+		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
+		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
+		return bAJ_TrmView_Repo.getTranlstWithInnerQuerySubstituted(acct_num, formattedDate, formattedDate1);
 	}
 	
 	

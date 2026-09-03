@@ -21,25 +21,25 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getvalue(String acct_num);
 
-	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1", nativeQuery = true)
+	@Query(value = "Select * From TRM_DEL_VIEW Where acct_num =?1", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getvalueDeleted(String acct_num);
 
-	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1", nativeQuery = true)
+	@Query(value = "Select * From TRM_MOD_VIEW Where acct_num =?1", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getvalueModified(String acct_num);
 
-	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1", nativeQuery = true)
+	@Query(value = "Select * From TRM_SUB_VIEW Where acct_num =?1", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getvalueSubstituted(String acct_num);
 
 	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntries(String acct_num);
 
-	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
+	@Query(value = "Select * From TRM_DEL_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntriesDeleted(String acct_num);
 
-	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
+	@Query(value = "Select * From TRM_MOD_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntriesModified(String acct_num);
 
-	@Query(value = "Select * From TRMWORK_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
+	@Query(value = "Select * From TRM_SUB_VIEW Where acct_num =?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC ", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntriesSubstituted(String acct_num);
 
 	/*
@@ -52,13 +52,13 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	@Query(value = "SELECT * FROM TRMWORK_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntries2(String acct_num);
 
-	@Query(value = "SELECT * FROM TRMWORK_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
+	@Query(value = "SELECT * FROM TRM_DEL_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntries2Deleted(String acct_num);
 
-	@Query(value = "SELECT * FROM TRMWORK_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
+	@Query(value = "SELECT * FROM TRM_MOD_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntries2Modified(String acct_num);
 
-	@Query(value = "SELECT * FROM TRMWORK_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
+	@Query(value = "SELECT * FROM TRM_SUB_VIEW WHERE acct_num = ?1 AND TRAN_DATE >= TO_DATE('01-04-2025', 'DD-MM-YYYY') AND TRAN_DATE <= TO_DATE('01-04-2026', 'DD-MM-YYYY') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE  ASC", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getLedgerEntries2Substituted(String acct_num);
 
 	@Query(value = "SELECT * " +
@@ -75,10 +75,10 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	List<BAJ_TrmView_Entity> getLedgerEntries3(String acctNum);
 
 	@Query(value = "SELECT * " +
-	        "FROM TRMWORK_VIEW " +
+	        "FROM TRM_DEL_VIEW " +
 	        "WHERE tran_id IN ( " +
 	        "    SELECT DISTINCT tran_id " +
-	        "    FROM TRMWORK_VIEW " +
+	        "    FROM TRM_DEL_VIEW " +
 	        "    WHERE acct_num = :acctNum " +
 	        "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE('01-04-2025', 'dd-MM-yyyy') AND TO_DATE('01-04-2026', 'dd-MM-yyyy') " +
 	        ") " +
@@ -88,10 +88,10 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	List<BAJ_TrmView_Entity> getLedgerEntries3Deleted(String acctNum);
 
 	@Query(value = "SELECT * " +
-	        "FROM TRMWORK_VIEW " +
+	        "FROM TRM_MOD_VIEW " +
 	        "WHERE tran_id IN ( " +
 	        "    SELECT DISTINCT tran_id " +
-	        "    FROM TRMWORK_VIEW " +
+	        "    FROM TRM_MOD_VIEW " +
 	        "    WHERE acct_num = :acctNum " +
 	        "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE('01-04-2025', 'dd-MM-yyyy') AND TO_DATE('01-04-2026', 'dd-MM-yyyy') " +
 	        ") " +
@@ -101,10 +101,10 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	List<BAJ_TrmView_Entity> getLedgerEntries3Modified(String acctNum);
 
 	@Query(value = "SELECT * " +
-	        "FROM TRMWORK_VIEW " +
+	        "FROM TRM_SUB_VIEW " +
 	        "WHERE tran_id IN ( " +
 	        "    SELECT DISTINCT tran_id " +
-	        "    FROM TRMWORK_VIEW " +
+	        "    FROM TRM_SUB_VIEW " +
 	        "    WHERE acct_num = :acctNum " +
 	        "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE('01-04-2025', 'dd-MM-yyyy') AND TO_DATE('01-04-2026', 'dd-MM-yyyy') " +
 	        ") " +
@@ -141,6 +141,24 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 			+ "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy')" + ") "
 			+ "AND TRAN_DATE BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC", nativeQuery = true)
 	List<BAJ_TrmView_Entity> getTranlstWithInnerQuery(String acct_num, String fromdate, String todate);
+
+	@Query(value = "SELECT * " + "FROM TRM_DEL_VIEW " + "WHERE tran_id IN (" + "    SELECT DISTINCT tran_id "
+			+ "    FROM TRM_DEL_VIEW " + "    WHERE acct_num = ?1 "
+			+ "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy')" + ") "
+			+ "AND TRAN_DATE BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC", nativeQuery = true)
+	List<BAJ_TrmView_Entity> getTranlstWithInnerQueryDeleted(String acct_num, String fromdate, String todate);
+
+	@Query(value = "SELECT * " + "FROM TRM_MOD_VIEW " + "WHERE tran_id IN (" + "    SELECT DISTINCT tran_id "
+			+ "    FROM TRM_MOD_VIEW " + "    WHERE acct_num = ?1 "
+			+ "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy')" + ") "
+			+ "AND TRAN_DATE BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC", nativeQuery = true)
+	List<BAJ_TrmView_Entity> getTranlstWithInnerQueryModified(String acct_num, String fromdate, String todate);
+
+	@Query(value = "SELECT * " + "FROM TRM_SUB_VIEW " + "WHERE tran_id IN (" + "    SELECT DISTINCT tran_id "
+			+ "    FROM TRM_SUB_VIEW " + "    WHERE acct_num = ?1 "
+			+ "      AND TRUNC(TRAN_DATE) BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy')" + ") "
+			+ "AND TRAN_DATE BETWEEN TO_DATE(?2, 'dd-MM-yyyy') AND TO_DATE(?3, 'dd-MM-yyyy') ORDER BY TRAN_DATE,TRAN_ID,PART_TRAN_ID,PART_TRAN_TYPE ASC", nativeQuery = true)
+	List<BAJ_TrmView_Entity> getTranlstWithInnerQuerySubstituted(String acct_num, String fromdate, String todate);
 
 	@Query(value = "SELECT ACCT_NUM, "
 			+ "SUM(CASE WHEN PART_TRAN_TYPE = 'debit' THEN TRAN_AMT ELSE 0 END) AS TOTAL_DEBIT_TRAN_AMT, "
