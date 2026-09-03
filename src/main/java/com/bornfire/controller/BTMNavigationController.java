@@ -13029,7 +13029,9 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		List<BAJ_TrmView_Entity> results = new ArrayList<>();
 		try {
 			if (acctnum != null && !acctnum.trim().isEmpty()) {
-				results = bAJ_TrmView_Repo.getLedgerEntries3Deleted(acctnum);
+				results = bAJ_TrmView_Repo.getLedgerEntries3Deleted(acctnum.trim());
+			} else {
+				results = bAJ_TrmView_Repo.getAllLedgerEntries3Deleted();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -13043,7 +13045,9 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		List<BAJ_TrmView_Entity> results = new ArrayList<>();
 		try {
 			if (acctnum != null && !acctnum.trim().isEmpty()) {
-				results = bAJ_TrmView_Repo.getLedgerEntries3Modified(acctnum);
+				results = bAJ_TrmView_Repo.getLedgerEntries3Modified(acctnum.trim());
+			} else {
+				results = bAJ_TrmView_Repo.getAllLedgerEntries3Modified();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -13057,7 +13061,9 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 		List<BAJ_TrmView_Entity> results = new ArrayList<>();
 		try {
 			if (acctnum != null && !acctnum.trim().isEmpty()) {
-				results = bAJ_TrmView_Repo.getLedgerEntries3Substituted(acctnum);
+				results = bAJ_TrmView_Repo.getLedgerEntries3Substituted(acctnum.trim());
+			} else {
+				results = bAJ_TrmView_Repo.getAllLedgerEntries3Substituted();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

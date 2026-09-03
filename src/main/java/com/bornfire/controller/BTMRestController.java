@@ -1398,7 +1398,11 @@ public class BTMRestController {
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
 		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
 		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
-		return bAJ_TrmView_Repo.getTranlstWithInnerQuery(acct_num, formattedDate, formattedDate1);
+		if (acct_num != null && !acct_num.trim().isEmpty()) {
+			return bAJ_TrmView_Repo.getTranlstWithInnerQuery(acct_num.trim(), formattedDate, formattedDate1);
+		} else {
+			return bAJ_TrmView_Repo.getAllTranlst(formattedDate, formattedDate1);
+		}
 	}
 
 	@GetMapping("/getTransactionRecords3Deleted")
@@ -1407,7 +1411,11 @@ public class BTMRestController {
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
 		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
 		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
-		return bAJ_TrmView_Repo.getTranlstWithInnerQueryDeleted(acct_num, formattedDate, formattedDate1);
+		if (acct_num != null && !acct_num.trim().isEmpty()) {
+			return bAJ_TrmView_Repo.getTranlstWithInnerQueryDeleted(acct_num.trim(), formattedDate, formattedDate1);
+		} else {
+			return bAJ_TrmView_Repo.getAllTranlstDeleted(formattedDate, formattedDate1);
+		}
 	}
 
 	@GetMapping("/getTransactionRecords3Modified")
@@ -1416,7 +1424,11 @@ public class BTMRestController {
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
 		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
 		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
-		return bAJ_TrmView_Repo.getTranlstWithInnerQueryModified(acct_num, formattedDate, formattedDate1);
+		if (acct_num != null && !acct_num.trim().isEmpty()) {
+			return bAJ_TrmView_Repo.getTranlstWithInnerQueryModified(acct_num.trim(), formattedDate, formattedDate1);
+		} else {
+			return bAJ_TrmView_Repo.getAllTranlstModified(formattedDate, formattedDate1);
+		}
 	}
 
 	@GetMapping("/getTransactionRecords3Substituted")
@@ -1425,7 +1437,11 @@ public class BTMRestController {
 			@RequestParam(required = false) String fromdate, @RequestParam(required = false) String todate) {
 		String formattedDate = parseAndFormatDate(fromdate, "01-04-2025");
 		String formattedDate1 = parseAndFormatDate(todate, "01-04-2026");
-		return bAJ_TrmView_Repo.getTranlstWithInnerQuerySubstituted(acct_num, formattedDate, formattedDate1);
+		if (acct_num != null && !acct_num.trim().isEmpty()) {
+			return bAJ_TrmView_Repo.getTranlstWithInnerQuerySubstituted(acct_num.trim(), formattedDate, formattedDate1);
+		} else {
+			return bAJ_TrmView_Repo.getAllTranlstSubstituted(formattedDate, formattedDate1);
+		}
 	}
 	
 	

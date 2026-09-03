@@ -676,8 +676,12 @@
 					$("#ref_crncy_amt").val(data.ref_crncy_amt);
 					$("#rate_code").val(data.rate_code);
 					$("#rate").val(data.rate);
-					$("#entry_user").val(data.entry_user);
-					$("#post_user").val(data.post_user);
+					$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
+					$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
+					$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
+					$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
+					$("#post_user").val(data.post_user != null ? data.post_user : "");
+					$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
 					$("#tran_status").val(data.tran_status);
 					$("#del_flg").val(data.del_flg);
 				},
@@ -687,6 +691,29 @@
 					alert("get values error")
 				}
 			});
+		}
+		function formatDateToDD(dateString) {
+			if (!dateString) return '';
+			var date = new Date(dateString);
+			if (isNaN(date.getTime())) return dateString;
+			var day = date.getDate();
+			var month = date.getMonth() + 1;
+			var year = date.getFullYear();
+			if (day < 10) day = '0' + day;
+			if (month < 10) month = '0' + month;
+			return day + '-' + month + '-' + year;
+		}
+		function formatDateTime(dateString) {
+			if (!dateString) return '';
+			var date = new Date(dateString);
+			if (isNaN(date.getTime())) return dateString;
+			var day = String(date.getDate()).padStart(2, '0');
+			var month = String(date.getMonth() + 1).padStart(2, '0');
+			var year = date.getFullYear();
+			var hours = String(date.getHours()).padStart(2, '0');
+			var minutes = String(date.getMinutes()).padStart(2, '0');
+			var seconds = String(date.getSeconds()).padStart(2, '0');
+			return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 		}
 		function formatNumberWithCommas(number) {
 
@@ -759,13 +786,15 @@
 					$("#rate_code").val("");
 					$("#rate").val("");
 					$("#entry_user").val("");
+					$("#entry_time").val("");
+					$("#modify_user").val("");
+					$("#modify_time").val("");
 					$("#post_user").val("");
+					$("#post_time").val("");
 					$("#tran_status").val("");
 					$("#del_flg").val("");
 					$("#value_date").val("");
 					$("#tran_date").val("");
-					$("#entry_time").val("");
-					$("#post_time").val("");
 					$("#srl_no").val("");
 
 
@@ -807,13 +836,15 @@
 							$("#rate_code").val(data.rate_code != null ? data.rate_code : "");
 							$("#rate").val(data.rate != null ? data.rate : "");
 							$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
+							$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
+							$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
+							$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
 							$("#post_user").val(data.post_user != null ? data.post_user : "");
+							$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
 							$("#tran_status").val(data.tran_status != null ? data.tran_status : "");
 							$("#del_flg").val(data.del_flg != null ? data.del_flg : "");
 							$("#value_date").val(data.value_date != null ? formatDateToDD(data.value_date) : "");
 							$("#tran_date").val(data.tran_date != null ? formatDateToDD(data.tran_date) : "");
-							$("#entry_time").val(data.entry_time != null ? formatDateToDD(data.entry_time) : "");
-							$("#post_time").val(data.post_time != null ? formatDateToDD(data.post_time) : "");
 							$("#srl_no").val(data.srl_no != null ? data.srl_no : "");
 						},
 						error: function () {
@@ -857,13 +888,15 @@
 					$("#rate_code").val("");
 					$("#rate").val("");
 					$("#entry_user").val("");
+					$("#entry_time").val("");
+					$("#modify_user").val("");
+					$("#modify_time").val("");
 					$("#post_user").val("");
+					$("#post_time").val("");
 					$("#tran_status").val("");
 					$("#del_flg").val("");
 					$("#value_date").val("");
 					$("#tran_date").val("");
-					$("#entry_time").val("");
-					$("#post_time").val("");
 					$("#srl_no").val("");
 
 
@@ -903,13 +936,15 @@
 							$("#rate_code").val(data.rate_code != null ? data.rate_code : "");
 							$("#rate").val(data.rate != null ? data.rate : "");
 							$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
+							$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
+							$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
+							$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
 							$("#post_user").val(data.post_user != null ? data.post_user : "");
+							$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
 							$("#tran_status").val(data.tran_status != null ? data.tran_status : "");
 							$("#del_flg").val(data.del_flg != null ? data.del_flg : "");
 							$("#value_date").val(data.value_date != null ? formatDateToDD(data.value_date) : "");
 							$("#tran_date").val(data.tran_date != null ? formatDateToDD(data.tran_date) : "");
-							$("#entry_time").val(data.entry_time != null ? formatDateToDD(data.entry_time) : "");
-							$("#post_time").val(data.post_time != null ? formatDateToDD(data.post_time) : "");
 							$("#srl_no").val(data.srl_no != null ? data.srl_no : "");
 						},
 						error: function () {
@@ -1107,11 +1142,11 @@
 								<button class="tablinks ml-2" onclick="showTab('tab3')" id="tab3_btn"
 									style="font-size: 16px; padding: 4px 20px; border: 2px solid black;">Journal
 									Entries</button>
-								<button class="tablinks ml-2" onclick="enableTabsDeleted('tab3', acct_num)" id="deleted_btn"
+								<button class="tablinks ml-2" onclick="enableTabsDeleted('tab3', '')" id="deleted_btn"
 									style="display: none; font-size: 16px; padding: 4px 20px; border: 2px solid black;">Deleted</button>
-								<button class="tablinks ml-2" onclick="enableTabsModified('tab3', acct_num)" id="modified_btn"
+								<button class="tablinks ml-2" onclick="enableTabsModified('tab3', '')" id="modified_btn"
 									style="display: none; font-size: 16px; padding: 4px 20px; border: 2px solid black;">Modified</button>
-								<button class="tablinks ml-2" onclick="enableTabsSubstituted('tab3', acct_num)" id="substituted_btn"
+								<button class="tablinks ml-2" onclick="enableTabsSubstituted('tab3', '')" id="substituted_btn"
 									style="display: none; font-size: 16px; padding: 4px 20px; border: 2px solid black;">Substituted</button>
 							</div>
 						<div id="acctList" class="acct-list" style="display: none; height: 40px; margin: 0px">
@@ -1210,11 +1245,11 @@
 							</tr>
 							<tr>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-										onclick="enableTabsDeleted('tab3', 1500001510);showTabButtons()">Deleted</a></td>
+										onclick="enableTabsDeleted('tab3', '');showTabButtons()">Deleted</a></td>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-										onclick="enableTabsModified('tab3', 1500001510);showTabButtons()">Modified</a></td>
+										onclick="enableTabsModified('tab3', '');showTabButtons()">Modified</a></td>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-										onclick="enableTabsSubstituted('tab3', 1500001510);showTabButtons()">Substituted</a></td>
+										onclick="enableTabsSubstituted('tab3', '');showTabButtons()">Substituted</a></td>
 							</tr>
 						</table>
 					</div>
@@ -1234,7 +1269,7 @@
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
 									<div class="col-sm-1">
 										<input type="text" name="acct_num1" id="acct_num1" class="form-control-sm"
-											readonly />
+											onchange="onAccountNumChange(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();onAccountNumChange(this.value);}" />
 									</div>
 									<div class="col-sm-1"></div>
 									<div class="col-sm-1" style="margin-top: 5px">Account
@@ -1326,7 +1361,7 @@
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
 									<div class="col-sm-1" style="display: flex;">
 										<input type="text" name="acct_num2" id="acct_num2" class="form-control-sm"
-											readonly />
+											onchange="onAccountNumChange(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();onAccountNumChange(this.value);}" />
 
 									</div>
 									<div class="col-sm-1"></div>
@@ -1440,7 +1475,7 @@
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
 									<div class="col-sm-1" style="display: flex;">
 										<input type="text" name="acct_num3" id="acct_num3" class="form-control-sm"
-											readonly />
+											onchange="onAccountNumChange(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();onAccountNumChange(this.value);}" />
 
 									</div>
 
@@ -1456,13 +1491,13 @@
 									<div class="col-sm-1" style="margin-top: 5px">From Date</div>
 									<div class="col-sm-1">
 										<input type="text" id="fromdate3" class="form-control-sm"
-											placeholder="DD-MM-YYYY" />
+											placeholder="DD-MM-YYYY" onchange="funcall3()" onkeydown="if(event.key==='Enter'){event.preventDefault();funcall3();}" />
 									</div>
 									<div class="col-sm-1"></div>
 									<div class="col-sm-1" style="margin-top: 5px">To Date</div>
 									<div class="col-sm-1">
 										<input type="text" name="todate3" id="todate3" placeholder="DD-MM-YYYY"
-											class="form-control-sm" />
+											class="form-control-sm" onchange="funcall3()" onkeydown="if(event.key==='Enter'){event.preventDefault();funcall3();}" />
 									</div>
 								</div>
 
@@ -1884,6 +1919,54 @@
 								th:text="${maxPartTran}"></span>
 							<button id="next-btn" class="btn btn-primary ms-2"
 								onclick="getPartTranRecords(this);">Next</button>
+						</div>
+
+						<div class="border border-secondary rounded mx-3 mb-3 p-2" style="background-color: #fdfdfd;">
+							<div class="row formline" style="padding: 5px 0px 2px 20px;">
+								<div class="col-sm-2" style="margin-top: 5px;">Entry User</div>
+								<div class="col-sm-2">
+									<input type="text" name="entry_user" id="entry_user"
+										th:value="${ledgervalues?.entry_user}"
+										class="form-control form-control-sm bg-white border border-dark" readonly />
+								</div>
+
+								<div class="col-sm-2" style="margin-top: 5px;">Modify User</div>
+								<div class="col-sm-2">
+									<input type="text" name="modify_user" id="modify_user"
+										th:value="${ledgervalues?.modify_user}"
+										class="form-control form-control-sm bg-white border border-dark" readonly />
+								</div>
+
+								<div class="col-sm-2" style="margin-top: 5px;">Post User</div>
+								<div class="col-sm-2">
+									<input type="text" name="post_user" id="post_user"
+										th:value="${ledgervalues?.post_user}"
+										class="form-control form-control-sm bg-white border border-dark" readonly />
+								</div>
+							</div>
+
+							<div class="row formline" style="padding: 5px 0px 5px 20px;">
+								<div class="col-sm-2" style="margin-top: 5px;">Entry Time</div>
+								<div class="col-sm-2">
+									<input type="text" name="entry_time" id="entry_time"
+										th:value="${ledgervalues?.entry_time != null ? #dates.format(ledgervalues.entry_time, 'dd-MM-yyyy HH:mm:ss') : ''}"
+										class="form-control form-control-sm bg-white border border-dark" readonly />
+								</div>
+
+								<div class="col-sm-2" style="margin-top: 5px;">Modify Time</div>
+								<div class="col-sm-2">
+									<input type="text" name="modify_time" id="modify_time"
+										th:value="${ledgervalues?.modify_time != null ? #dates.format(ledgervalues.modify_time, 'dd-MM-yyyy HH:mm:ss') : ''}"
+										class="form-control form-control-sm bg-white border border-dark" readonly />
+								</div>
+
+								<div class="col-sm-2" style="margin-top: 5px;">Post Time</div>
+								<div class="col-sm-2">
+									<input type="text" name="post_time" id="post_time"
+										th:value="${ledgervalues?.post_time != null ? #dates.format(ledgervalues.post_time, 'dd-MM-yyyy HH:mm:ss') : ''}"
+										class="form-control form-control-sm bg-white border border-dark" readonly />
+								</div>
+							</div>
 						</div>
 						<br>
 						<div class="table-responsive">
@@ -2310,7 +2393,7 @@
 			data: {acctnum: acctnum},
 			success: function (list2Data) {
 				console.log("List2 data:", list2Data);
-				$('#list2 tbody, #list3 tbody').empty();
+				$('#list2 tbody').empty();
 
 				if (list2Data && list2Data.length > 0) {
 					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
@@ -2400,7 +2483,29 @@
 		}
 	}
 
+	function onAccountNumChange(val) {
+		val = val ? String(val).trim() : '';
+		acct_num = val;
+		if (currentMode === 'Deleted') {
+			enableTabsDeleted('tab3', val);
+		} else if (currentMode === 'Modified') {
+			enableTabsModified('tab3', val);
+		} else if (currentMode === 'Substituted') {
+			enableTabsSubstituted('tab3', val);
+		} else {
+			if (!val) {
+				$('#acct_num1, #acct_num2, #acct_num3').val('');
+				$('#acct_name1, #acct_name2, #acct_name3').val('');
+				$('#fromdate, #fromdate2, #fromdate3, #todate, #todate2, #todate3').val('');
+				$('#usertable tbody, #list2 tbody, #list3 tbody').empty();
+				return;
+			}
+			enableTabs('tab1', val);
+		}
+	}
+
 	function enableTabsDeleted(initialTabId, acctnum) {
+		acctnum = acctnum ? String(acctnum).trim() : '';
 		console.log("acct_num (Deleted): " + acctnum);
 		acct_num = acctnum;
 		currentMode = 'Deleted';
@@ -2409,74 +2514,80 @@
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#deleted_btn').css({'background-color': '#13739F', 'color': 'white'});
 		$('#modified_btn, #substituted_btn').css({'background-color': '', 'color': ''});
+
+		document.getElementById('CommonTable').style.display = 'none';
+		document.getElementById('TabButtons').style.display = 'block';
+		showTab('tab3', 'deleted_btn');
+
 		$('#loader-overlay').show();
 		const ajaxPromises = [];
 
-		const acctDetailsPromise = $.ajax({
-			url: './gettranvalueDeleted',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (data) {
-				if (data.acct_num && data.acct_name) {
-					$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
-					$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
-				} else {
-					$('#acct_num1, #acct_num2, #acct_num3').val('');
-					$('#acct_name1, #acct_name2, #acct_name3').val('');
+		if (acctnum) {
+			const acctDetailsPromise = $.ajax({
+				url: './gettranvalueDeleted',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (data) {
+					if (data.acct_num && data.acct_name) {
+						$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
+						$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
+					} else {
+						$('#acct_num1, #acct_num2, #acct_num3').val('');
+						$('#acct_name1, #acct_name2, #acct_name3').val('');
+					}
+				},
+				error: function (error) {
+					console.error('Error fetching account details:', error);
 				}
-			},
-			error: function (error) {
-				console.error('Error fetching account details:', error);
-			}
-		});
-		ajaxPromises.push(acctDetailsPromise);
+			});
+			ajaxPromises.push(acctDetailsPromise);
 
-		const transactionBalancePromise = $.ajax({
-			url: './getTranbal2Deleted',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (balanceData) {
-				let tableBody = $('#usertable tbody');
-				tableBody.empty();
-				let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
+			const transactionBalancePromise = $.ajax({
+				url: './getTranbal2Deleted',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (balanceData) {
+					let tableBody = $('#usertable tbody');
+					tableBody.empty();
+					let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
 
-				if (balanceData1.includes(',')) {
-					let [dateString, balance] = balanceData1.split(',');
-					let date = new Date(dateString);
-					let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
-					let formattedBalance = parseFloat(balance);
+					if (balanceData1.includes(',')) {
+						let [dateString, balance] = balanceData1.split(',');
+						let date = new Date(dateString);
+						let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+						let formattedBalance = parseFloat(balance);
 
-					let headerHTML = ` 
+						let headerHTML = ` 
                     <tr>
 						<td colspan="2"></td>
 						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="3"></td>
                         <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>`;
-					tableBody.append(headerHTML);
+						tableBody.append(headerHTML);
 
-					$.ajax({
-						url: './getledgerdataDeleted',
-						type: 'GET',
-						data: {acctnum: acctnum},
-						success: function (data) {
-							let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
-							$('#fromdate').val(firstTranDate);
+						$.ajax({
+							url: './getledgerdataDeleted',
+							type: 'GET',
+							data: {acctnum: acctnum},
+							success: function (data) {
+								let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
+								$('#fromdate').val(firstTranDate);
 
-							let currentBalance = formattedBalance;
+								let currentBalance = formattedBalance;
 
-							data.forEach(function (entry) {
-								let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
-								let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
-								let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
-								currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
+								data.forEach(function (entry) {
+									let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
+									let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
+									let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
+									currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
 
-								let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let indicator = currentBalance < 0 ? 'DR' : 'CR';
+									let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let indicator = currentBalance < 0 ? 'DR' : 'CR';
 
-								tableBody.append(`
+									tableBody.append(`
                                 <tr>
                                     <td>${formattedDate}</td>
                                     <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
@@ -2491,31 +2602,31 @@
                                     <td style="text-align:right">${indicator}</td>
                                 </tr>
                             `);
-							});
-						},
-						error: function (error) {
-							console.error("Error fetching ledger data:", error);
-						}
-					});
+								});
+							},
+							error: function (error) {
+								console.error("Error fetching ledger data:", error);
+							}
+						});
+					}
+				},
+				error: function (error) {
+					console.error("Error fetching transaction balance:", error);
 				}
-			},
-			error: function (error) {
-				console.error("Error fetching transaction balance:", error);
-			}
-		});
-		ajaxPromises.push(transactionBalancePromise);
+			});
+			ajaxPromises.push(transactionBalancePromise);
 
-		const list2DataPromise = $.ajax({
-			url: './setlist2Deleted',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (list2Data) {
-				$('#list2 tbody, #list3 tbody').empty();
-				if (list2Data && list2Data.length > 0) {
-					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
-					$('#fromdate2').val(firstTranDate);
-					list2Data.forEach(function (item) {
-						let row = `
+			const list2DataPromise = $.ajax({
+				url: './setlist2Deleted',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (list2Data) {
+					$('#list2 tbody').empty();
+					if (list2Data && list2Data.length > 0) {
+						let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+						$('#fromdate2').val(firstTranDate);
+						list2Data.forEach(function (item) {
+							let row = `
                         <tr>
                             <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
                             <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
@@ -2530,15 +2641,20 @@
                             <td style="text-align: left;">${item.tran_status || ''}</td>
                         </tr>
                     `;
-						$('#list2 tbody').append(row);
-					});
+							$('#list2 tbody').append(row);
+						});
+					}
+				},
+				error: function (error) {
+					console.error('Error fetching list2 data:', error);
 				}
-			},
-			error: function (error) {
-				console.error('Error fetching list2 data:', error);
-			}
-		});
-		ajaxPromises.push(list2DataPromise);
+			});
+			ajaxPromises.push(list2DataPromise);
+		} else {
+			$('#acct_name1, #acct_name2, #acct_name3').val('');
+			$('#fromdate, #fromdate2, #todate, #todate2').val('');
+			$('#usertable tbody, #list2 tbody').empty();
+		}
 
 		const fourthDataPromise = $.ajax({
 			url: './setlist3Deleted',
@@ -2590,6 +2706,7 @@
 	}
 
 	function enableTabsModified(initialTabId, acctnum) {
+		acctnum = acctnum ? String(acctnum).trim() : '';
 		console.log("acct_num (Modified): " + acctnum);
 		acct_num = acctnum;
 		currentMode = 'Modified';
@@ -2598,74 +2715,80 @@
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#modified_btn').css({'background-color': '#13739F', 'color': 'white'});
 		$('#deleted_btn, #substituted_btn').css({'background-color': '', 'color': ''});
+
+		document.getElementById('CommonTable').style.display = 'none';
+		document.getElementById('TabButtons').style.display = 'block';
+		showTab('tab3', 'modified_btn');
+
 		$('#loader-overlay').show();
 		const ajaxPromises = [];
 
-		const acctDetailsPromise = $.ajax({
-			url: './gettranvalueModified',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (data) {
-				if (data.acct_num && data.acct_name) {
-					$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
-					$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
-				} else {
-					$('#acct_num1, #acct_num2, #acct_num3').val('');
-					$('#acct_name1, #acct_name2, #acct_name3').val('');
+		if (acctnum) {
+			const acctDetailsPromise = $.ajax({
+				url: './gettranvalueModified',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (data) {
+					if (data.acct_num && data.acct_name) {
+						$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
+						$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
+					} else {
+						$('#acct_num1, #acct_num2, #acct_num3').val('');
+						$('#acct_name1, #acct_name2, #acct_name3').val('');
+					}
+				},
+				error: function (error) {
+					console.error('Error fetching account details:', error);
 				}
-			},
-			error: function (error) {
-				console.error('Error fetching account details:', error);
-			}
-		});
-		ajaxPromises.push(acctDetailsPromise);
+			});
+			ajaxPromises.push(acctDetailsPromise);
 
-		const transactionBalancePromise = $.ajax({
-			url: './getTranbal2Modified',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (balanceData) {
-				let tableBody = $('#usertable tbody');
-				tableBody.empty();
-				let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
+			const transactionBalancePromise = $.ajax({
+				url: './getTranbal2Modified',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (balanceData) {
+					let tableBody = $('#usertable tbody');
+					tableBody.empty();
+					let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
 
-				if (balanceData1.includes(',')) {
-					let [dateString, balance] = balanceData1.split(',');
-					let date = new Date(dateString);
-					let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
-					let formattedBalance = parseFloat(balance);
+					if (balanceData1.includes(',')) {
+						let [dateString, balance] = balanceData1.split(',');
+						let date = new Date(dateString);
+						let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+						let formattedBalance = parseFloat(balance);
 
-					let headerHTML = ` 
+						let headerHTML = ` 
                     <tr>
 						<td colspan="2"></td>
 						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="3"></td>
                         <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>`;
-					tableBody.append(headerHTML);
+						tableBody.append(headerHTML);
 
-					$.ajax({
-						url: './getledgerdataModified',
-						type: 'GET',
-						data: {acctnum: acctnum},
-						success: function (data) {
-							let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
-							$('#fromdate').val(firstTranDate);
+						$.ajax({
+							url: './getledgerdataModified',
+							type: 'GET',
+							data: {acctnum: acctnum},
+							success: function (data) {
+								let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
+								$('#fromdate').val(firstTranDate);
 
-							let currentBalance = formattedBalance;
+								let currentBalance = formattedBalance;
 
-							data.forEach(function (entry) {
-								let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
-								let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
-								let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
-								currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
+								data.forEach(function (entry) {
+									let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
+									let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
+									let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
+									currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
 
-								let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let indicator = currentBalance < 0 ? 'DR' : 'CR';
+									let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let indicator = currentBalance < 0 ? 'DR' : 'CR';
 
-								tableBody.append(`
+									tableBody.append(`
                                 <tr>
                                     <td>${formattedDate}</td>
                                     <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
@@ -2680,31 +2803,31 @@
                                     <td style="text-align:right">${indicator}</td>
                                 </tr>
                             `);
-							});
-						},
-						error: function (error) {
-							console.error("Error fetching ledger data:", error);
-						}
-					});
+								});
+							},
+							error: function (error) {
+								console.error("Error fetching ledger data:", error);
+							}
+						});
+					}
+				},
+				error: function (error) {
+					console.error("Error fetching transaction balance:", error);
 				}
-			},
-			error: function (error) {
-				console.error("Error fetching transaction balance:", error);
-			}
-		});
-		ajaxPromises.push(transactionBalancePromise);
+			});
+			ajaxPromises.push(transactionBalancePromise);
 
-		const list2DataPromise = $.ajax({
-			url: './setlist2Modified',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (list2Data) {
-				$('#list2 tbody, #list3 tbody').empty();
-				if (list2Data && list2Data.length > 0) {
-					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
-					$('#fromdate2').val(firstTranDate);
-					list2Data.forEach(function (item) {
-						let row = `
+			const list2DataPromise = $.ajax({
+				url: './setlist2Modified',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (list2Data) {
+					$('#list2 tbody').empty();
+					if (list2Data && list2Data.length > 0) {
+						let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+						$('#fromdate2').val(firstTranDate);
+						list2Data.forEach(function (item) {
+							let row = `
                         <tr>
                             <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
                             <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
@@ -2719,15 +2842,20 @@
                             <td style="text-align: left;">${item.tran_status || ''}</td>
                         </tr>
                     `;
-						$('#list2 tbody').append(row);
-					});
+							$('#list2 tbody').append(row);
+						});
+					}
+				},
+				error: function (error) {
+					console.error('Error fetching list2 data:', error);
 				}
-			},
-			error: function (error) {
-				console.error('Error fetching list2 data:', error);
-			}
-		});
-		ajaxPromises.push(list2DataPromise);
+			});
+			ajaxPromises.push(list2DataPromise);
+		} else {
+			$('#acct_name1, #acct_name2, #acct_name3').val('');
+			$('#fromdate, #fromdate2, #todate, #todate2').val('');
+			$('#usertable tbody, #list2 tbody').empty();
+		}
 
 		const fourthDataPromise = $.ajax({
 			url: './setlist3Modified',
@@ -2779,6 +2907,7 @@
 	}
 
 	function enableTabsSubstituted(initialTabId, acctnum) {
+		acctnum = acctnum ? String(acctnum).trim() : '';
 		console.log("acct_num (Substituted): " + acctnum);
 		acct_num = acctnum;
 		currentMode = 'Substituted';
@@ -2787,74 +2916,80 @@
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#substituted_btn').css({'background-color': '#13739F', 'color': 'white'});
 		$('#deleted_btn, #modified_btn').css({'background-color': '', 'color': ''});
+
+		document.getElementById('CommonTable').style.display = 'none';
+		document.getElementById('TabButtons').style.display = 'block';
+		showTab('tab3', 'substituted_btn');
+
 		$('#loader-overlay').show();
 		const ajaxPromises = [];
 
-		const acctDetailsPromise = $.ajax({
-			url: './gettranvalueSubstituted',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (data) {
-				if (data.acct_num && data.acct_name) {
-					$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
-					$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
-				} else {
-					$('#acct_num1, #acct_num2, #acct_num3').val('');
-					$('#acct_name1, #acct_name2, #acct_name3').val('');
+		if (acctnum) {
+			const acctDetailsPromise = $.ajax({
+				url: './gettranvalueSubstituted',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (data) {
+					if (data.acct_num && data.acct_name) {
+						$('#acct_num1, #acct_num2, #acct_num3').val(data.acct_num);
+						$('#acct_name1, #acct_name2, #acct_name3').val(data.acct_name);
+					} else {
+						$('#acct_num1, #acct_num2, #acct_num3').val('');
+						$('#acct_name1, #acct_name2, #acct_name3').val('');
+					}
+				},
+				error: function (error) {
+					console.error('Error fetching account details:', error);
 				}
-			},
-			error: function (error) {
-				console.error('Error fetching account details:', error);
-			}
-		});
-		ajaxPromises.push(acctDetailsPromise);
+			});
+			ajaxPromises.push(acctDetailsPromise);
 
-		const transactionBalancePromise = $.ajax({
-			url: './getTranbal2Substituted',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (balanceData) {
-				let tableBody = $('#usertable tbody');
-				tableBody.empty();
-				let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
+			const transactionBalancePromise = $.ajax({
+				url: './getTranbal2Substituted',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (balanceData) {
+					let tableBody = $('#usertable tbody');
+					tableBody.empty();
+					let balanceData1 = (typeof balanceData !== 'string') ? String(balanceData) : balanceData;
 
-				if (balanceData1.includes(',')) {
-					let [dateString, balance] = balanceData1.split(',');
-					let date = new Date(dateString);
-					let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
-					let formattedBalance = parseFloat(balance);
+					if (balanceData1.includes(',')) {
+						let [dateString, balance] = balanceData1.split(',');
+						let date = new Date(dateString);
+						let formattedDate = `${('0' + date.getDate()).slice(-2)}-${('0' + (date.getMonth() + 1)).slice(-2)}-${date.getFullYear()}`;
+						let formattedBalance = parseFloat(balance);
 
-					let headerHTML = ` 
+						let headerHTML = ` 
                     <tr>
 						<td colspan="2"></td>
 						<td colspan="1"><strong>B/F:</strong> ${formattedDate}</td>
                         <td colspan="3"></td>
                         <td colspan="1" style="text-align:right">${formattedBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     </tr>`;
-					tableBody.append(headerHTML);
+						tableBody.append(headerHTML);
 
-					$.ajax({
-						url: './getledgerdataSubstituted',
-						type: 'GET',
-						data: {acctnum: acctnum},
-						success: function (data) {
-							let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
-							$('#fromdate').val(firstTranDate);
+						$.ajax({
+							url: './getledgerdataSubstituted',
+							type: 'GET',
+							data: {acctnum: acctnum},
+							success: function (data) {
+								let firstTranDate = data[0] && data[0].tran_date ? formatDate(data[0].tran_date) : '';
+								$('#fromdate').val(firstTranDate);
 
-							let currentBalance = formattedBalance;
+								let currentBalance = formattedBalance;
 
-							data.forEach(function (entry) {
-								let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
-								let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
-								let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
-								currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
+								data.forEach(function (entry) {
+									let formattedDate = entry.tran_date ? formatDate(entry.tran_date) : '';
+									let debitAmount = (entry.part_tran_type === 'debit') ? parseFloat(entry.tran_amt) : 0.00;
+									let creditAmount = (entry.part_tran_type === 'credit') ? parseFloat(entry.tran_amt) : 0.00;
+									currentBalance += (entry.part_tran_type === 'debit') ? -debitAmount : creditAmount;
 
-								let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-								let indicator = currentBalance < 0 ? 'DR' : 'CR';
+									let formattedDebit = debitAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let formattedCredit = creditAmount.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let formattedUpdatedBalance = currentBalance.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+									let indicator = currentBalance < 0 ? 'DR' : 'CR';
 
-								tableBody.append(`
+									tableBody.append(`
                                 <tr>
                                     <td>${formattedDate}</td>
                                     <td style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';"
@@ -2869,31 +3004,31 @@
                                     <td style="text-align:right">${indicator}</td>
                                 </tr>
                             `);
-							});
-						},
-						error: function (error) {
-							console.error("Error fetching ledger data:", error);
-						}
-					});
+								});
+							},
+							error: function (error) {
+								console.error("Error fetching ledger data:", error);
+							}
+						});
+					}
+				},
+				error: function (error) {
+					console.error("Error fetching transaction balance:", error);
 				}
-			},
-			error: function (error) {
-				console.error("Error fetching transaction balance:", error);
-			}
-		});
-		ajaxPromises.push(transactionBalancePromise);
+			});
+			ajaxPromises.push(transactionBalancePromise);
 
-		const list2DataPromise = $.ajax({
-			url: './setlist2Substituted',
-			type: 'GET',
-			data: {acctnum: acctnum},
-			success: function (list2Data) {
-				$('#list2 tbody, #list3 tbody').empty();
-				if (list2Data && list2Data.length > 0) {
-					let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
-					$('#fromdate2').val(firstTranDate);
-					list2Data.forEach(function (item) {
-						let row = `
+			const list2DataPromise = $.ajax({
+				url: './setlist2Substituted',
+				type: 'GET',
+				data: {acctnum: acctnum},
+				success: function (list2Data) {
+					$('#list2 tbody').empty();
+					if (list2Data && list2Data.length > 0) {
+						let firstTranDate = list2Data[0].tran_date ? formatDate(list2Data[0].tran_date) : '';
+						$('#fromdate2').val(firstTranDate);
+						list2Data.forEach(function (item) {
+							let row = `
                         <tr>
                             <td>${item.tran_date ? new Date(item.tran_date).toLocaleDateString('en-GB') : ''}</td>
                             <td style="cursor:pointer" onmouseover="this.style.color='#0000EE';" onmouseout="this.style.color='black';" onclick="showdetails('${item.tran_id}', '${item.part_tran_id}','${item.acct_num}')"> ${item.tran_id} / ${item.part_tran_id}</td>
@@ -2908,15 +3043,20 @@
                             <td style="text-align: left;">${item.tran_status || ''}</td>
                         </tr>
                     `;
-						$('#list2 tbody').append(row);
-					});
+							$('#list2 tbody').append(row);
+						});
+					}
+				},
+				error: function (error) {
+					console.error('Error fetching list2 data:', error);
 				}
-			},
-			error: function (error) {
-				console.error('Error fetching list2 data:', error);
-			}
-		});
-		ajaxPromises.push(list2DataPromise);
+			});
+			ajaxPromises.push(list2DataPromise);
+		} else {
+			$('#acct_name1, #acct_name2, #acct_name3').val('');
+			$('#fromdate, #fromdate2, #todate, #todate2').val('');
+			$('#usertable tbody, #list2 tbody').empty();
+		}
 
 		const fourthDataPromise = $.ajax({
 			url: './setlist3Substituted',
@@ -3145,10 +3285,7 @@
 					dt.setDate(dt.getDate());
 					$("#todate3").datepicker("option", "minDate", dt);
 				}
-				var todate = $("#todate3").val();
-				if (todate) {
-					funcall3();
-				}
+				funcall3();
 			}
 		});
 
@@ -3160,17 +3297,7 @@
 			minDate: minAllowedDate,
 			maxDate: maxAllowedDate,
 			onSelect: function (selected) {
-				var fromdate = $("#fromdate3").val();
-				var todate = $("#todate3").val();
-				console.log("fromdate3" + fromdate);
-				console.log("todate3" + todate);
-
-				if (!fromdate) {
-					alert("Enter From date");
-				} else {
-
-					funcall3();
-				}
+				funcall3();
 			}
 		});
 	});
@@ -3700,13 +3827,13 @@
 
 		var fromdate = $('#fromdate3').val();
 		var todate = $('#todate3').val();
-		var acct_val = $('#acct_num3').val() || acct_num || $('#acct_num1').val();
+		var acct_val = $('#acct_num3').val() || acct_num || $('#acct_num1').val() || '';
 
-		console.log("acct_num2: " + acct_val);
+		console.log("acct_num3: " + acct_val);
 		console.log("fromdate: " + fromdate);
 		console.log("todate: " + todate);
 
-		if (!acct_val) {
+		if (!acct_val && currentMode === 'standard') {
 			console.log("No account number available yet.");
 			return;
 		}
