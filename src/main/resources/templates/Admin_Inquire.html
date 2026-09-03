@@ -1269,7 +1269,7 @@
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
 									<div class="col-sm-1">
 										<input type="text" name="acct_num1" id="acct_num1" class="form-control-sm"
-											onchange="onAccountNumChange(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();onAccountNumChange(this.value);}" />
+											readonly />
 									</div>
 									<div class="col-sm-1"></div>
 									<div class="col-sm-1" style="margin-top: 5px">Account
@@ -1361,7 +1361,7 @@
 									<div class="col-sm-1" style="margin-top: 5px">Account No</div>
 									<div class="col-sm-1" style="display: flex;">
 										<input type="text" name="acct_num2" id="acct_num2" class="form-control-sm"
-											onchange="onAccountNumChange(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();onAccountNumChange(this.value);}" />
+											readonly />
 
 									</div>
 									<div class="col-sm-1"></div>
@@ -2268,6 +2268,7 @@
 		acct_num = acctnum;
 		currentMode = 'standard';
 		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
+		$('#acct_num1, #acct_num2, #acct_num3').prop('readonly', true);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').show();
 		$('#deleted_btn, #modified_btn, #substituted_btn').hide();
 		var currentdateElement = document.getElementById("todate3");
@@ -2510,6 +2511,8 @@
 		acct_num = acctnum;
 		currentMode = 'Deleted';
 		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
+		$('#acct_num1, #acct_num2').prop('readonly', true);
+		$('#acct_num3').prop('readonly', false);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#deleted_btn').css({'background-color': '#13739F', 'color': 'white'});
@@ -2711,6 +2714,8 @@
 		acct_num = acctnum;
 		currentMode = 'Modified';
 		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
+		$('#acct_num1, #acct_num2').prop('readonly', true);
+		$('#acct_num3').prop('readonly', false);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#modified_btn').css({'background-color': '#13739F', 'color': 'white'});
@@ -2912,6 +2917,8 @@
 		acct_num = acctnum;
 		currentMode = 'Substituted';
 		$('#acct_num1, #acct_num2, #acct_num3').val(acctnum);
+		$('#acct_num1, #acct_num2').prop('readonly', true);
+		$('#acct_num3').prop('readonly', false);
 		$('#tab1_btn, #tab2_btn, #tab3_btn').hide();
 		$('#deleted_btn, #modified_btn, #substituted_btn').show();
 		$('#substituted_btn').css({'background-color': '#13739F', 'color': 'white'});
