@@ -1599,18 +1599,50 @@ public class BTMRestController {
 
 	@GetMapping("transactionaccountdetailsvalues")
 	public BAJ_TrmView_Entity transactionaccountdetailsvalues(@RequestParam(required = false) String acctNum,
-			@RequestParam(required = false) String tranId, @RequestParam(required = false) String partnId) {
-		System.out.println("tranId1" + tranId + "partTranId1" + partnId + "acct_num1" + acctNum);
-		BAJ_TrmView_Entity accountvalue = bAJ_TrmView_Repo.getValuepopvalues(tranId, acctNum, partnId);
-		System.out.println("accountvalue" + accountvalue);
+			@RequestParam(required = false) String tranId, @RequestParam(required = false) String partnId,
+			@RequestParam(required = false) String mode) {
+		System.out.println("tranId1: " + tranId + ", partTranId1: " + partnId + ", acct_num1: " + acctNum + ", mode: " + mode);
+		BAJ_TrmView_Entity accountvalue;
+		if ("Deleted".equalsIgnoreCase(mode)) {
+			accountvalue = bAJ_TrmView_Repo.getValuepopvaluesDeleted(tranId, acctNum, partnId);
+			if (accountvalue == null) {
+				accountvalue = bAJ_TrmView_Repo.getValuepopDeleted(tranId, partnId);
+			}
+		} else if ("Modified".equalsIgnoreCase(mode)) {
+			accountvalue = bAJ_TrmView_Repo.getValuepopvaluesModified(tranId, acctNum, partnId);
+			if (accountvalue == null) {
+				accountvalue = bAJ_TrmView_Repo.getValuepopModified(tranId, partnId);
+			}
+		} else if ("Substituted".equalsIgnoreCase(mode)) {
+			accountvalue = bAJ_TrmView_Repo.getValuepopvaluesSubstituted(tranId, acctNum, partnId);
+			if (accountvalue == null) {
+				accountvalue = bAJ_TrmView_Repo.getValuepopSubstituted(tranId, partnId);
+			}
+		} else {
+			accountvalue = bAJ_TrmView_Repo.getValuepopvalues(tranId, acctNum, partnId);
+			if (accountvalue == null) {
+				accountvalue = bAJ_TrmView_Repo.getValuepop(tranId, partnId);
+			}
+		}
+		System.out.println("accountvalue: " + accountvalue);
 		return accountvalue;
 	}
 
 	@GetMapping("transactionValues")
 	public BAJ_TrmView_Entity transactionValues(@RequestParam(required = false) String tran_id,
-			@RequestParam(required = false) String part_tran_id) {
-		System.out.println("tranId11111" + tran_id + "partTranId1" + part_tran_id);
-		BAJ_TrmView_Entity accountvalue = bAJ_TrmView_Repo.getValuepop(tran_id, part_tran_id);
+			@RequestParam(required = false) String part_tran_id,
+			@RequestParam(required = false) String mode) {
+		System.out.println("tranId: " + tran_id + ", partTranId: " + part_tran_id + ", mode: " + mode);
+		BAJ_TrmView_Entity accountvalue;
+		if ("Deleted".equalsIgnoreCase(mode)) {
+			accountvalue = bAJ_TrmView_Repo.getValuepopDeleted(tran_id, part_tran_id);
+		} else if ("Modified".equalsIgnoreCase(mode)) {
+			accountvalue = bAJ_TrmView_Repo.getValuepopModified(tran_id, part_tran_id);
+		} else if ("Substituted".equalsIgnoreCase(mode)) {
+			accountvalue = bAJ_TrmView_Repo.getValuepopSubstituted(tran_id, part_tran_id);
+		} else {
+			accountvalue = bAJ_TrmView_Repo.getValuepop(tran_id, part_tran_id);
+		}
 		return accountvalue;
 	}
 

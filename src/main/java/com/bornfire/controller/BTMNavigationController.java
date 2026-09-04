@@ -12815,8 +12815,8 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 	@RequestMapping(value = "admininq", method = { RequestMethod.GET, RequestMethod.POST })
 	public String admininq(Model md, HttpServletRequest req, @RequestParam(required = false) String formmode,
 			@RequestParam(required = false) String tranId, @RequestParam(required = false) String partTranId,
-			@RequestParam(required = false) String acct_num) {
-		System.out.println("tranId" + tranId + "partTranId" + partTranId + "acct_num" + acct_num);
+			@RequestParam(required = false) String acct_num, @RequestParam(required = false) String mode) {
+		System.out.println("tranId: " + tranId + ", partTranId: " + partTranId + ", acct_num: " + acct_num + ", mode: " + mode);
 		String userId = (String) req.getSession().getAttribute("USERID");
 		md.addAttribute("RoleMenu", resourceMasterRepo.getrole(userId));
 
@@ -12834,24 +12834,89 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 
 		} else if (formmode.equals("view")) {
 			md.addAttribute("formmode", "view");
-			List<BAJ_TrmView_Entity> jourList = bAJ_TrmView_Repo.findByjournalvalues(tranId);
+			md.addAttribute("mode", mode != null ? mode : "standard");
+
+			List<BAJ_TrmView_Entity> jourList;
+			if ("Deleted".equalsIgnoreCase(mode)) {
+				jourList = bAJ_TrmView_Repo.findByjournalvaluesDeleted(tranId);
+			} else if ("Modified".equalsIgnoreCase(mode)) {
+				jourList = bAJ_TrmView_Repo.findByjournalvaluesModified(tranId);
+			} else if ("Substituted".equalsIgnoreCase(mode)) {
+				jourList = bAJ_TrmView_Repo.findByjournalvaluesSubstituted(tranId);
+			} else {
+				jourList = bAJ_TrmView_Repo.findByjournalvalues(tranId);
+			}
 			md.addAttribute("jour", jourList);
 
 			BAJ_TrmView_Entity ledgerVal = null;
-			if (acct_num != null && !acct_num.trim().isEmpty() && partTranId != null && !partTranId.trim().isEmpty()) {
-				ledgerVal = bAJ_TrmView_Repo.getValuepopvalues(tranId, acct_num, partTranId);
+			if (jourList != null && !jourList.isEmpty() && partTranId != null && !partTranId.trim().isEmpty()) {
+				String pIdTrim = partTranId.trim();
+				for (BAJ_TrmView_Entity e : jourList) {
+					if (e.getPart_tran_id() != null && e.getPart_tran_id().toString().trim().equals(pIdTrim)) {
+						if (acct_num != null && !acct_num.trim().isEmpty()) {
+							if (acct_num.trim().equals(e.getAcct_num() != null ? e.getAcct_num().trim() : "")) {
+								ledgerVal = e;
+								break;
+							}
+						} else {
+							ledgerVal = e;
+							break;
+						}
+					}
+				}
+				if (ledgerVal == null) {
+					for (BAJ_TrmView_Entity e : jourList) {
+						if (e.getPart_tran_id() != null && e.getPart_tran_id().toString().trim().equals(pIdTrim)) {
+							ledgerVal = e;
+							break;
+						}
+					}
+				}
+			}
+
+			if (ledgerVal == null && acct_num != null && !acct_num.trim().isEmpty() && partTranId != null && !partTranId.trim().isEmpty()) {
+				if ("Deleted".equalsIgnoreCase(mode)) {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopvaluesDeleted(tranId, acct_num, partTranId);
+				} else if ("Modified".equalsIgnoreCase(mode)) {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopvaluesModified(tranId, acct_num, partTranId);
+				} else if ("Substituted".equalsIgnoreCase(mode)) {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopvaluesSubstituted(tranId, acct_num, partTranId);
+				} else {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopvalues(tranId, acct_num, partTranId);
+				}
 			}
 			if (ledgerVal == null && partTranId != null && !partTranId.trim().isEmpty()) {
-				ledgerVal = bAJ_TrmView_Repo.getValuepop(tranId, partTranId);
+				if ("Deleted".equalsIgnoreCase(mode)) {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopDeleted(tranId, partTranId);
+				} else if ("Modified".equalsIgnoreCase(mode)) {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopModified(tranId, partTranId);
+				} else if ("Substituted".equalsIgnoreCase(mode)) {
+					ledgerVal = bAJ_TrmView_Repo.getValuepopSubstituted(tranId, partTranId);
+				} else {
+					ledgerVal = bAJ_TrmView_Repo.getValuepop(tranId, partTranId);
+				}
 			}
 			if (ledgerVal == null && jourList != null && !jourList.isEmpty()) {
 				ledgerVal = jourList.get(0);
 			}
+
 			md.addAttribute("ledgervalues", ledgerVal);
-			md.addAttribute("currentPartTran", partTranId != null ? partTranId : (ledgerVal != null ? ledgerVal.getPart_tran_id() : "1"));
-			System.out.println("part_tran_id: " + partTranId);
-			md.addAttribute("maxPartTran", bAJ_TrmView_Repo.maxPartranID(tranId));
-			System.out.println("maxPartTran: " + bAJ_TrmView_Repo.maxPartranID(tranId));
+
+			int totalCount = (jourList != null && !jourList.isEmpty()) ? jourList.size() : 1;
+			int currentIndex = 1;
+			if (jourList != null && ledgerVal != null) {
+				for (int i = 0; i < jourList.size(); i++) {
+					BAJ_TrmView_Entity item = jourList.get(i);
+					if (item == ledgerVal || (item.getPart_tran_id() != null && ledgerVal.getPart_tran_id() != null 
+							&& item.getPart_tran_id().compareTo(ledgerVal.getPart_tran_id()) == 0)) {
+						currentIndex = i + 1;
+						break;
+					}
+				}
+			}
+
+			md.addAttribute("currentPartTran", currentIndex);
+			md.addAttribute("maxPartTran", totalCount);
 		}
 
 		return "Admin_Inquire";

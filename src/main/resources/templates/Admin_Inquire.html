@@ -638,57 +638,122 @@
 			evt.currentTarget.className += " active";
 		}
 
+		var currentJourIndex = 0;
+		function initJourIndex() {
+			if (typeof jourRecords !== 'undefined' && jourRecords && jourRecords.length > 0) {
+				var curPId = $("#part_tran_id").val();
+				var curAcc = $("#acct_num").val();
+				var foundIdx = -1;
+				for (var i = 0; i < jourRecords.length; i++) {
+					if (String(jourRecords[i].part_tran_id).trim() === String(curPId).trim()) {
+						if (curAcc && String(jourRecords[i].acct_num).trim() === String(curAcc).trim()) {
+							foundIdx = i;
+							break;
+						}
+						if (foundIdx === -1) foundIdx = i;
+					}
+				}
+				currentJourIndex = (foundIdx >= 0) ? foundIdx : 0;
+				updatePaginationIndicator();
+			}
+		}
+
+		function updatePaginationIndicator() {
+			var curEl = document.getElementById('currentPartTran');
+			var maxEl = document.getElementById('maxPartTran');
+			if (typeof jourRecords !== 'undefined' && jourRecords && jourRecords.length > 0) {
+				if (curEl) curEl.innerText = (currentJourIndex + 1);
+				if (maxEl) maxEl.innerText = jourRecords.length;
+			}
+		}
+
+		$(document).ready(function () {
+			initJourIndex();
+		});
+
+		function populateJournalFields(data) {
+			if (!data) return;
+			$("#tran_id").val(data.tran_id != null ? data.tran_id : "");
+			$("#part_tran_id").val(data.part_tran_id != null ? data.part_tran_id : "");
+			$("#acct_num").val(data.acct_num != null ? data.acct_num : "");
+			$("#acct_name").val(data.acct_name != null ? data.acct_name : "");
+			$("#tran_type").val(data.tran_type != null ? data.tran_type : "");
+			$("#part_tran_type").val(data.part_tran_type != null ? data.part_tran_type : "");
+			$("#acct_crncy").val(data.acct_crncy != null ? data.acct_crncy : "");
+			$("#tran_amt").val(data.tran_amt != null ? formatNumberWithCommas(data.tran_amt) : "");
+			$("#tran_particular").val(data.tran_particular != null ? data.tran_particular : "");
+			$("#tran_remarks").val(data.tran_remarks != null ? data.tran_remarks : "");
+			$("#gst_amount").val(data.flow_code != null ? data.flow_code : (data.gst_amount != null ? data.gst_amount : ""));
+			$("#gst_type").val(data.flow_date != null ? formatDateToDD(data.flow_date) : (data.gst_type != null ? formatDateToDD(data.gst_type) : ""));
+			$("#tran_code").val(data.tran_code != null ? data.tran_code : "");
+			$("#tran_rpt_code").val(data.tran_rpt_code != null ? data.tran_rpt_code : "");
+			$("#tran_ref_no").val(data.tran_ref_no != null ? data.tran_ref_no : "");
+			$("#add_details").val(data.add_details != null ? data.add_details : "");
+			$("#partition_type").val(data.partition_type != null ? data.partition_type : "");
+			$("#partition_det").val(data.partition_det != null ? data.partition_det : "");
+			$("#instr_num").val(data.instr_num != null ? data.instr_num : "");
+			$("#instr_date").val(data.instr_date != null ? formatDateToDD(data.instr_date) : "");
+			$("#ref_crncy").val(data.ref_crncy != null ? data.ref_crncy : "");
+			$("#ref_crncy_amt").val(data.ref_crncy_amt != null ? data.ref_crncy_amt : "");
+			$("#rate_code").val(data.rate_code != null ? data.rate_code : "");
+			$("#rate").val(data.rate != null ? data.rate : "");
+			$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
+			$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
+			$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
+			$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
+			$("#post_user").val(data.post_user != null ? data.post_user : "");
+			$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
+			$("#tran_status").val(data.tran_status != null ? data.tran_status : "");
+			$("#del_flg").val(data.del_flg != null ? data.del_flg : "");
+			$("#value_date").val(data.value_date != null ? formatDateToDD(data.value_date) : "");
+			$("#tran_date").val(data.tran_date != null ? formatDateToDD(data.tran_date) : "");
+			$("#srl_no").val(data.srl_no != null ? data.srl_no : "");
+
+			updatePaginationIndicator();
+		}
+
 		function selectActions(element) {
 			var tranId = $(element).attr('data-tranid');
 			var partnId = $(element).attr('data-partnid');
 			var acctNum = $(element).attr('data-acctnum');
-			console.log(tranId + " " + partnId + " " + acctNum);
+			console.log("selectActions:", tranId, partnId, acctNum);
+
+			if (typeof jourRecords !== 'undefined' && jourRecords && jourRecords.length > 0) {
+				for (var i = 0; i < jourRecords.length; i++) {
+					if (String(jourRecords[i].part_tran_id).trim() === String(partnId).trim() &&
+						(!acctNum || String(jourRecords[i].acct_num).trim() === String(acctNum).trim())) {
+						currentJourIndex = i;
+						populateJournalFields(jourRecords[i]);
+						return;
+					}
+				}
+				for (var i = 0; i < jourRecords.length; i++) {
+					if (String(jourRecords[i].part_tran_id).trim() === String(partnId).trim()) {
+						currentJourIndex = i;
+						populateJournalFields(jourRecords[i]);
+						return;
+					}
+				}
+			}
+
+			var activeMode = (typeof activeViewMode !== 'undefined' ? activeViewMode : (typeof currentMode !== 'undefined' ? currentMode : 'standard')) || 'standard';
+
 			$.ajax({
 				type: 'GET',
 				url: './transactionaccountdetailsvalues',
 				data: {
 					tranId: tranId,
 					partnId: partnId,
-					acctNum: acctNum
+					acctNum: acctNum,
+					mode: activeMode
 				},
 				success: function (data) {
-
-					$("#tran_id").val(data.tran_id);
-					$("#part_tran_id").val(data.part_tran_id);
-					$("#acct_num").val(data.acct_num);
-					$("#acct_name").val(data.acct_name);
-					$("#tran_type").val(data.tran_type);
-					$("#part_tran_type").val(data.part_tran_type);
-					$("#acct_crncy").val(data.acct_crncy);
-					$("#tran_amt").val(data.tran_amt);
-					$("#tran_particular").val(data.tran_particular);
-					$("#tran_remarks").val(data.tran_remarks);
-					$("#gst_amount").val(data.gst_amount);
-					$("#gst_type").val(data.gst_type);
-					$("#tran_code").val(data.tran_code);
-					$("#tran_rpt_code").val(data.tran_rpt_code);
-					$("#tran_ref_no").val(data.tran_ref_no);
-					$("#add_details").val(data.add_details);
-					$("#partition_type").val(data.partition_type);
-					$("#partition_det").val(data.partition_det);
-					$("#instr_num").val(data.instr_num);
-					$("#ref_crncy").val(data.ref_crncy);
-					$("#ref_crncy_amt").val(data.ref_crncy_amt);
-					$("#rate_code").val(data.rate_code);
-					$("#rate").val(data.rate);
-					$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
-					$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
-					$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
-					$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
-					$("#post_user").val(data.post_user != null ? data.post_user : "");
-					$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
-					$("#tran_status").val(data.tran_status);
-					$("#del_flg").val(data.del_flg);
+					if (data) populateJournalFields(data);
 				},
 				error: function () {
 					$('#errorMessage').text('Error fetching data');
 					$('#errorModal').modal('show');
-					alert("get values error")
+					alert("get values error");
 				}
 			});
 		}
@@ -743,109 +808,52 @@
 			return formattedNumber;
 		}
 		function getPartTranRecords(button) {
-			event.preventDefault();
+			if (typeof event !== 'undefined' && event) event.preventDefault();
 
-			const currentPartTran = parseInt(document.getElementById('currentPartTran').innerText);
-			console.log("currentPartTran" + currentPartTran);
+			if (typeof jourRecords !== 'undefined' && jourRecords && jourRecords.length > 0) {
+				if (button.id === 'previous-btn') {
+					if (currentJourIndex > 0) {
+						currentJourIndex--;
+						var record = jourRecords[currentJourIndex];
+						populateJournalFields(record);
+						var targetRadio = $(`#usertablevalues tbody tr:eq(${currentJourIndex}) input[name="actionRadio"]`);
+						if (targetRadio.length) targetRadio.prop('checked', true);
+					} else {
+						alert('This is the first record!');
+					}
+				} else if (button.id === 'next-btn') {
+					if (currentJourIndex < jourRecords.length - 1) {
+						currentJourIndex++;
+						var record = jourRecords[currentJourIndex];
+						populateJournalFields(record);
+						var targetRadio = $(`#usertablevalues tbody tr:eq(${currentJourIndex}) input[name="actionRadio"]`);
+						if (targetRadio.length) targetRadio.prop('checked', true);
+					} else {
+						alert('This is the last record!');
+					}
+				}
+				return;
+			}
 
-			const maxPartTran = parseInt(document.getElementById('maxPartTran').innerText);
-			console.log("maxPartTran" + maxPartTran);
+			var currentPartTran = parseInt(document.getElementById('currentPartTran').innerText);
+			var maxPartTran = parseInt(document.getElementById('maxPartTran').innerText);
 			var tranId = $("#tran_id").val();
-			console.log("tranId" + tranId);
-			let partTranId = currentPartTran;
-			console.log("partTranId" + partTranId);
+			var partTranId = currentPartTran;
+			var activeMode = (typeof activeViewMode !== 'undefined' ? activeViewMode : (typeof currentMode !== 'undefined' ? currentMode : 'standard')) || 'standard';
 
 			if (button.id === 'previous-btn') {
-
 				if (currentPartTran > 1) {
-					/*previous record*/
 					partTranId = currentPartTran - 1;
-					document.getElementById('currentPartTran').innerText = partTranId;
-
-					$("#tran_id").val("");
-					$("#part_tran_id").val("");
-					$("#acct_num").val("");
-					$("#acct_name").val("");
-					$("#tran_type").val("");
-					$("#part_tran_type").val("");
-					$("#acct_crncy").val("");
-					$("#tran_amt").val("");
-					$("#tran_particular").val("");
-					$("#tran_remarks").val("");
-					$("#gst_amount").val("");
-					$("#gst_type").val("");
-					$("#tran_code").val("");
-					$("#tran_rpt_code").val("");
-					$("#tran_ref_no").val("");
-					$("#add_details").val("");
-					$("#partition_type").val("");
-					$("#partition_det").val("");
-					$("#instr_num").val("");
-					$("#ref_crncy").val("");
-					$("#ref_crncy_amt").val("");
-					$("#rate_code").val("");
-					$("#rate").val("");
-					$("#entry_user").val("");
-					$("#entry_time").val("");
-					$("#modify_user").val("");
-					$("#modify_time").val("");
-					$("#post_user").val("");
-					$("#post_time").val("");
-					$("#tran_status").val("");
-					$("#del_flg").val("");
-					$("#value_date").val("");
-					$("#tran_date").val("");
-					$("#srl_no").val("");
-
-
-
 					$.ajax({
 						type: 'GET',
 						url: './transactionValues',
 						data: {
 							tran_id: tranId,
-							part_tran_id: partTranId
-
+							part_tran_id: partTranId,
+							mode: activeMode
 						},
 						success: function (data) {
-							console.log(data);
-							console.log("dat" + data.tran_amt);
-							$("#tran_id").val(data.tran_id != null ? data.tran_id : "");
-							$("#part_tran_id").val(data.part_tran_id != null ? data.part_tran_id : "");
-							$("#acct_num").val(data.acct_num != null ? data.acct_num : "");
-							$("#acct_name").val(data.acct_name != null ? data.acct_name : "");
-							$("#tran_type").val(data.tran_type != null ? data.tran_type : "");
-							$("#part_tran_type").val(data.part_tran_type != null ? data.part_tran_type : "");
-							$("#acct_crncy").val(data.acct_crncy != null ? data.acct_crncy : "");
-
-							$("#tran_amt").val(data.tran_amt != null ? formatNumberWithCommas(data.tran_amt) : "");
-
-							$("#tran_particular").val(data.tran_particular != null ? data.tran_particular : "");
-							$("#tran_remarks").val(data.tran_remarks != null ? data.tran_remarks : "");
-							$("#gst_amount").val(data.flow_code != null ? data.flow_code : "");
-							$("#gst_type").val(data.flow_date != null ? formatDateToDD(data.flow_date) : "");
-							$("#tran_code").val(data.tran_code != null ? data.tran_code : "");
-							$("#tran_rpt_code").val(data.tran_rpt_code != null ? data.tran_rpt_code : "");
-							$("#tran_ref_no").val(data.tran_ref_no != null ? data.tran_ref_no : "");
-							$("#add_details").val(data.add_details != null ? data.add_details : "");
-							$("#partition_type").val(data.partition_type != null ? data.partition_type : "");
-							$("#partition_det").val(data.partition_det != null ? data.partition_det : "");
-							$("#instr_num").val(data.instr_num != null ? data.instr_num : "");
-							$("#ref_crncy").val(data.ref_crncy != null ? data.ref_crncy : "");
-							$("#ref_crncy_amt").val(data.ref_crncy_amt != null ? data.ref_crncy_amt : "");
-							$("#rate_code").val(data.rate_code != null ? data.rate_code : "");
-							$("#rate").val(data.rate != null ? data.rate : "");
-							$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
-							$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
-							$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
-							$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
-							$("#post_user").val(data.post_user != null ? data.post_user : "");
-							$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
-							$("#tran_status").val(data.tran_status != null ? data.tran_status : "");
-							$("#del_flg").val(data.del_flg != null ? data.del_flg : "");
-							$("#value_date").val(data.value_date != null ? formatDateToDD(data.value_date) : "");
-							$("#tran_date").val(data.tran_date != null ? formatDateToDD(data.tran_date) : "");
-							$("#srl_no").val(data.srl_no != null ? data.srl_no : "");
+							if (data) populateJournalFields(data);
 						},
 						error: function () {
 							$('#errorMessage').text('Error fetching data');
@@ -857,95 +865,18 @@
 					return;
 				}
 			} else if (button.id === 'next-btn') {
-
 				if (currentPartTran < maxPartTran) {
-					/*next record*/
 					partTranId = currentPartTran + 1;
-					document.getElementById('currentPartTran').innerText = partTranId;
-
-
-					$("#tran_id").val("");
-					$("#part_tran_id").val("");
-					$("#acct_num").val("");
-					$("#acct_name").val("");
-					$("#tran_type").val("");
-					$("#part_tran_type").val("");
-					$("#acct_crncy").val("");
-					$("#tran_amt").val("");
-					$("#tran_particular").val("");
-					$("#tran_remarks").val("");
-					$("#gst_amount").val("");
-					$("#gst_type").val("");
-					$("#tran_code").val("");
-					$("#tran_rpt_code").val("");
-					$("#tran_ref_no").val("");
-					$("#add_details").val("");
-					$("#partition_type").val("");
-					$("#partition_det").val("");
-					$("#instr_num").val("");
-					$("#ref_crncy").val("");
-					$("#ref_crncy_amt").val("");
-					$("#rate_code").val("");
-					$("#rate").val("");
-					$("#entry_user").val("");
-					$("#entry_time").val("");
-					$("#modify_user").val("");
-					$("#modify_time").val("");
-					$("#post_user").val("");
-					$("#post_time").val("");
-					$("#tran_status").val("");
-					$("#del_flg").val("");
-					$("#value_date").val("");
-					$("#tran_date").val("");
-					$("#srl_no").val("");
-
-
-
 					$.ajax({
 						type: 'GET',
 						url: './transactionValues',
 						data: {
 							tran_id: tranId,
-							part_tran_id: partTranId
-
+							part_tran_id: partTranId,
+							mode: activeMode
 						},
 						success: function (data) {
-							console.log(data);
-
-							$("#tran_id").val(data.tran_id != null ? data.tran_id : "");
-							$("#part_tran_id").val(data.part_tran_id != null ? data.part_tran_id : "");
-							$("#acct_num").val(data.acct_num != null ? data.acct_num : "");
-							$("#acct_name").val(data.acct_name != null ? data.acct_name : "");
-							$("#tran_type").val(data.tran_type != null ? data.tran_type : "");
-							$("#part_tran_type").val(data.part_tran_type != null ? data.part_tran_type : "");
-							$("#acct_crncy").val(data.acct_crncy != null ? data.acct_crncy : "");
-							$("#tran_amt").val(data.tran_amt != null ? formatNumberWithCommas(data.tran_amt) : "");
-							$("#tran_particular").val(data.tran_particular != null ? data.tran_particular : "");
-							$("#tran_remarks").val(data.tran_remarks != null ? data.tran_remarks : "");
-							$("#gst_amount").val(data.flow_code != null ? data.flow_code : "");
-							$("#gst_type").val(data.flow_date != null ? formatDateToDD(data.flow_date) : "");
-							$("#tran_code").val(data.tran_code != null ? data.tran_code : "");
-							$("#tran_rpt_code").val(data.tran_rpt_code != null ? data.tran_rpt_code : "");
-							$("#tran_ref_no").val(data.tran_ref_no != null ? data.tran_ref_no : "");
-							$("#add_details").val(data.add_details != null ? data.add_details : "");
-							$("#partition_type").val(data.partition_type != null ? data.partition_type : "");
-							$("#partition_det").val(data.partition_det != null ? data.partition_det : "");
-							$("#instr_num").val(data.instr_num != null ? data.instr_num : "");
-							$("#ref_crncy").val(data.ref_crncy != null ? data.ref_crncy : "");
-							$("#ref_crncy_amt").val(data.ref_crncy_amt != null ? data.ref_crncy_amt : "");
-							$("#rate_code").val(data.rate_code != null ? data.rate_code : "");
-							$("#rate").val(data.rate != null ? data.rate : "");
-							$("#entry_user").val(data.entry_user != null ? data.entry_user : "");
-							$("#entry_time").val(data.entry_time != null ? formatDateTime(data.entry_time) : "");
-							$("#modify_user").val(data.modify_user != null ? data.modify_user : "");
-							$("#modify_time").val(data.modify_time != null ? formatDateTime(data.modify_time) : "");
-							$("#post_user").val(data.post_user != null ? data.post_user : "");
-							$("#post_time").val(data.post_time != null ? formatDateTime(data.post_time) : "");
-							$("#tran_status").val(data.tran_status != null ? data.tran_status : "");
-							$("#del_flg").val(data.del_flg != null ? data.del_flg : "");
-							$("#value_date").val(data.value_date != null ? formatDateToDD(data.value_date) : "");
-							$("#tran_date").val(data.tran_date != null ? formatDateToDD(data.tran_date) : "");
-							$("#srl_no").val(data.srl_no != null ? data.srl_no : "");
+							if (data) populateJournalFields(data);
 						},
 						error: function () {
 							$('#errorMessage').text('Error fetching data');
@@ -1577,6 +1508,12 @@
 
 				<!-- -----------------------------------------------View-------------------------------------------------------------------------- -->
 				<div th:if="${formmode}=='view'">
+					<script th:inline="javascript">
+					/*<![CDATA[*/
+					var jourRecords = /*[[${jour}]]*/ [];
+					var activeViewMode = /*[[${mode}]]*/ 'standard';
+					/*]]>*/
+					</script>
 
 					<div class="card w-100 border">
 				<div class="card-header" style="background-color: #e9ecef; height: 50px">
@@ -3125,15 +3062,17 @@
 
 
 
-	function showdetails(tranId, partTranId, acct_num) {
+	function showdetails(tranId, partTranId, acct_num, mode) {
 		tranId = (tranId && tranId !== 'undefined' && tranId !== 'null') ? String(tranId).trim() : '';
-		partTranId = (partTranId && partTranId !== 'undefined' && partTranId !== 'null') ? String(partTranId).trim() : '1';
+		partTranId = (partTranId && partTranId !== 'undefined' && partTranId !== 'null') ? String(partTranId).trim() : '';
 		acct_num = (acct_num && acct_num !== 'undefined' && acct_num !== 'null') ? String(acct_num).trim() : '';
-		
-		console.log("showdetails - tranId: " + tranId + ", partTranId: " + partTranId + ", acct_num: " + acct_num);
+		var activeMode = mode || (typeof currentMode !== 'undefined' ? currentMode : 'standard') || 'standard';
+
+		console.log("showdetails - tranId: " + tranId + ", partTranId: " + partTranId + ", acct_num: " + acct_num + ", mode: " + activeMode);
 
 		var url = 'admininq?formmode=view&tranId=' + encodeURIComponent(tranId)
-			+ '&partTranId=' + encodeURIComponent(partTranId) + '&acct_num=' + encodeURIComponent(acct_num);
+			+ '&partTranId=' + encodeURIComponent(partTranId) + '&acct_num=' + encodeURIComponent(acct_num)
+			+ '&mode=' + encodeURIComponent(activeMode);
 		location.href = url;
 	}
 
