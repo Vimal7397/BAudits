@@ -2522,6 +2522,9 @@
 		document.getElementById('TabButtons').style.display = 'block';
 		showTab('tab3', 'deleted_btn');
 
+		if (!$('#fromdate3').val()) $('#fromdate3').val('01-04-2025');
+		if (!$('#todate3').val()) $('#todate3').val('01-04-2026');
+
 		$('#loader-overlay').show();
 		const ajaxPromises = [];
 
@@ -2725,6 +2728,9 @@
 		document.getElementById('TabButtons').style.display = 'block';
 		showTab('tab3', 'modified_btn');
 
+		if (!$('#fromdate3').val()) $('#fromdate3').val('01-04-2025');
+		if (!$('#todate3').val()) $('#todate3').val('01-04-2026');
+
 		$('#loader-overlay').show();
 		const ajaxPromises = [];
 
@@ -2927,6 +2933,9 @@
 		document.getElementById('CommonTable').style.display = 'none';
 		document.getElementById('TabButtons').style.display = 'block';
 		showTab('tab3', 'substituted_btn');
+
+		if (!$('#fromdate3').val()) $('#fromdate3').val('01-04-2025');
+		if (!$('#todate3').val()) $('#todate3').val('01-04-2026');
 
 		$('#loader-overlay').show();
 		const ajaxPromises = [];
