@@ -1245,11 +1245,11 @@
 							</tr>
 							<tr>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-										onclick="enableTabsDeleted('tab3', '');showTabButtons()">Deleted</a></td>
+										onclick="enableTabsDeleted('tab3', '');showTabButtons()">Delete</a></td>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-										onclick="enableTabsModified('tab3', '');showTabButtons()">Modified</a></td>
+										onclick="enableTabsModified('tab3', '');showTabButtons()">Modify</a></td>
 								<td style="padding: 10px;"><a style="text-decoration: none; cursor: pointer"
-										onclick="enableTabsSubstituted('tab3', '');showTabButtons()">Substituted</a></td>
+										onclick="enableTabsSubstituted('tab3', '');showTabButtons()">Substitute</a></td>
 							</tr>
 						</table>
 					</div>
@@ -3117,14 +3117,15 @@
 
 
 	function showdetails(tranId, partTranId, acct_num) {
-		console.log("tranId" + tranId);
-		console.log("partTranId" + partTranId);
-		console.log("Acct_num" + acct_num);
+		tranId = (tranId && tranId !== 'undefined' && tranId !== 'null') ? String(tranId).trim() : '';
+		partTranId = (partTranId && partTranId !== 'undefined' && partTranId !== 'null') ? String(partTranId).trim() : '1';
+		acct_num = (acct_num && acct_num !== 'undefined' && acct_num !== 'null') ? String(acct_num).trim() : '';
+		
+		console.log("showdetails - tranId: " + tranId + ", partTranId: " + partTranId + ", acct_num: " + acct_num);
 
-		var url = 'admininq?formmode=view&tranId=' + tranId
-			+ '&partTranId=' + partTranId + '&acct_num=' + acct_num;
+		var url = 'admininq?formmode=view&tranId=' + encodeURIComponent(tranId)
+			+ '&partTranId=' + encodeURIComponent(partTranId) + '&acct_num=' + encodeURIComponent(acct_num);
 		location.href = url;
-
 	}
 
 	function formatDate(inputDate) {

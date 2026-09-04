@@ -12288,11 +12288,23 @@ public class BTMNavigationController {
 			md.addAttribute("Accountvalue", bAJAccountLedgerRepo.getaccno(acct_num));
 			md.addAttribute("AccList", bAJ_TrmView_Repo.getAccRecord(acct_num));
 
-		}else if (formmode.equals("view")) {
+		} else if (formmode.equals("view")) {
 			md.addAttribute("formmode", "view");
-			md.addAttribute("jour", bAJ_TrmView_Repo.findByjournalvalues(tranId));
-			md.addAttribute("ledgervalues", bAJ_TrmView_Repo.getValuepopvalues(tranId, acct_num, partTranId));
-			md.addAttribute("currentPartTran", partTranId);
+			List<BAJ_TrmView_Entity> jourList = bAJ_TrmView_Repo.findByjournalvalues(tranId);
+			md.addAttribute("jour", jourList);
+
+			BAJ_TrmView_Entity ledgerVal = null;
+			if (acct_num != null && !acct_num.trim().isEmpty() && partTranId != null && !partTranId.trim().isEmpty()) {
+				ledgerVal = bAJ_TrmView_Repo.getValuepopvalues(tranId, acct_num, partTranId);
+			}
+			if (ledgerVal == null && partTranId != null && !partTranId.trim().isEmpty()) {
+				ledgerVal = bAJ_TrmView_Repo.getValuepop(tranId, partTranId);
+			}
+			if (ledgerVal == null && jourList != null && !jourList.isEmpty()) {
+				ledgerVal = jourList.get(0);
+			}
+			md.addAttribute("ledgervalues", ledgerVal);
+			md.addAttribute("currentPartTran", partTranId != null ? partTranId : (ledgerVal != null ? ledgerVal.getPart_tran_id() : "1"));
 			md.addAttribute("maxPartTran", bAJ_TrmView_Repo.maxPartranID(tranId));
 
 		}
@@ -12822,12 +12834,24 @@ public ResponseEntity<Resource> downloadDocument(@RequestParam String docId) {
 
 		} else if (formmode.equals("view")) {
 			md.addAttribute("formmode", "view");
-			md.addAttribute("jour", bAJ_TrmView_Repo.findByjournalvalues(tranId));
-			md.addAttribute("ledgervalues", bAJ_TrmView_Repo.getValuepopvalues(tranId, acct_num, partTranId));
-			md.addAttribute("currentPartTran", partTranId);
-			System.out.println("part_tran_id" + partTranId);
+			List<BAJ_TrmView_Entity> jourList = bAJ_TrmView_Repo.findByjournalvalues(tranId);
+			md.addAttribute("jour", jourList);
+
+			BAJ_TrmView_Entity ledgerVal = null;
+			if (acct_num != null && !acct_num.trim().isEmpty() && partTranId != null && !partTranId.trim().isEmpty()) {
+				ledgerVal = bAJ_TrmView_Repo.getValuepopvalues(tranId, acct_num, partTranId);
+			}
+			if (ledgerVal == null && partTranId != null && !partTranId.trim().isEmpty()) {
+				ledgerVal = bAJ_TrmView_Repo.getValuepop(tranId, partTranId);
+			}
+			if (ledgerVal == null && jourList != null && !jourList.isEmpty()) {
+				ledgerVal = jourList.get(0);
+			}
+			md.addAttribute("ledgervalues", ledgerVal);
+			md.addAttribute("currentPartTran", partTranId != null ? partTranId : (ledgerVal != null ? ledgerVal.getPart_tran_id() : "1"));
+			System.out.println("part_tran_id: " + partTranId);
 			md.addAttribute("maxPartTran", bAJ_TrmView_Repo.maxPartranID(tranId));
-			System.out.println("bAJ_TrmView_Repo.maxPartranID(partTranId)" + bAJ_TrmView_Repo.maxPartranID(partTranId));
+			System.out.println("maxPartTran: " + bAJ_TrmView_Repo.maxPartranID(tranId));
 		}
 
 		return "Admin_Inquire";

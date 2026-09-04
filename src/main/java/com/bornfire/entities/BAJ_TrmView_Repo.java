@@ -99,16 +99,48 @@ public interface BAJ_TrmView_Repo extends JpaRepository<BAJ_TrmView_Entity, BAJ_
 	List<BAJ_TrmView_Entity> getAllLedgerEntries3Substituted();
 
 
-	@Query(value = "select  * from TRMWORK_VIEW where tran_id = ?1", nativeQuery = true)
+	@Query(value = "SELECT * FROM ( " +
+	        "SELECT * FROM TRMWORK_VIEW WHERE tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_DEL_VIEW WHERE tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_MOD_VIEW WHERE tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_SUB_VIEW WHERE tran_id = ?1 " +
+	        ")", nativeQuery = true)
 	List<BAJ_TrmView_Entity> findByjournalvalues(String tran_id);
 
-	@Query(value = "select * from TRMWORK_VIEW aa where aa.part_tran_id =?3 and aa.tran_id =?1 and aa.acct_num = ?2 ", nativeQuery = true)
+	@Query(value = "SELECT * FROM ( " +
+	        "SELECT * FROM TRMWORK_VIEW WHERE part_tran_id = ?3 AND tran_id = ?1 AND acct_num = ?2 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_DEL_VIEW WHERE part_tran_id = ?3 AND tran_id = ?1 AND acct_num = ?2 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_MOD_VIEW WHERE part_tran_id = ?3 AND tran_id = ?1 AND acct_num = ?2 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_SUB_VIEW WHERE part_tran_id = ?3 AND tran_id = ?1 AND acct_num = ?2 " +
+	        ") FETCH FIRST 1 ROW ONLY", nativeQuery = true)
 	BAJ_TrmView_Entity getValuepopvalues(String tran_id, String acct_num, String part_tran_id);
 
-	@Query(value = "select * from TRMWORK_VIEW aa where aa.part_tran_id =?2 and aa.tran_id =?1 ", nativeQuery = true)
+	@Query(value = "SELECT * FROM ( " +
+	        "SELECT * FROM TRMWORK_VIEW WHERE part_tran_id = ?2 AND tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_DEL_VIEW WHERE part_tran_id = ?2 AND tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_MOD_VIEW WHERE part_tran_id = ?2 AND tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT * FROM TRM_SUB_VIEW WHERE part_tran_id = ?2 AND tran_id = ?1 " +
+	        ") FETCH FIRST 1 ROW ONLY", nativeQuery = true)
 	BAJ_TrmView_Entity getValuepop(String tran_id, String part_tran_id);
 
-	@Query(value = "SELECT MAX(part_tran_id) AS part_tran_id FROM TRMWORK_VIEW  WHERE tran_id =?1", nativeQuery = true)
+	@Query(value = "SELECT MAX(part_tran_id) AS part_tran_id FROM ( " +
+	        "SELECT part_tran_id FROM TRMWORK_VIEW WHERE tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT part_tran_id FROM TRM_DEL_VIEW WHERE tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT part_tran_id FROM TRM_MOD_VIEW WHERE tran_id = ?1 " +
+	        "UNION ALL " +
+	        "SELECT part_tran_id FROM TRM_SUB_VIEW WHERE tran_id = ?1 " +
+	        ")", nativeQuery = true)
 	String maxPartranID(String tranId);
 
 	@Query(value = "select  * from  TRMWORK_VIEW where tran_date=?1 order by TRAN_DATE,TRAN_ID,PART_TRAN_ID ", nativeQuery = true)
