@@ -1462,6 +1462,7 @@ public class BTMRestController {
 	public Object getTransactionBalance(@RequestParam(required = false) String acctnum,
 			@RequestParam(required = false) String fromdate, Model md) {
 
+		System.err.println("HI");
 		System.out.println("Acct number: " + acctnum + " From date: " + fromdate);
 
 		SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -1474,10 +1475,10 @@ public class BTMRestController {
 				fromDateParsed = inputDateFormat.parse(fromdate);
 			}
 
-			// Format the parsed date to 'dd-MMM-yyyy'
+			// Format the parsed date to 'dd-MM-yyyy' to match TO_DATE SQL query format
 			if (fromDateParsed != null) {
-				SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-				formattedDate = outputDateFormat.format(fromDateParsed); // Format to'dd-MMM-yyyy'
+				SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				formattedDate = outputDateFormat.format(fromDateParsed);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -1485,7 +1486,7 @@ public class BTMRestController {
 		}
 
 		// Now pass the formatted date to the repository query
-		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst(acctnum, formattedDate);
+		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst(acctnum, formattedDate != null ? formattedDate : fromdate);
 		System.out.println("tranDateBal" + tranDateBal);
 		/*
 		 * md.addAttribute("Accountvalue1", tranDateBal[0]);
@@ -1512,17 +1513,17 @@ public class BTMRestController {
 				fromDateParsed = inputDateFormat.parse(fromdate);
 			}
 
-			// Format the parsed date to 'dd-MMM-yyyy'
+			// Format the parsed date to 'dd-MM-yyyy' to match TO_DATE SQL query format
 			if (fromDateParsed != null) {
-				SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-				formattedDate = outputDateFormat.format(fromDateParsed); // Format to'dd-MMM-yyyy'
+				SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				formattedDate = outputDateFormat.format(fromDateParsed);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 			System.out.println("Error parsing 'fromdate': " + e.getMessage());
 		}
 
-		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst(acctnum, formattedDate);
+		Object[] tranDateBal = bAJ_DABView_Rep.getTranlst(acctnum, formattedDate != null ? formattedDate : fromdate);
 		Object tranDate = null;
 		// Check if the result is not null and has at least two elements
 		if (tranDateBal != null && tranDateBal.length > 0) {

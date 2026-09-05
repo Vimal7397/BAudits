@@ -288,7 +288,6 @@
 
 			/* updateMinusDate(); */
 
-
 			var acctnum = $('#acct_num').val();
 			var fromdate = $('#fromdate').val();
 			var todate = $('#todate').val();
@@ -314,145 +313,155 @@
 			$('#list1').closest('.table-responsive').hide();
 			$('#loadingMessage').show();  // Show loading message
 
-			// Inside the success function after the balanceData fetch
+			function fetchRecords(formattedDateString, Obalance) {
+				let formattedBalance = formatDecimal(Obalance, 2);
+				if (isNaN(parseFloat(formattedBalance))) {
+					formattedBalance = '0.00';
+				}
+				$('#TranBalance').val(formattedBalance);
+				let balance = parseFloat(Obalance) || 0.00;
+
+				$.ajax({
+					url: './getTransactionRecords',
+					type: 'GET',
+					data: {
+						acctnum: acctnum,
+						fromdate: fromdate,
+						todate: todate
+					},
+					success: function (data) {
+						console.log("transaction data:", data);
+
+						var tableBody = document.getElementById("transactionBody");
+						if (!tableBody) return;
+						tableBody.innerHTML = '';
+
+						// Add opening balance row
+						let headerHTML = `
+                        <tr>
+                            <td colspan="2"></td>
+                            <td colspan="1"><strong>B/F:</strong> ${formattedDateString}</td>
+                            <td colspan="3"></td>
+                            <td colspan="1" style="text-align:right">${formattedBalance}</td>
+                            <td colspan="1"></td>
+                        </tr>`;
+						tableBody.innerHTML = headerHTML;
+
+						// Check if no transaction data is returned
+						if (!data || data.length === 0) {
+							let noDataRow = `
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: red;">
+                                    No transaction data available for the selected period.
+                                </td>
+                            </tr>`;
+							tableBody.innerHTML += noDataRow;
+
+							$('#loader-overlay').hide();
+							$('#loadingMessage').hide();
+							$('#transactionTableContainer').show();
+							$('#transactionTable').show();
+							$('#downloadButton').hide();
+							return;
+						}
+
+						// Process transaction records
+						let transactions = [];
+						let trHTML = '';
+
+						data.forEach(function (record) {
+							let formattedDate = record.tran_date ? formatDate(record.tran_date) : '';
+							let isDebit = record.part_tran_type && record.part_tran_type.toLowerCase() === 'debit';
+							let isCredit = record.part_tran_type && record.part_tran_type.toLowerCase() === 'credit';
+							let debitAmount = isDebit ? parseFloat(formatDecimal(record.tran_amt, 2).replace(/,/g, '')) : 0.00;
+							let creditAmount = isCredit ? parseFloat(formatDecimal(record.tran_amt, 2).replace(/,/g, '')) : 0.00;
+							let tran = (record.tran_id || '') + "/" + (record.part_tran_id || '');
+
+							if (isDebit) {
+								balance -= debitAmount;
+							} else if (isCredit) {
+								balance += creditAmount;
+							}
+
+							let absoluteBalance = Math.abs(balance);
+							let indicator = balance < 0 ? 'DR' : 'CR';
+
+							trHTML += `
+                            <tr>
+                                <td>${formattedDate}</td>
+                                <td>
+                                    <span style="cursor: pointer;" onmouseover="this.style.color='#0000EE';" 
+										onmouseout="this.style.color='black';"
+                                        onclick="showdetails('${record.tran_id}', '${record.part_tran_id}', '${record.acct_num}')">
+                                        ${tran}
+                                    </span>
+                                </td>
+                                <td>${(record.tran_particular || '')}</td>
+                                <td>${(record.acct_crncy || '')}</td>
+                                <td style="text-align:right">${formatDecimal(debitAmount, 2)}</td>
+                                <td style="text-align:right">${formatDecimal(creditAmount, 2)}</td>
+                                <td style="text-align:right">${formatDecimal(absoluteBalance, 2)}</td>
+                                <td style="text-align:right">${indicator}</td>
+                            </tr>`;
+
+							transactions.push({tran, balance});
+						});
+
+						// Append all transaction rows
+						tableBody.innerHTML += trHTML;
+
+						$('#loader-overlay').hide();
+						$('#loadingMessage').hide();
+						$('#transactionTableContainer').show();
+						$('#transactionTable').show();
+						$('#downloadButton').show();
+					},
+					error: function (error) {
+						$('#loader-overlay').hide();
+						$('#loadingMessage').hide();
+						$('#transactionTableContainer').show();
+						$('#transactionTable').show();
+						console.error("Error occurred while fetching records:", error);
+						alert("Error occurred fetching records: " + (error.responseText || "Server error"));
+					}
+				});
+			}
+
+			// AJAX call for balance
 			$.ajax({
-				url: './getTransactionBalance',  // API endpoint for balance
+				url: './getTransactionBalance',
 				type: 'GET',
 				data: {
 					acctnum: acctnum,
 					fromdate: fromdate
 				},
 				success: function (balanceData) {
-					console.log("balancedata2:" + balanceData);  // Log the full response
+					console.log("balancedata:", balanceData);
+					let date1 = null;
+					let Obalance = 0.00;
 
-					let innerArray = balanceData[0];  // The inner array
-					let date1 = innerArray[0];
-					let Obalance = innerArray[1];
-					let formattedDateString = new Date(date1).toLocaleDateString('en-GB');
-
-					// Format the balance with commas and 2 decimal places
-					let formattedBalance = Obalance.toLocaleString('en-US', {
-						minimumFractionDigits: 2,
-						maximumFractionDigits: 2
-					});
-					$('#TranBalance').val(formattedBalance);
-
-					let balance = parseFloat(Obalance);
-
-					// Second AJAX call to get transaction records
-					$.ajax({
-						url: './getTransactionRecords',
-						type: 'GET',
-						data: {
-							acctnum: acctnum,
-							fromdate: fromdate,
-							todate: todate
-						},
-						success: function (data) {
-							console.log("transaction data:", data);
-
-							// Clear the existing table rows
-							var tableBody = document.getElementById("transactionBody");
-							tableBody.innerHTML = '';
-
-							if (isNaN(parseFloat(formattedBalance))) {
-								formattedBalance = '0.00';  // Default value if it's NaN
+					if (balanceData) {
+						if (Array.isArray(balanceData)) {
+							if (balanceData.length > 0 && Array.isArray(balanceData[0])) {
+								date1 = balanceData[0][0];
+								Obalance = balanceData[0][1];
+							} else if (balanceData.length >= 2 && typeof balanceData[0] !== 'object') {
+								date1 = balanceData[0];
+								Obalance = balanceData[1];
 							}
-
-							// Add opening balance row
-							let headerHTML = `
-	                        <tr>
-	                            <td colspan="2"></td>
-	                            <td colspan="1"><strong>B/F:</strong> ${formattedDateString}</td>
-	                            <td colspan="3"></td>
-	                            <td colspan="1" style="text-align:right">${formattedBalance}</td>
-	                            <td colspan="1"></td>
-	                        </tr>`;
-							tableBody.innerHTML = headerHTML;
-
-							// ✅ Check if no transaction data is returned
-							if (!data || data.length === 0) {
-								let noDataRow = `
-	                            <tr>
-	                                <td colspan="8" style="text-align: center; color: red;">
-	                                    No transaction data available for the selected period.
-	                                </td>
-	                            </tr>`;
-								tableBody.innerHTML += noDataRow;
-
-								$('#loader-overlay').hide();
-								$('#loadingMessage').hide();
-								$('#transactionTableContainer').show();
-								$('#transactionTable').show();
-								$('#downloadButton').hide(); // Optionally hide download
-								return; // Stop processing further
-							}
-
-							// Process transaction records
-							let transactions = [];
-							let trHTML = '';
-
-							data.forEach(function (record) {
-								let formattedDate = record.tran_date ? formatDate(record.tran_date) : '';
-								let debitAmount = (record.part_tran_type === 'debit') ? parseFloat(formatDecimal(record.tran_amt, 2).replace(/,/g, '')) : 0.00;
-								let creditAmount = (record.part_tran_type === 'credit') ? parseFloat(formatDecimal(record.tran_amt, 2).replace(/,/g, '')) : 0.00;
-								let tran = (record.tran_id || '') + "/" + (record.part_tran_id || '');
-
-								if (record.part_tran_type === 'debit') {
-									balance -= debitAmount;
-								} else if (record.part_tran_type === 'credit') {
-									balance += creditAmount;
-								}
-
-								let absoluteBalance = Math.abs(balance);
-								let indicator = '';
-								if (balance < 0) {
-									indicator = 'DR';
-								} else if (balance >= 0) {
-									indicator = 'CR';
-								}
-
-								trHTML += `
-	                            <tr>
-	                                <td>${formattedDate}</td>
-	                                <td>
-	                                    <span style="cursor: pointer;"  onmouseover="this.style.color='#0000EE';" 
-											onmouseout="this.style.color='black';"
-	                                        onclick="showdetails('${record.tran_id}', '${record.part_tran_id}', '${record.acct_num}')">
-	                                        ${tran}
-	                                    </span>
-	                                </td>
-	                                <td>${(record.tran_particular || '')}</td>
-	                                <td>${(record.acct_crncy || '')}</td>
-	                                <td style="text-align:right">${formatDecimal(debitAmount, 2)}</td>
-	                                <td style="text-align:right">${formatDecimal(creditAmount, 2)}</td>
-	                                <td style="text-align:right">${formatDecimal(absoluteBalance, 2)}</td>
-	                                <td style="text-align:right">${indicator}</td>
-	                            </tr>`;
-
-								transactions.push({tran, balance});
-							});
-
-							// Append all transaction rows
-							tableBody.innerHTML += trHTML;
-
-							$('#loader-overlay').hide();
-							$('#loadingMessage').hide();
-							$('#transactionTableContainer').show();
-							$('#transactionTable').show();
-							$('#downloadButton').show();
-						},
-						error: function (error) {
-							$('#loader-overlay').hide();
-							$('#loadingMessage').hide();
-							alert("Error occurred: " + error.responseText);
 						}
-					});
+					}
+
+					let formattedDateString = date1 ? formatDate(date1) : fromdate;
+					if (Obalance === null || Obalance === undefined || isNaN(parseFloat(Obalance))) {
+						Obalance = 0.00;
+					}
+
+					fetchRecords(formattedDateString, Obalance);
 				},
 				error: function (error) {
-					$('#loader-overlay').hide();
-					$('#loadingMessage').hide();
-					alert("Error occurred while fetching balance: " + error.responseText);
+					console.warn("Could not fetch initial balance, using default 0.00", error);
+					fetchRecords(fromdate, 0.00);
 				}
 			});
 
